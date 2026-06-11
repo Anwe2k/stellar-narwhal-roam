@@ -4,10 +4,9 @@ import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Settings, Bell, Shield, LogOut } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Profile = () => {
   return (
@@ -61,7 +60,7 @@ const Profile = () => {
                 key={item.label}
                 className={cn(
                   "w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors",
-                  idx !== 3 && "border-bottom border-gray-100"
+                  idx !== 3 && "border-b border-gray-100"
                 )}
               >
                 <div className="flex items-center gap-3">

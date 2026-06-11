@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Flame, Footprints, Moon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const HealthSummary = () => {
   const stats = [
