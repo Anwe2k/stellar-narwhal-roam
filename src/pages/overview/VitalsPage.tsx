@@ -79,7 +79,7 @@ const VitalsPage = () => {
                     </button>
                   </div>
 
-                  {/* Micro-Graph last 12 hours */}
+                  {/* Micro-Graph last week */}
                   {hasData ? (
                     <div className="h-16 w-full mt-3">
                       <ResponsiveContainer width="100%" height="100%">
@@ -107,7 +107,7 @@ const VitalsPage = () => {
                       <span className="text-xs text-gray-400 font-medium">No readings registered</span>
                     </div>
                   )}
-                  <span className="text-[10px] text-gray-400 block text-right mt-1">Last 12 hours</span>
+                  <span className="text-[10px] text-gray-400 block text-right mt-1">Last week</span>
                 </CardContent>
               </Card>
             );
