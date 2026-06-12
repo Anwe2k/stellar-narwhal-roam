@@ -57,16 +57,16 @@ const Overview = () => {
               <Link key={section.title} to={section.path} className="block group">
                 <Card className="border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-3xl overflow-hidden">
                   <CardContent className="p-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${section.color} transition-transform group-hover:scale-105 duration-300`}>
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${section.color} transition-transform group-hover:scale-105 duration-300`}>
                         <Icon size={24} />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-lg text-[#1A1C1E]">{section.title}</h3>
-                        <p className="text-sm text-[#44474E]">{section.description}</p>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-lg text-[#1A1C1E] truncate">{section.title}</h3>
+                        <p className="text-sm text-[#44474E] truncate">{section.description}</p>
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-[#44474E] group-hover:translate-x-1 transition-transform duration-300">
+                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0 text-[#44474E] group-hover:translate-x-1 transition-transform duration-300">
                       <ChevronRight size={18} />
                     </div>
                   </CardContent>
