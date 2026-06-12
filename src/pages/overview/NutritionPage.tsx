@@ -9,37 +9,30 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, Flame, CupSoda } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
+import { useHealthData } from '@/context/HealthDataContext';
 import { showSuccess } from '@/utils/toast';
 
 const NutritionPage = () => {
   const { settings, convertEnergy, convertWater } = useUnits();
+  const { calorieLogs, addCalorieLog, waterLogs, addWaterLog } = useHealthData();
 
   const [calories, setCalories] = useState('');
+  const [mealDesc, setMealDesc] = useState('');
   const [water, setWater] = useState('');
-
-  // Daily logged storage arrays
-  const [calorieLogs, setCalorieLogs] = useState([
-    { id: 1, val: 450, desc: 'Breakfast - Avocado Toast' },
-    { id: 2, val: 620, desc: 'Lunch - Grilled Chicken Bowl' },
-  ]);
-
-  const [waterLogs, setWaterLogs] = useState([
-    { id: 1, val: 250 },
-    { id: 2, val: 500 },
-  ]);
 
   const handleCalorieSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!calories) return;
-    setCalorieLogs([...calorieLogs, { id: Date.now(), val: parseInt(calories), desc: 'Logged meal' }]);
+    addCalorieLog(parseInt(calories), mealDesc || 'Logged meal');
     setCalories('');
+    setMealDesc('');
     showSuccess('Calories logged successfully!');
   };
 
   const handleWaterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!water) return;
-    setWaterLogs([...waterLogs, { id: Date.now(), val: parseInt(water) }]);
+    addWaterLog(parseInt(water));
     setWater('');
     showSuccess('Water intake logged!');
   };
@@ -69,7 +62,13 @@ const NutritionPage = () => {
               </div>
               <span className="text-xs font-semibold text-gray-500 block">Total Consumed</span>
               <p className="text-2xl font-black mt-1">
-                {convertedCal.value} <span className="text-xs font-normal text-gray-500">{convertedCal.label}</span>
+                {totalCalsRaw > 0 ? (
+                  <>
+                    {convertedCal.value} <span className="text-xs font-normal text-gray-500">{convertedCal.label}</span>
+                  </>
+                ) : (
+                  <span className="text-sm font-medium text-gray-400">No data</span>
+                )}
               </p>
             </CardContent>
           </Card>
@@ -81,7 +80,13 @@ const NutritionPage = () => {
               </div>
               <span className="text-xs font-semibold text-gray-500 block">Hydration</span>
               <p className="text-2xl font-black mt-1">
-                {convertedWater.value} <span className="text-xs font-normal text-gray-500">{convertedWater.label}</span>
+                {totalWaterRaw > 0 ? (
+                  <>
+                    {convertedWater.value} <span className="text-xs font-normal text-gray-500">{convertedWater.label}</span>
+                  </>
+                ) : (
+                  <span className="text-sm font-medium text-gray-400">No data</span>
+                )}
               </p>
             </CardContent>
           </Card>
@@ -103,6 +108,17 @@ const NutritionPage = () => {
                   placeholder="e.g. 350"
                   value={calories}
                   onChange={(e) => setCalories(e.target.value)}
+                  className="rounded-2xl border-gray-200 h-11"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="calories-desc" className="text-xs text-gray-500">Description / Meal Name</Label>
+                <Input
+                  id="calories-desc"
+                  type="text"
+                  placeholder="e.g. Avocado Toast"
+                  value={mealDesc}
+                  onChange={(e) => setMealDesc(e.target.value)}
                   className="rounded-2xl border-gray-200 h-11"
                 />
               </div>

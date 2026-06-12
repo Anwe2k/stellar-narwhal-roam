@@ -5,18 +5,47 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Flame, Footprints, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUnits } from '@/context/UnitContext';
+import { useHealthData } from '@/context/HealthDataContext';
 
 const HealthSummary = () => {
   const { convertEnergy } = useUnits();
+  const { activityLogs, vitalsData, sleepLogs } = useHealthData();
 
-  // Convert Base Calorie Target (1,240 kcal)
-  const caloriesConverted = convertEnergy(1240);
+  // Dynamic values computation
+  const totalSteps = activityLogs.reduce((acc, log) => acc + log.steps, 0);
+  const totalCaloriesBurned = activityLogs.reduce((acc, log) => acc + log.energy, 0);
+  const latestHR = vitalsData.hr && vitalsData.hr.length > 0 ? vitalsData.hr[vitalsData.hr.length - 1].value : null;
+  const totalSleep = sleepLogs.reduce((acc, log) => acc + log.hrs, 0);
 
   const stats = [
-    { label: 'Heart Rate', value: '72', unit: 'bpm', icon: Heart, color: 'bg-red-100 text-red-600' },
-    { label: 'Calories', value: caloriesConverted.value.toLocaleString(), unit: caloriesConverted.label, icon: Flame, color: 'bg-orange-100 text-orange-600' },
-    { label: 'Steps', value: '8,432', unit: 'steps', icon: Footprints, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Sleep', value: '7.5', unit: 'hrs', icon: Moon, color: 'bg-purple-100 text-purple-600' },
+    { 
+      label: 'Heart Rate', 
+      value: latestHR !== null ? latestHR.toString() : 'No data', 
+      unit: latestHR !== null ? 'bpm' : '', 
+      icon: Heart, 
+      color: 'bg-red-100 text-red-600' 
+    },
+    { 
+      label: 'Calories Burned', 
+      value: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).value.toLocaleString() : 'No data', 
+      unit: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).label : '', 
+      icon: Flame, 
+      color: 'bg-orange-100 text-orange-600' 
+    },
+    { 
+      label: 'Steps', 
+      value: totalSteps > 0 ? totalSteps.toLocaleString() : 'No data', 
+      unit: totalSteps > 0 ? 'steps' : '', 
+      icon: Footprints, 
+      color: 'bg-blue-100 text-blue-600' 
+    },
+    { 
+      label: 'Sleep', 
+      value: totalSleep > 0 ? totalSleep.toString() : 'No data', 
+      unit: totalSleep > 0 ? 'hrs' : '', 
+      icon: Moon, 
+      color: 'bg-purple-100 text-purple-600' 
+    },
   ];
 
   return (
@@ -29,8 +58,8 @@ const HealthSummary = () => {
             </div>
             <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
             <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-2xl font-bold">{stat.value}</span>
-              <span className="text-xs text-gray-400">{stat.unit}</span>
+              <span className={cn("font-bold", stat.value === 'No data' ? 'text-sm text-gray-400' : 'text-2xl')}>{stat.value}</span>
+              {stat.unit && <span className="text-xs text-gray-400">{stat.unit}</span>}
             </div>
           </CardContent>
         </Card>

@@ -6,45 +6,42 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, Footprints, Ruler, Plus } from 'lucide-react';
+import { ChevronLeft, Flame, Footprints, Ruler } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
+import { useHealthData } from '@/context/HealthDataContext';
 import { showSuccess } from '@/utils/toast';
 
 const ActivityPage = () => {
   const { settings, convertEnergy, formatTime } = useUnits();
+  const { activityLogs, addActivityLog } = useHealthData();
   
   const [stepsInput, setStepsInput] = useState('');
   const [energyInput, setEnergyInput] = useState('');
   const [distanceInput, setDistanceInput] = useState('');
 
-  // Sample static activities
-  const [logs, setLogs] = useState([
-    { id: 1, steps: 8432, energy: 320, distance: 5.8, time: '18:45' },
-    { id: 2, steps: 4200, energy: 150, distance: 3.1, time: '11:15' },
-  ]);
-
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stepsInput && !energyInput && !distanceInput) return;
+    const steps = stepsInput ? parseInt(stepsInput) : 0;
+    const energy = energyInput ? parseFloat(energyInput) : 0;
+    const distance = distanceInput ? parseFloat(distanceInput) : 0;
 
-    const newLog = {
-      id: Date.now(),
-      steps: stepsInput ? parseInt(stepsInput) : 0,
-      energy: energyInput ? parseFloat(energyInput) : 0,
-      distance: distanceInput ? parseFloat(distanceInput) : 0,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-    };
+    if (!steps && !energy && !distance) return;
 
-    setLogs([newLog, ...logs]);
+    addActivityLog(steps, energy, distance);
     setStepsInput('');
     setEnergyInput('');
     setDistanceInput('');
     showSuccess('Activity log saved successfully!');
   };
 
-  const convertedEnergyTotal = convertEnergy(logs.reduce((acc, log) => acc + log.energy, 0));
+  const totalSteps = activityLogs.reduce((acc, log) => acc + log.steps, 0);
+  const totalEnergy = activityLogs.reduce((acc, log) => acc + log.energy, 0);
+  const totalDistance = activityLogs.reduce((acc, log) => acc + log.distance, 0);
+
+  const convertedEnergyTotal = convertEnergy(totalEnergy);
   const distanceUnit = settings.length === 'metric' ? 'km' : 'miles';
+  const displayDistance = totalDistance * (settings.length === 'imperial' ? 0.621371 : 1);
 
   return (
     <MobileLayout title="Activity">
@@ -66,14 +63,16 @@ const ActivityPage = () => {
                   <Footprints size={14} />
                   <span>Steps</span>
                 </div>
-                <p className="text-xl font-bold">{logs.reduce((acc, log) => acc + log.steps, 0).toLocaleString()}</p>
+                <p className="text-xl font-bold">{totalSteps.toLocaleString()}</p>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 opacity-80 text-xs">
                   <Flame size={14} />
                   <span>Active</span>
                 </div>
-                <p className="text-xl font-bold">{Math.round(convertedEnergyTotal.value)} <span className="text-xs font-normal">{convertedEnergyTotal.label}</span></p>
+                <p className="text-xl font-bold">
+                  {Math.round(convertedEnergyTotal.value)} <span className="text-xs font-normal">{convertedEnergyTotal.label}</span>
+                </p>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 opacity-80 text-xs">
@@ -81,7 +80,7 @@ const ActivityPage = () => {
                   <span>Distance</span>
                 </div>
                 <p className="text-xl font-bold">
-                  {(logs.reduce((acc, log) => acc + log.distance, 0) * (settings.length === 'imperial' ? 0.621371 : 1)).toFixed(1)} <span className="text-xs font-normal">{distanceUnit}</span>
+                  {displayDistance.toFixed(1)} <span className="text-xs font-normal">{distanceUnit}</span>
                 </p>
               </div>
             </div>
@@ -141,27 +140,33 @@ const ActivityPage = () => {
         {/* Activity Logs history */}
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-1">Today's Active Logs</h4>
-          {logs.map((log) => {
-            const convertedEnergy = convertEnergy(log.energy);
-            const dist = log.distance * (settings.length === 'imperial' ? 0.621371 : 1);
-            return (
-              <div key={log.id} className="bg-white p-4 rounded-3xl flex justify-between items-center shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#EADDFF] text-[#21005D] rounded-2xl flex items-center justify-center">
-                    <Footprints size={20} />
+          {activityLogs.length === 0 ? (
+            <div className="bg-white p-6 rounded-3xl text-center shadow-sm">
+              <p className="text-sm text-gray-400 font-medium">No activity data logged yet.</p>
+            </div>
+          ) : (
+            activityLogs.map((log) => {
+              const convertedEnergy = convertEnergy(log.energy);
+              const dist = log.distance * (settings.length === 'imperial' ? 0.621371 : 1);
+              return (
+                <div key={log.id} className="bg-white p-4 rounded-3xl flex justify-between items-center shadow-sm animate-in fade-in">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#EADDFF] text-[#21005D] rounded-2xl flex items-center justify-center shrink-0">
+                      <Footprints size={20} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-[#1A1C1E]">{log.steps.toLocaleString()} steps</p>
+                      <p className="text-xs text-gray-400">At {formatTime(log.time)}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-[#1A1C1E]">{log.steps.toLocaleString()} steps</p>
-                    <p className="text-xs text-gray-400">At {formatTime(log.time)}</p>
+                  <div className="text-right">
+                    <p className="font-bold text-[#6750A4]">{Math.round(convertedEnergy.value)} {convertedEnergy.label}</p>
+                    <p className="text-xs text-gray-500">{dist.toFixed(1)} {distanceUnit}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-[#6750A4]">{Math.round(convertedEnergy.value)} {convertedEnergy.label}</p>
-                  <p className="text-xs text-gray-500">{dist.toFixed(1)} {distanceUnit}</p>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </MobileLayout>

@@ -17,6 +17,7 @@ import BodyMeasurementsPage from "./pages/overview/BodyMeasurementsPage";
 
 import NotFound from "./pages/NotFound";
 import { UnitProvider } from "./context/UnitContext";
+import { HealthDataProvider } from "./context/HealthDataContext";
 
 const queryClient = new QueryClient();
 
@@ -24,22 +25,24 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <UnitProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/overview" element={<Overview />} />
-            <Route path="/overview/activity" element={<ActivityPage />} />
-            <Route path="/overview/vitals" element={<VitalsPage />} />
-            <Route path="/overview/sleep" element={<SleepPage />} />
-            <Route path="/overview/nutrition" element={<NutritionPage />} />
-            <Route path="/overview/body-measurements" element={<BodyMeasurementsPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings/units" element={<UnitSettingsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <HealthDataProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/overview" element={<Overview />} />
+              <Route path="/overview/activity" element={<ActivityPage />} />
+              <Route path="/overview/vitals" element={<VitalsPage />} />
+              <Route path="/overview/sleep" element={<SleepPage />} />
+              <Route path="/overview/nutrition" element={<NutritionPage />} />
+              <Route path="/overview/body-measurements" element={<BodyMeasurementsPage />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings/units" element={<UnitSettingsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </HealthDataProvider>
       </UnitProvider>
     </TooltipProvider>
   </QueryClientProvider>

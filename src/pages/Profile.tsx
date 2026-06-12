@@ -9,12 +9,15 @@ import { Settings, Bell, Shield, LogOut, Plus, Ruler } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
+import { useHealthData } from '@/context/HealthDataContext';
 
 const Profile = () => {
   const { convertWeight, convertHeight } = useUnits();
+  const { weightLogs } = useHealthData();
 
-  // Convert basic metrics (Weight: 75kg, Height: 180cm)
-  const weightConverted = convertWeight(75);
+  // Convert basic metrics (Weight fallback: 75kg, Height: 180cm)
+  const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : 75;
+  const weightConverted = convertWeight(currentWeightRaw);
   const heightConverted = convertHeight(180);
 
   return (
