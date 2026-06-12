@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -14,8 +14,24 @@ import { showSuccess } from '@/utils/toast';
 
 const SleepPage = () => {
   const { sleepLogs, addSleepLog } = useHealthData();
-  const [durationInput, setDurationInput] = useState('');
+  const [bedtime, setBedtime] = useState('22:00');
+  const [waketime, setWaketime] = useState('06:00');
+  const [computedHrs, setComputedHrs] = useState(8);
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Recalculate computed hours when bedtime or waketime changes
+  useEffect(() => {
+    const [bedH, bedM] = bedtime.split(':').map(Number);
+    const [wakeH, wakeM] = waketime.split(':').map(Number);
+    
+    let diffMins = (wakeH * 60 + wakeM) - (bedH * 60 + bedM);
+    if (diffMins < 0) {
+      // Sleep crossed midnight
+      diffMins += 24 * 60;
+    }
+    const finalHrs = Math.round((diffMins / 60) * 10) / 10;
+    setComputedHrs(finalHrs);
+  }, [bedtime, waketime]);
 
   // Default sleeping phase ratios based on latest sleep record or fallback
   const phaseData = sleepLogs.length > 0 ? [
@@ -36,18 +52,16 @@ const SleepPage = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!durationInput) return;
+    if (computedHrs <= 0) return;
 
-    addSleepLog(parseFloat(durationInput), logDate);
-    setDurationInput('');
-    showSuccess('Sleep duration logged successfully!');
+    addSleepLog(computedHrs, logDate, bedtime, waketime);
+    showSuccess(`Logged sleep period! Total duration: ${computedHrs} hrs`);
   };
 
   const avgDuration = sleepLogs.length > 0 
     ? (sleepLogs.reduce((acc, curr) => acc + curr.hrs, 0) / sleepLogs.length).toFixed(1)
     : '0';
 
-  // Calculate generic index score out of 100
   const sleepScore = sleepLogs.length > 0
     ? Math.min(100, Math.round((sleepLogs[sleepLogs.length - 1].hrs / 8) * 100))
     : null;
@@ -107,7 +121,7 @@ const SleepPage = () => {
               </>
             ) : (
               <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">Log your sleep duration below to generate phases breakdown.</p>
+                <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
               </div>
             )}
           </CardContent>
@@ -153,23 +167,36 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
-        {/* Input Log block */}
+        {/* Period selection inputs */}
         <Card className="border-none shadow-sm bg-white rounded-3xl">
           <CardContent className="p-6">
-            <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Add Sleep Duration</h3>
+            <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-1.5">
+              <Clock size={18} className="text-[#6750A4]" /> Log Sleep Period
+            </h3>
             <form onSubmit={handleSave} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="duration" className="text-xs font-medium text-gray-500">Duration (hours)</Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  step="0.1"
-                  placeholder="e.g. 8.2"
-                  value={durationInput}
-                  onChange={(e) => setDurationInput(e.target.value)}
-                  className="rounded-2xl border-gray-200 h-11"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="bedtime" className="text-xs font-medium text-gray-500">Went to Bed</Label>
+                  <Input
+                    id="bedtime"
+                    type="time"
+                    value={bedtime}
+                    onChange={(e) => setBedtime(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="waketime" className="text-xs font-medium text-gray-500">Woke Up</Label>
+                  <Input
+                    id="waketime"
+                    type="time"
+                    value={waketime}
+                    onChange={(e) => setWaketime(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="sleep-date" className="text-xs font-medium text-gray-500">Sleep Date</Label>
                 <Input
@@ -180,8 +207,13 @@ const SleepPage = () => {
                   className="rounded-2xl border-gray-200 h-11"
                 />
               </div>
+
+              <div className="bg-[#EADDFF]/40 text-[#21005D] p-3.5 rounded-2xl text-center text-sm font-medium">
+                Calculated Sleep Time: <span className="font-bold text-lg text-[#6750A4]">{computedHrs}</span> hours
+              </div>
+
               <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium">
-                Log Night
+                Log Sleep Period
               </Button>
             </form>
           </CardContent>

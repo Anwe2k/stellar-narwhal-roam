@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, Footprints, Ruler } from 'lucide-react';
+import { ChevronLeft, Flame, Footprints, Ruler, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -19,6 +19,10 @@ const ActivityPage = () => {
   const [stepsInput, setStepsInput] = useState('');
   const [energyInput, setEnergyInput] = useState('');
   const [distanceInput, setDistanceInput] = useState('');
+  const [timeInput, setTimeInput] = useState(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  });
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +32,7 @@ const ActivityPage = () => {
 
     if (!steps && !energy && !distance) return;
 
-    addActivityLog(steps, energy, distance);
+    addActivityLog(steps, energy, distance, timeInput);
     setStepsInput('');
     setEnergyInput('');
     setDistanceInput('');
@@ -117,17 +121,31 @@ const ActivityPage = () => {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="distance" className="text-xs font-medium text-gray-500">Distance ({settings.length === 'metric' ? 'Kilometers' : 'Miles'})</Label>
-                <Input
-                  id="distance"
-                  type="number"
-                  step="0.1"
-                  placeholder={settings.length === 'metric' ? "e.g. 3.2" : "e.g. 2.0"}
-                  value={distanceInput}
-                  onChange={(e) => setDistanceInput(e.target.value)}
-                  className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="distance" className="text-xs font-medium text-gray-500">Distance ({settings.length === 'metric' ? 'km' : 'miles'})</Label>
+                  <Input
+                    id="distance"
+                    type="number"
+                    step="0.1"
+                    placeholder={settings.length === 'metric' ? "e.g. 3.2" : "e.g. 2.0"}
+                    value={distanceInput}
+                    onChange={(e) => setDistanceInput(e.target.value)}
+                    className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="workout-time" className="text-xs font-medium text-gray-500 flex items-center gap-1">
+                    <Clock size={12} /> Time
+                  </Label>
+                  <Input
+                    id="workout-time"
+                    type="time"
+                    value={timeInput}
+                    onChange={(e) => setTimeInput(e.target.value)}
+                    className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
+                  />
+                </div>
               </div>
 
               <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium">

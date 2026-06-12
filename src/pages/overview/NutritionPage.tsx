@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, CupSoda } from 'lucide-react';
+import { ChevronLeft, Flame, CupSoda, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -18,12 +18,21 @@ const NutritionPage = () => {
 
   const [calories, setCalories] = useState('');
   const [mealDesc, setMealDesc] = useState('');
+  const [mealTime, setMealTime] = useState(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  });
+
   const [water, setWater] = useState('');
+  const [waterTime, setWaterTime] = useState(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  });
 
   const handleCalorieSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!calories) return;
-    addCalorieLog(parseInt(calories), mealDesc || 'Logged meal');
+    addCalorieLog(parseInt(calories), mealDesc || 'Logged meal', mealTime);
     setCalories('');
     setMealDesc('');
     showSuccess('Calories logged successfully!');
@@ -32,7 +41,7 @@ const NutritionPage = () => {
   const handleWaterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!water) return;
-    addWaterLog(parseInt(water));
+    addWaterLog(parseInt(water), waterTime);
     setWater('');
     showSuccess('Water intake logged!');
   };
@@ -100,16 +109,30 @@ const NutritionPage = () => {
               Log Calorie Intake
             </h3>
             <form onSubmit={handleCalorieSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="calories-val" className="text-xs text-gray-500">Amount (kcal)</Label>
-                <Input
-                  id="calories-val"
-                  type="number"
-                  placeholder="e.g. 350"
-                  value={calories}
-                  onChange={(e) => setCalories(e.target.value)}
-                  className="rounded-2xl border-gray-200 h-11"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="calories-val" className="text-xs text-gray-500">Amount (kcal)</Label>
+                  <Input
+                    id="calories-val"
+                    type="number"
+                    placeholder="e.g. 350"
+                    value={calories}
+                    onChange={(e) => setCalories(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="meal-time" className="text-xs text-gray-500 flex items-center gap-1">
+                    <Clock size={12} /> Time
+                  </Label>
+                  <Input
+                    id="meal-time"
+                    type="time"
+                    value={mealTime}
+                    onChange={(e) => setMealTime(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="calories-desc" className="text-xs text-gray-500">Description / Meal Name</Label>
@@ -137,16 +160,30 @@ const NutritionPage = () => {
               Log Water Consumption
             </h3>
             <form onSubmit={handleWaterSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="water-val" className="text-xs text-gray-500">Amount ({settings.water === 'ml' ? 'ml' : 'fl oz'})</Label>
-                <Input
-                  id="water-val"
-                  type="number"
-                  placeholder={settings.water === 'ml' ? 'e.g. 250' : 'e.g. 8'}
-                  value={water}
-                  onChange={(e) => setWater(e.target.value)}
-                  className="rounded-2xl border-gray-200 h-11"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="water-val" className="text-xs text-gray-500">Amount ({settings.water === 'ml' ? 'ml' : 'fl oz'})</Label>
+                  <Input
+                    id="water-val"
+                    type="number"
+                    placeholder={settings.water === 'ml' ? 'e.g. 250' : 'e.g. 8'}
+                    value={water}
+                    onChange={(e) => setWater(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="water-time" className="text-xs text-gray-500 flex items-center gap-1">
+                    <Clock size={12} /> Time
+                  </Label>
+                  <Input
+                    id="water-time"
+                    type="time"
+                    value={waterTime}
+                    onChange={(e) => setWaterTime(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
               </div>
               <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-2xl h-11 font-medium">
                 Log Hydration

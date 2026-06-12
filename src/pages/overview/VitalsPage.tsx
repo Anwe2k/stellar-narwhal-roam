@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ChevronLeft, ArrowUpRight, Activity } from 'lucide-react';
+import { ChevronLeft, ArrowUpRight, Activity, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -19,12 +19,24 @@ const VitalsPage = () => {
   
   const [newValue, setNewValue] = useState('');
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  const [logTime, setLogTime] = useState('');
+
+  // Update logTime automatically when a dialog opens
+  useEffect(() => {
+    if (selectedVital) {
+      const now = new Date();
+      setLogTime(`${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
+    }
+  }, [selectedVital]);
 
   const saveVitalLog = () => {
     if (!newValue || !selectedVital) return;
 
     const valNum = parseFloat(newValue);
-    addVitalLog(selectedVital, valNum, logDate);
+    // Don't log time for 'rhr' (Resting Heart Rate)
+    const activeTime = selectedVital === 'rhr' ? undefined : logTime;
+
+    addVitalLog(selectedVital, valNum, logDate, activeTime);
 
     setNewValue('');
     setSelectedVital(null);
@@ -187,22 +199,45 @@ const VitalsPage = () => {
                         className="rounded-2xl border-gray-250 h-11"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="vital-date" className="text-xs text-gray-500">Date</Label>
-                      <Input
-                        id="vital-date"
-                        type="date"
-                        value={logDate}
-                        onChange={(e) => setLogDate(e.target.value)}
-                        className="rounded-2xl border-gray-250 h-11"
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="vital-date" className="text-xs text-gray-500">Date</Label>
+                        <Input
+                          id="vital-date"
+                          type="date"
+                          value={logDate}
+                          onChange={(e) => setLogDate(e.target.value)}
+                          className="rounded-2xl border-gray-250 h-11"
+                        />
+                      </div>
+                      
+                      {/* Hide Time Selector for Resting HR (rhr) */}
+                      {selectedVital !== 'rhr' ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="vital-time" className="text-xs text-gray-500 flex items-center gap-1">
+                            <Clock size={12} /> Time
+                          </Label>
+                          <Input
+                            id="vital-time"
+                            type="time"
+                            value={logTime}
+                            onChange={(e) => setLogTime(e.target.value)}
+                            className="rounded-2xl border-gray-250 h-11"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-end text-xs text-gray-400 pb-3">
+                          * Resting HR represents overall baseline (no time log needed).
+                        </div>
+                      )}
                     </div>
+
                     <Button 
                       onClick={saveVitalLog}
                       className="w-full text-white rounded-2xl h-11 font-medium transition-colors"
                       style={{ backgroundColor: vitalObj.color }}
                     >
-                      Save to Cloud
+                      Save Entry
                     </Button>
                   </div>
                 </div>

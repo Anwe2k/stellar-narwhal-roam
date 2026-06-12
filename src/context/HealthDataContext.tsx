@@ -20,17 +20,21 @@ export interface SleepLog {
   day: string;
   hrs: number;
   date: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export interface NutritionLog {
   id: number;
   val: number; // kcal
   desc: string;
+  time: string;
 }
 
 export interface WaterLog {
   id: number;
   val: number; // ml
+  time: string;
 }
 
 export interface WeightLog {
@@ -45,19 +49,19 @@ export interface FatLog {
 
 interface HealthDataContextType {
   activityLogs: ActivityLog[];
-  addActivityLog: (steps: number, energy: number, distance: number) => void;
+  addActivityLog: (steps: number, energy: number, distance: number, customTime?: string) => void;
   
   vitalsData: Record<string, VitalLog[]>;
-  addVitalLog: (key: string, value: number, date: string) => void;
+  addVitalLog: (key: string, value: number, date: string, customTime?: string) => void;
   
   sleepLogs: SleepLog[];
-  addSleepLog: (hrs: number, date: string) => void;
+  addSleepLog: (hrs: number, date: string, startTime?: string, endTime?: string) => void;
   
   calorieLogs: NutritionLog[];
-  addCalorieLog: (val: number, desc: string) => void;
+  addCalorieLog: (val: number, desc: string, customTime?: string) => void;
   
   waterLogs: WaterLog[];
-  addWaterLog: (val: number) => void;
+  addWaterLog: (val: number, customTime?: string) => void;
   
   weightLogs: WeightLog[];
   addWeightLog: (val: number, day: string) => void;
@@ -71,7 +75,6 @@ interface HealthDataContextType {
 const HealthDataContext = createContext<HealthDataContextType | undefined>(undefined);
 
 export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Start with empty arrays to satisfy "show that there's no data available if not logged"
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
     const saved = localStorage.getItem('health_activity');
     return saved ? JSON.parse(saved) : [];
@@ -109,7 +112,6 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Sync to localStorage
   useEffect(() => {
     localStorage.setItem('health_activity', JSON.stringify(activityLogs));
   }, [activityLogs]);
@@ -138,41 +140,43 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem('health_fat', JSON.stringify(fatLogs));
   }, [fatLogs]);
 
-  // Actions
-  const addActivityLog = (steps: number, energy: number, distance: number) => {
+  const addActivityLog = (steps: number, energy: number, distance: number, customTime?: string) => {
+    const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const newLog: ActivityLog = {
       id: Date.now(),
       steps,
       energy,
       distance,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+      time: activeTime
     };
     setActivityLogs(prev => [newLog, ...prev]);
   };
 
-  const addVitalLog = (key: string, value: number, date: string) => {
-    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newEntry: VitalLog = { time: timeStr, date, value };
+  const addVitalLog = (key: string, value: number, date: string, customTime?: string) => {
+    const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const newEntry: VitalLog = { time: activeTime, date, value };
     setVitalsData(prev => ({
       ...prev,
       [key]: [...(prev[key] || []), newEntry]
     }));
   };
 
-  const addSleepLog = (hrs: number, date: string) => {
+  const addSleepLog = (hrs: number, date: string, startTime?: string, endTime?: string) => {
     const parsedDate = new Date(date);
     const dayLabel = parsedDate.toLocaleDateString([], { weekday: 'short' });
-    const newLog: SleepLog = { day: dayLabel, hrs, date };
+    const newLog: SleepLog = { day: dayLabel, hrs, date, startTime, endTime };
     setSleepLogs(prev => [...prev, newLog]);
   };
 
-  const addCalorieLog = (val: number, desc: string) => {
-    const newLog: NutritionLog = { id: Date.now(), val, desc };
+  const addCalorieLog = (val: number, desc: string, customTime?: string) => {
+    const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const newLog: NutritionLog = { id: Date.now(), val, desc, time: activeTime };
     setCalorieLogs(prev => [...prev, newLog]);
   };
 
-  const addWaterLog = (val: number) => {
-    const newLog: WaterLog = { id: Date.now(), val };
+  const addWaterLog = (val: number, customTime?: string) => {
+    const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const newLog: WaterLog = { id: Date.now(), val, time: activeTime };
     setWaterLogs(prev => [...prev, newLog]);
   };
 
