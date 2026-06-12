@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useUnits } from '@/context/UnitContext';
-import { ChevronLeft, Globe, Clock, Ruler, Scale, CupSoda, Flame, Thermometer } from 'lucide-react';
+import { ChevronLeft, Globe, Clock, Calendar, Ruler, Scale, CupSoda, Flame, Thermometer } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const UnitSettingsPage = () => {
@@ -65,6 +65,26 @@ const UnitSettingsPage = () => {
                 <SelectContent>
                   <SelectItem value="12h">12-hour (1:30 PM)</SelectItem>
                   <SelectItem value="24h">24-hour (13:30)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date Format */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-gray-700">
+                <Calendar size={18} className="text-[#6750A4]" />
+                <Label htmlFor="dateFormat" className="text-sm font-semibold">Date Format</Label>
+              </div>
+              <Select 
+                value={settings.dateFormat} 
+                onValueChange={(val) => updateSetting('dateFormat', val as 'DD/MM/YYYY' | 'MM/DD/YYYY')}
+              >
+                <SelectTrigger className="rounded-2xl border-gray-200 h-12">
+                  <SelectValue placeholder="Select Date Format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DD/MM/YYYY">DD/MM/YYYY (Day/Month/Year)</SelectItem>
+                  <SelectItem value="MM/DD/YYYY">MM/DD/YYYY (Month/Day/Year)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

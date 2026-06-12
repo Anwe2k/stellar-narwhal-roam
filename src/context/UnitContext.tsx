@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 export interface UnitSettings {
   timeZone: string;
   timeFormat: '12h' | '24h';
+  dateFormat: 'DD/MM/YYYY' | 'MM/DD/YYYY';
   length: 'metric' | 'imperial'; // Centimeters/Kilometers vs Feet/Miles
   weight: 'kg' | 'lbs' | 'st';
   water: 'ml' | 'oz';
@@ -21,11 +22,13 @@ interface UnitContextType {
   convertWater: (mlVal: number) => { value: number; label: string };
   convertEnergy: (kcalVal: number) => { value: number; label: string };
   formatTime: (timeString: string) => string;
+  formatDate: (dateString: string) => string;
 }
 
 const defaultSettings: UnitSettings = {
   timeZone: 'GMT+1',
   timeFormat: '12h',
+  dateFormat: 'DD/MM/YYYY',
   length: 'metric',
   weight: 'kg',
   water: 'ml',
@@ -104,8 +107,23 @@ export const UnitProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return `${hoursStr.padStart(2, '0')}:${minutes}`;
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    if (settings.dateFormat === 'MM/DD/YYYY') {
+      return `${month}/${day}/${year}`;
+    }
+    return `${day}/${month}/${year}`;
+  };
+
   return (
-    <UnitContext.Provider value={{ settings, updateSetting, convertWeight, convertHeight, convertWater, convertEnergy, formatTime }}>
+    <UnitContext.Provider value={{ settings, updateSetting, convertWeight, convertHeight, convertWater, convertEnergy, formatTime, formatDate }}>
       {children}
     </UnitContext.Provider>
   );

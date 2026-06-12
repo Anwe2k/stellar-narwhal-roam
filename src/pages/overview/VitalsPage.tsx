@@ -11,10 +11,12 @@ import { ChevronLeft, ArrowUpRight, Activity, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
+import { useUnits } from '@/context/UnitContext';
 import { showSuccess } from '@/utils/toast';
 
 const VitalsPage = () => {
   const { vitalsData, addVitalLog } = useHealthData();
+  const { formatDate } = useUnits();
   const [selectedVital, setSelectedVital] = useState<string | null>(null);
   
   const [newValue, setNewValue] = useState('');
@@ -133,17 +135,12 @@ const VitalsPage = () => {
           const dataSet = vitalsData[selectedVital] || [];
           const hasData = dataSet.length > 0;
 
-          // Format raw date string into clean 'Oct 27' formats for continuous multi-day plotting
+          // Format raw date string using custom formatDate function
           const formattedHistory = dataSet.map(item => {
-            let label = item.time;
-            try {
-              if (item.date) {
-                const parsed = new Date(item.date);
-                if (!isNaN(parsed.getTime())) {
-                  label = parsed.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                }
-              }
-            } catch (e) {}
+            let label = item.time || '';
+            if (item.date) {
+              label = formatDate(item.date);
+            }
             return {
               ...item,
               displayDate: label
