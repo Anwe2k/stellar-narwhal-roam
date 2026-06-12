@@ -5,10 +5,18 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Settings, Bell, Shield, LogOut, Plus } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, Plus, Ruler } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { useUnits } from '@/context/UnitContext';
 
 const Profile = () => {
+  const { convertWeight, convertHeight } = useUnits();
+
+  // Convert basic metrics (Weight: 75kg, Height: 180cm)
+  const weightConverted = convertWeight(75);
+  const heightConverted = convertHeight(180);
+
   return (
     <MobileLayout title="Profile">
       <div className="space-y-6">
@@ -32,11 +40,11 @@ const Profile = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-500">Weight</p>
-                  <p className="font-medium">75 kg</p>
+                  <p className="font-medium">{weightConverted.value} {weightConverted.label}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-500">Height</p>
-                  <p className="font-medium">180 cm</p>
+                  <p className="font-medium">{heightConverted.value} {heightConverted.label}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-500">Blood Type</p>
@@ -47,9 +55,25 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        {/* Units Tab & Rest Settings */}
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider px-1">Settings</h3>
           <div className="bg-white rounded-3xl overflow-hidden shadow-sm">
+            
+            {/* Measurement Units tab */}
+            <Link 
+              to="/settings/units"
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-100"
+            >
+              <div className="flex items-center gap-3">
+                <Ruler size={20} className="text-[#6750A4]" />
+                <span className="font-medium text-[#1A1C1E]">Units & Formats</span>
+              </div>
+              <div className="w-6 h-6 flex items-center justify-center text-[#6750A4] font-bold">
+                <Plus size={16} />
+              </div>
+            </Link>
+
             {[
               { icon: Bell, label: 'Notifications', color: 'text-blue-500' },
               { icon: Shield, label: 'Privacy & Security', color: 'text-green-500' },

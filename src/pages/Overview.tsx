@@ -8,8 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Activity } from 'lucide-react';
+import { useUnits } from '@/context/UnitContext';
 
 const Overview = () => {
+  const { settings, formatTime, convertWater } = useUnits();
+
+  // Convert basic logs for visual correctness
+  const logValue1 = convertWater(250); // e.g. 250ml or equivalent fl oz
+
   return (
     <MobileLayout title="Log Health Data">
       <div className="space-y-6">
@@ -23,9 +29,9 @@ const Overview = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="steps">Steps</SelectItem>
-                  <SelectItem value="weight">Weight</SelectItem>
-                  <SelectItem value="water">Water Intake</SelectItem>
-                  <SelectItem value="sleep">Sleep Duration</SelectItem>
+                  <SelectItem value="weight">Weight ({settings.weight === 'kg' ? 'kg' : settings.weight === 'lbs' ? 'lbs' : 'st'})</SelectItem>
+                  <SelectItem value="water">Water Intake ({settings.water === 'ml' ? 'ml' : 'fl oz'})</SelectItem>
+                  <SelectItem value="sleep">Sleep Duration (hrs)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -57,20 +63,32 @@ const Overview = () => {
 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold px-1">Recent Logs</h3>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
-                  <Activity size={20} />
-                </div>
-                <div>
-                  <p className="font-medium">Steps</p>
-                  <p className="text-xs text-gray-400">Today, 10:30 AM</p>
-                </div>
+          
+          <div className="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                <Activity size={20} />
               </div>
-              <span className="font-bold text-[#6750A4]">1,200</span>
+              <div>
+                <p className="font-medium">Steps</p>
+                <p className="text-xs text-gray-400">Today, {formatTime("10:30")}</p>
+              </div>
             </div>
-          ))}
+            <span className="font-bold text-[#6750A4]">1,200</span>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-cyan-50 rounded-xl flex items-center justify-center text-cyan-600">
+                <Activity size={20} />
+              </div>
+              <div>
+                <p className="font-medium">Water Intake</p>
+                <p className="text-xs text-gray-400">Today, {formatTime("08:15")}</p>
+              </div>
+            </div>
+            <span className="font-bold text-[#6750A4]">{logValue1.value} {logValue1.label}</span>
+          </div>
         </div>
       </div>
     </MobileLayout>

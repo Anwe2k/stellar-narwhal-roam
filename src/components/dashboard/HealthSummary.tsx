@@ -4,11 +4,17 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Flame, Footprints, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUnits } from '@/context/UnitContext';
 
 const HealthSummary = () => {
+  const { convertEnergy } = useUnits();
+
+  // Convert Base Calorie Target (1,240 kcal)
+  const caloriesConverted = convertEnergy(1240);
+
   const stats = [
     { label: 'Heart Rate', value: '72', unit: 'bpm', icon: Heart, color: 'bg-red-100 text-red-600' },
-    { label: 'Calories', value: '1,240', unit: 'kcal', icon: Flame, color: 'bg-orange-100 text-orange-600' },
+    { label: 'Calories', value: caloriesConverted.value.toLocaleString(), unit: caloriesConverted.label, icon: Flame, color: 'bg-orange-100 text-orange-600' },
     { label: 'Steps', value: '8,432', unit: 'steps', icon: Footprints, color: 'bg-blue-100 text-blue-600' },
     { label: 'Sleep', value: '7.5', unit: 'hrs', icon: Moon, color: 'bg-purple-100 text-purple-600' },
   ];
