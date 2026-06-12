@@ -3,13 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Clock } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
+import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
 
 const SleepPage = () => {
@@ -170,43 +169,26 @@ const SleepPage = () => {
         {/* Period selection inputs */}
         <Card className="border-none shadow-sm bg-white rounded-3xl">
           <CardContent className="p-6">
-            <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-1.5">
-              <Clock size={18} className="text-[#6750A4]" /> Log Sleep Period
-            </h3>
+            <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Log Sleep Period</h3>
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="bedtime" className="text-xs font-medium text-gray-500">Went to Bed</Label>
-                  <Input
-                    id="bedtime"
-                    type="time"
-                    value={bedtime}
-                    onChange={(e) => setBedtime(e.target.value)}
-                    className="rounded-2xl border-gray-200 h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="waketime" className="text-xs font-medium text-gray-500">Woke Up</Label>
-                  <Input
-                    id="waketime"
-                    type="time"
-                    value={waketime}
-                    onChange={(e) => setWaketime(e.target.value)}
-                    className="rounded-2xl border-gray-200 h-11"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="sleep-date" className="text-xs font-medium text-gray-500">Sleep Date</Label>
-                <Input
-                  id="sleep-date"
-                  type="date"
-                  value={logDate}
-                  onChange={(e) => setLogDate(e.target.value)}
-                  className="rounded-2xl border-gray-200 h-11"
+                <CustomTimePicker 
+                  label="Went to Bed"
+                  value={bedtime}
+                  onChange={setBedtime}
+                />
+                <CustomTimePicker 
+                  label="Woke Up"
+                  value={waketime}
+                  onChange={setWaketime}
                 />
               </div>
+
+              <CustomDatePicker 
+                label="Sleep Date"
+                value={logDate}
+                onChange={setLogDate}
+              />
 
               <div className="bg-[#EADDFF]/40 text-[#21005D] p-3.5 rounded-2xl text-center text-sm font-medium">
                 Calculated Sleep Time: <span className="font-bold text-lg text-[#6750A4]">{computedHrs}</span> hours

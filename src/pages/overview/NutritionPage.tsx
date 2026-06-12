@@ -6,10 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, CupSoda, Clock } from 'lucide-react';
+import { ChevronLeft, Flame, CupSoda } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
+import { CustomTimePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
 
 const NutritionPage = () => {
@@ -121,18 +122,11 @@ const NutritionPage = () => {
                     className="rounded-2xl border-gray-200 h-11"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="meal-time" className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock size={12} /> Time
-                  </Label>
-                  <Input
-                    id="meal-time"
-                    type="time"
-                    value={mealTime}
-                    onChange={(e) => setMealTime(e.target.value)}
-                    className="rounded-2xl border-gray-200 h-11"
-                  />
-                </div>
+                <CustomTimePicker 
+                  label="Meal Time"
+                  value={mealTime}
+                  onChange={setMealTime}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="calories-desc" className="text-xs text-gray-500">Description / Meal Name</Label>
@@ -172,18 +166,11 @@ const NutritionPage = () => {
                     className="rounded-2xl border-gray-200 h-11"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="water-time" className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock size={12} /> Time
-                  </Label>
-                  <Input
-                    id="water-time"
-                    type="time"
-                    value={waterTime}
-                    onChange={(e) => setWaterTime(e.target.value)}
-                    className="rounded-2xl border-gray-200 h-11"
-                  />
-                </div>
+                <CustomTimePicker 
+                  label="Water Log Time"
+                  value={waterTime}
+                  onChange={setWaterTime}
+                />
               </div>
               <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-2xl h-11 font-medium">
                 Log Hydration

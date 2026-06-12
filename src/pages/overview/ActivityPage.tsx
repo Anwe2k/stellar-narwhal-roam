@@ -6,10 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, Footprints, Ruler, Clock } from 'lucide-react';
+import { ChevronLeft, Flame, Footprints, Ruler } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
+import { CustomTimePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
 
 const ActivityPage = () => {
@@ -121,7 +122,7 @@ const ActivityPage = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="distance" className="text-xs font-medium text-gray-500">Distance ({settings.length === 'metric' ? 'km' : 'miles'})</Label>
                   <Input
@@ -134,18 +135,12 @@ const ActivityPage = () => {
                     className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="workout-time" className="text-xs font-medium text-gray-500 flex items-center gap-1">
-                    <Clock size={12} /> Time
-                  </Label>
-                  <Input
-                    id="workout-time"
-                    type="time"
-                    value={timeInput}
-                    onChange={(e) => setTimeInput(e.target.value)}
-                    className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
-                  />
-                </div>
+
+                <CustomTimePicker 
+                  label="Workout Time"
+                  value={timeInput}
+                  onChange={setTimeInput}
+                />
               </div>
 
               <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium">
