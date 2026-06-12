@@ -35,6 +35,7 @@ const App = () => (
             <Route path="/overview/sleep" element={<SleepPage />} />
             <Route path="/overview/nutrition" element={<NutritionPage />} />
             <Route path="/overview/body-measurements" element={<BodyMeasurementsPage />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/settings/units" element={<UnitSettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
