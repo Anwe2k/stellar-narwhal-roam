@@ -120,6 +120,24 @@ const VitalsPage = () => {
           if (!vitalObj) return null;
           const dataSet = vitalsData[selectedVital] || [];
           const hasData = dataSet.length > 0;
+
+          // Format raw date string into clean 'Oct 27' formats for continuous multi-day plotting
+          const formattedHistory = dataSet.map(item => {
+            let label = item.time;
+            try {
+              if (item.date) {
+                const parsed = new Date(item.date);
+                if (!isNaN(parsed.getTime())) {
+                  label = parsed.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                }
+              }
+            } catch (e) {}
+            return {
+              ...item,
+              displayDate: label
+            };
+          });
+
           return (
             <Dialog open={true} onOpenChange={() => setSelectedVital(null)}>
               <DialogContent className="rounded-3xl w-[92%] max-w-md mx-auto p-6 bg-white border-none">
@@ -135,8 +153,8 @@ const VitalsPage = () => {
                   {hasData ? (
                     <div className="h-44 w-full bg-gray-50/50 p-2 rounded-2xl">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={dataSet}>
-                          <XAxis dataKey="time" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
+                        <AreaChart data={formattedHistory}>
+                          <XAxis dataKey="displayDate" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
                           <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={25} />
                           <Tooltip />
                           <Area 
