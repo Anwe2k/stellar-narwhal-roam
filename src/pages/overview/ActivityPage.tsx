@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, Footprints, Ruler } from 'lucide-react';
+import { ChevronLeft, Flame, Footprints, Ruler, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -58,39 +58,43 @@ const ActivityPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Dynamic Activity Progress Card */}
-        <Card className="border-none shadow-sm bg-gradient-to-br from-[#6750A4] to-[#4F378B] text-white rounded-3xl overflow-hidden">
-          <CardContent className="p-6">
-            <h3 className="font-semibold opacity-90 text-sm">Today's Active Total</h3>
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Footprints size={14} />
-                  <span>Steps</span>
-                </div>
-                <p className="text-xl font-bold">{totalSteps.toLocaleString()}</p>
+        {/* Premium Layout: 3 key metrics on left, visual graphics with subtle gradient on right */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#6750A4] via-[#5B4396] to-[#4F378B] text-white rounded-3xl p-6 shadow-md">
+          <div className="absolute right-[-15px] top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
+            <Footprints size={180} strokeWidth={1} className="text-white rotate-12" />
+          </div>
+
+          <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-5">
+              <div>
+                <p className="text-2xl font-black tracking-tight">{totalSteps.toLocaleString()}</p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Steps Taken</p>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Flame size={14} />
-                  <span>Active</span>
-                </div>
-                <p className="text-xl font-bold">
-                  {Math.round(convertedEnergyTotal.value)} <span className="text-xs font-normal">{convertedEnergyTotal.label}</span>
+
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {displayDistance.toFixed(2)} <span className="text-xs font-normal opacity-85">{distanceUnit}</span>
                 </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Distance</p>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Ruler size={14} />
-                  <span>Distance</span>
-                </div>
-                <p className="text-xl font-bold">
-                  {displayDistance.toFixed(1)} <span className="text-xs font-normal">{distanceUnit}</span>
+
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {Math.round(convertedEnergyTotal.value).toLocaleString()} <span className="text-xs font-normal opacity-85">{convertedEnergyTotal.label}</span>
                 </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Active Calories</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Premium badge on the right */}
+            <div className="flex flex-col items-center mr-2">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                <Sparkles size={24} className="text-[#EADDFF] animate-pulse" />
+              </div>
+              <span className="text-[10px] font-bold mt-2 text-[#EADDFF] uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full">ACTIVE STATE</span>
+            </div>
+          </div>
+        </div>
 
         {/* Log Form */}
         <Card className="border-none shadow-sm bg-white rounded-3xl">

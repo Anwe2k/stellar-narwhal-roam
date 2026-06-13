@@ -3,7 +3,7 @@
 import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ArrowUpRight } from 'lucide-react';
+import { ChevronLeft, ArrowUpRight, Activity, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -20,6 +20,16 @@ const VitalsPage = () => {
     { key: 'temp', title: 'Body Temperature', current: 'Temperature', unit: '°C', color: '#8B5CF6', gradient: 'rgba(139, 92, 246, 0.1)', periodText: 'Last week' },
   ];
 
+  // Dynamic values computation for the 3 key vitals on left
+  const getLatestValue = (key: string) => {
+    const list = vitalsData[key] || [];
+    return list.length > 0 ? list[list.length - 1].value : null;
+  };
+
+  const hrVal = getLatestValue('hr');
+  const rhrVal = getLatestValue('rhr');
+  const spo2Val = getLatestValue('spo2');
+
   return (
     <MobileLayout title="Vitals">
       <div className="space-y-6">
@@ -28,6 +38,48 @@ const VitalsPage = () => {
             <ChevronLeft size={24} className="text-[#6750A4]" />
           </Link>
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
+        </div>
+
+        {/* Premium Vitals layout mirroring the photo */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#E11D48] via-[#BE123C] to-[#881337] text-white rounded-3xl p-6 shadow-md">
+          <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
+            <Heart size={170} strokeWidth={1} className="text-white rotate-12 fill-white" />
+          </div>
+
+          <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-5">
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {hrVal !== null ? `${hrVal} ` : '-- '}
+                  {hrVal !== null && <span className="text-xs font-normal opacity-85">bpm</span>}
+                </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Heart Rate</p>
+              </div>
+
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {rhrVal !== null ? `${rhrVal} ` : '-- '}
+                  {rhrVal !== null && <span className="text-xs font-normal opacity-85">bpm</span>}
+                </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Resting Heart Rate</p>
+              </div>
+
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {spo2Val !== null ? `${spo2Val} ` : '-- '}
+                  {spo2Val !== null && <span className="text-xs font-normal opacity-85">%</span>}
+                </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Blood Oxygen (SpO2)</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center mr-2">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                <Activity size={24} className="text-[#FFE4E6] animate-pulse" />
+              </div>
+              <span className="text-[10px] font-bold mt-2 text-[#FFE4E6] uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full">VITALS</span>
+            </div>
+          </div>
         </div>
 
         {/* Dynamic Vitals Grid with sub-page transitions */}

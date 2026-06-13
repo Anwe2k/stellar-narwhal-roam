@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, CupSoda } from 'lucide-react';
+import { ChevronLeft, Flame, CupSoda, Apple } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -52,6 +52,7 @@ const NutritionPage = () => {
 
   const convertedCal = convertEnergy(totalCalsRaw);
   const convertedWater = convertWater(totalWaterRaw);
+  const totalMealsCount = calorieLogs.length;
 
   return (
     <MobileLayout title="Nutrition">
@@ -63,43 +64,41 @@ const NutritionPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Combined summary visualizer card */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-sm bg-amber-50 text-amber-900 rounded-3xl">
-            <CardContent className="p-5">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 mb-2">
-                <Flame size={16} />
-              </div>
-              <span className="text-xs font-semibold text-gray-500 block">Total Consumed</span>
-              <p className="text-2xl font-black mt-1">
-                {totalCalsRaw > 0 ? (
-                  <>
-                    {convertedCal.value} <span className="text-xs font-normal text-gray-500">{convertedCal.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
-              </p>
-            </CardContent>
-          </Card>
+        {/* Premium Nutrition layout mirroring the photo */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#EA580C] via-[#E11D48] to-[#BE123C] text-white rounded-3xl p-6 shadow-md">
+          <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
+            <Apple size={170} strokeWidth={1} className="text-white rotate-12" />
+          </div>
 
-          <Card className="border-none shadow-sm bg-cyan-50 text-cyan-900 rounded-3xl">
-            <CardContent className="p-5">
-              <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-700 mb-2">
-                <CupSoda size={16} />
+          <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-5">
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {convertedCal.value.toLocaleString()} <span className="text-xs font-normal opacity-85">{convertedCal.label}</span>
+                </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Total Consumed</p>
               </div>
-              <span className="text-xs font-semibold text-gray-500 block">Hydration</span>
-              <p className="text-2xl font-black mt-1">
-                {totalWaterRaw > 0 ? (
-                  <>
-                    {convertedWater.value} <span className="text-xs font-normal text-gray-500">{convertedWater.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
-              </p>
-            </CardContent>
-          </Card>
+
+              <div>
+                <p className="text-2xl font-black tracking-tight">
+                  {convertedWater.value.toLocaleString()} <span className="text-xs font-normal opacity-85">{convertedWater.label}</span>
+                </p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Hydration</p>
+              </div>
+
+              <div>
+                <p className="text-2xl font-black tracking-tight">{totalMealsCount}</p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Logged Meals</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center mr-2">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                <CupSoda size={24} className="text-[#FFE4E6] animate-bounce" />
+              </div>
+              <span className="text-[10px] font-bold mt-2 text-[#FFE4E6] uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full">NOURISH</span>
+            </div>
+          </div>
         </div>
 
         {/* Log calories form */}
