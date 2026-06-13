@@ -8,11 +8,13 @@ import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
+import { useUnits } from '@/context/UnitContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
 
 const SleepPage = () => {
   const { sleepLogs, addSleepLog } = useHealthData();
+  const { formatTime } = useUnits();
   const [bedtime, setBedtime] = useState('22:00');
   const [waketime, setWaketime] = useState('06:00');
   const [computedHrs, setComputedHrs] = useState(8);
@@ -48,6 +50,12 @@ const SleepPage = () => {
     { time: '05:00', bpm: 56 },
     { time: '07:00', bpm: 60 },
   ];
+
+  // Map and format the raw times to match the user's preferred format
+  const formattedSleepingHrData = sleepingHrData.map((item) => ({
+    ...item,
+    displayTime: formatTime(item.time),
+  }));
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,8 +140,8 @@ const SleepPage = () => {
             <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate</h3>
             <div className="h-32 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={sleepingHrData}>
-                  <XAxis dataKey="time" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
+                <AreaChart data={formattedSleepingHrData}>
+                  <XAxis dataKey="displayTime" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
                   <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} />
                   <Tooltip />
                   <Area type="monotone" dataKey="bpm" stroke="#EF4444" strokeWidth={2} fill="rgba(239, 68, 68, 0.05)" />
