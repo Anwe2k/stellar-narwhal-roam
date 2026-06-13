@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Scale, Ruler, Heart } from 'lucide-react';
+import { ChevronLeft, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -76,49 +76,31 @@ const BodyMeasurementsPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Premium Body Measurements layout mirroring the prompt photo */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#059669] via-[#0D9488] to-[#0F766E] text-white rounded-3xl p-6 shadow-md">
-          <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
-            <Scale size={170} strokeWidth={1} className="text-white rotate-12" />
-          </div>
+        {/* Main Body Stat cards */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="border-none shadow-sm bg-white rounded-3xl">
+            <CardContent className="p-5">
+              <span className="text-xs text-gray-400 font-semibold block">Height</span>
+              <p className="text-2xl font-black text-[#6750A4] mt-2">
+                {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
+              </p>
+            </CardContent>
+          </Card>
 
-          <div className="relative z-10 flex justify-between items-center">
-            <div className="space-y-5">
-              <div>
-                <p className="text-2xl font-black tracking-tight">
-                  {currentWeightConverted !== null ? (
-                    <>
-                      {currentWeightConverted.value} <span className="text-xs font-normal opacity-85">{currentWeightConverted.label}</span>
-                    </>
-                  ) : (
-                    '--'
-                  )}
-                </p>
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Current Weight</p>
-              </div>
-
-              <div>
-                <p className="text-2xl font-black tracking-tight">
-                  {currentHeightConverted.value} <span className="text-xs font-normal opacity-85">{currentHeightConverted.label}</span>
-                </p>
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Body Height</p>
-              </div>
-
-              <div>
-                <p className="text-2xl font-black tracking-tight">
-                  {currentBMI !== null ? currentBMI : '--'}
-                </p>
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">BMI (Body Mass Index)</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center mr-2">
-              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                <Heart size={24} className="text-[#CCFBF1] animate-pulse" />
-              </div>
-              <span className="text-[10px] font-bold mt-2 text-[#CCFBF1] uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full">BODY MASS</span>
-            </div>
-          </div>
+          <Card className="border-none shadow-sm bg-white rounded-3xl">
+            <CardContent className="p-5">
+              <span className="text-xs text-gray-400 font-semibold block">Weight</span>
+              <p className="text-2xl font-black text-[#6750A4] mt-2">
+                {currentWeightConverted !== null ? (
+                  <>
+                    {currentWeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentWeightConverted.label}</span>
+                  </>
+                ) : (
+                  <span className="text-sm font-medium text-gray-400">No data</span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Weight 30 days trends area graph */}

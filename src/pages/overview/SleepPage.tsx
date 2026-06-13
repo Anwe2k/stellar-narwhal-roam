@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Moon, Star, Clock } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -67,10 +67,6 @@ const SleepPage = () => {
     ? Math.min(100, Math.round((sleepLogs[sleepLogs.length - 1].hrs / 8) * 100))
     : null;
 
-  const latestBedtime = sleepLogs.length > 0 && sleepLogs[sleepLogs.length - 1].startTime 
-    ? sleepLogs[sleepLogs.length - 1].startTime 
-    : '22:00';
-
   return (
     <MobileLayout title="Sleep Tracker">
       <div className="space-y-6">
@@ -81,39 +77,24 @@ const SleepPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Celestial Gradient layout matching prompt visual */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#21123D] to-[#14082B] text-white rounded-3xl p-6 shadow-md border border-purple-950/40">
-          <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
-            <Moon size={170} strokeWidth={1} className="text-white rotate-6 fill-white" />
-          </div>
-
-          <div className="relative z-10 flex justify-between items-center">
-            <div className="space-y-5">
-              <div>
-                <p className="text-2xl font-black tracking-tight">{avgDuration} <span className="text-xs font-normal opacity-70">hrs</span></p>
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Average Sleep</p>
-              </div>
-
-              <div>
-                <p className="text-2xl font-black tracking-tight">
-                  {sleepScore !== null ? `${sleepScore} / 100` : '--'}
-                </p>
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Sleep Quality Score</p>
-              </div>
-
-              <div>
-                <p className="text-2xl font-black tracking-tight">{latestBedtime}</p>
-                <p className="text-[10px] uppercase tracking-wider font-semibold opacity-70">Last Bedtime</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center mr-2">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 backdrop-blur-sm flex items-center justify-center border border-white/10 shadow-inner">
-                <Star size={24} className="text-[#D0BCFF] fill-[#D0BCFF] animate-pulse" />
-              </div>
-              <span className="text-[10px] font-bold mt-2 text-[#D0BCFF] uppercase tracking-wider bg-purple-900/40 px-2 py-0.5 rounded-full">RESTING</span>
-            </div>
-          </div>
+        {/* Average and Score Dashboard summary */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="border-none shadow-sm bg-[#D0BCFF] text-[#381E72] rounded-3xl">
+            <CardContent className="p-5">
+              <span className="text-xs font-semibold opacity-80 uppercase">Avg Sleep</span>
+              <p className="text-3xl font-black mt-2">
+                {avgDuration} <span className="text-xs font-normal">hrs/day</span>
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-sm bg-white rounded-3xl">
+            <CardContent className="p-5">
+              <span className="text-xs font-semibold text-gray-400 uppercase">Sleep Score</span>
+              <p className="text-3xl font-black text-[#6750A4] mt-2">
+                {sleepScore !== null ? `${sleepScore}/100` : 'No data'}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Sleep phases visualization */}
