@@ -11,7 +11,7 @@ export interface ActivityLog {
 }
 
 export interface VitalLog {
-  time: string;
+  time?: string;
   date: string;
   value: number;
 }
@@ -149,45 +149,76 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       distance,
       time: activeTime
     };
-    setActivityLogs(prev => [newLog, ...prev]);
+    setActivityLogs(prev => {
+      const filtered = prev.filter(log => log.time !== activeTime);
+      return [newLog, ...filtered];
+    });
   };
 
   const addVitalLog = (key: string, value: number, date: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const newEntry: VitalLog = { time: activeTime, date, value };
-    setVitalsData(prev => ({
-      ...prev,
-      [key]: [...(prev[key] || []), newEntry]
-    }));
+    
+    setVitalsData(prev => {
+      const currentList = prev[key] || [];
+      const filtered = currentList.filter(entry => {
+        if (key === 'rhr') {
+          // Resting HR is unique per date only
+          return entry.date !== date;
+        } else {
+          // Other vitals are unique per date AND time combination
+          return !(entry.date === date && entry.time === activeTime);
+        }
+      });
+      return {
+        ...prev,
+        [key]: [...filtered, newEntry]
+      };
+    });
   };
 
   const addSleepLog = (hrs: number, date: string, startTime?: string, endTime?: string) => {
     const parsedDate = new Date(date);
     const dayLabel = parsedDate.toLocaleDateString([], { weekday: 'short' });
     const newLog: SleepLog = { day: dayLabel, hrs, date, startTime, endTime };
-    setSleepLogs(prev => [...prev, newLog]);
+    setSleepLogs(prev => {
+      const filtered = prev.filter(log => log.date !== date);
+      return [...filtered, newLog];
+    });
   };
 
   const addCalorieLog = (val: number, desc: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const newLog: NutritionLog = { id: Date.now(), val, desc, time: activeTime };
-    setCalorieLogs(prev => [...prev, newLog]);
+    setCalorieLogs(prev => {
+      const filtered = prev.filter(log => log.time !== activeTime);
+      return [...filtered, newLog];
+    });
   };
 
   const addWaterLog = (val: number, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const newLog: WaterLog = { id: Date.now(), val, time: activeTime };
-    setWaterLogs(prev => [...prev, newLog]);
+    setWaterLogs(prev => {
+      const filtered = prev.filter(log => log.time !== activeTime);
+      return [...filtered, newLog];
+    });
   };
 
   const addWeightLog = (val: number, day: string) => {
     const newLog: WeightLog = { day, val };
-    setWeightLogs(prev => [...prev, newLog]);
+    setWeightLogs(prev => {
+      const filtered = prev.filter(log => log.day !== day);
+      return [...filtered, newLog];
+    });
   };
 
   const addFatLog = (val: number, day: string) => {
     const newLog: FatLog = { day, val };
-    setFatLogs(prev => [...prev, newLog]);
+    setFatLogs(prev => {
+      const filtered = prev.filter(log => log.day !== day);
+      return [...filtered, newLog];
+    });
   };
 
   const clearAllData = () => {
