@@ -40,13 +40,15 @@ const SleepPage = () => {
     { name: 'Deep', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#6750A4' },
   ] : [];
 
-  // Heart Rate During Sleep Graph values
+  // Heart Rate During Sleep Graph values - Weekly Average
   const sleepingHrData = [
-    { time: '23:00', bpm: 62 },
-    { time: '01:00', bpm: 58 },
-    { time: '03:00', bpm: 54 },
-    { time: '05:00', bpm: 56 },
-    { time: '07:00', bpm: 60 },
+    { day: 'Mon', bpm: 58 },
+    { day: 'Tue', bpm: 56 },
+    { day: 'Wed', bpm: 54 },
+    { day: 'Thu', bpm: 55 },
+    { day: 'Fri', bpm: 52 },
+    { day: 'Sat', bpm: 57 },
+    { day: 'Sun', bpm: 55 },
   ];
 
   const handleSave = (e: React.FormEvent) => {
@@ -129,11 +131,11 @@ const SleepPage = () => {
         {/* Heart Rate During Sleep Graph */}
         <Card className="border-none shadow-sm bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate</h3>
+            <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate (Weekly)</h3>
             <div className="h-32 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={sleepingHrData}>
-                  <XAxis dataKey="time" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
                   <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} />
                   <Tooltip />
                   <Area type="monotone" dataKey="bpm" stroke="#EF4444" strokeWidth={2} fill="rgba(239, 68, 68, 0.05)" />
