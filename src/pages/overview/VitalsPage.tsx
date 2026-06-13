@@ -1,50 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ChevronLeft, ArrowUpRight, Activity } from 'lucide-react';
+import { ChevronLeft, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
-import { useUnits } from '@/context/UnitContext';
-import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
-import { showSuccess } from '@/utils/toast';
 
 const VitalsPage = () => {
-  const { vitalsData, addVitalLog } = useHealthData();
-  const { formatDate } = useUnits();
-  const [selectedVital, setSelectedVital] = useState<string | null>(null);
-  
-  const [newValue, setNewValue] = useState('');
-  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
-  const [logTime, setLogTime] = useState('');
-
-  // Update logTime automatically when a dialog opens
-  useEffect(() => {
-    if (selectedVital) {
-      const now = new Date();
-      setLogTime(`${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
-    }
-  }, [selectedVital]);
-
-  const saveVitalLog = () => {
-    if (!newValue || !selectedVital) return;
-
-    const valNum = parseFloat(newValue);
-    // Don't log time for 'rhr' (Resting Heart Rate)
-    const activeTime = selectedVital === 'rhr' ? undefined : logTime;
-
-    addVitalLog(selectedVital, valNum, logDate, activeTime);
-
-    setNewValue('');
-    setSelectedVital(null);
-    showSuccess('Vital measurement logged successfully!');
-  };
+  const { vitalsData } = useHealthData();
 
   const vitalTypes = [
     { key: 'hr', title: 'Heart Rate', current: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', periodText: 'Last 12 hours' },
@@ -65,7 +30,7 @@ const VitalsPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Dynamic Vitals Grid with interactive quick popups */}
+        {/* Dynamic Vitals Grid with sub-page transitions */}
         <div className="grid grid-cols-1 gap-4">
           {vitalTypes.map((vital) => {
             const dataSet = vitalsData[vital.key] || [];
@@ -73,167 +38,60 @@ const VitalsPage = () => {
             const currentDisplay = hasData ? dataSet[dataSet.length - 1].value : null;
 
             return (
-              <Card key={vital.key} className="border-none shadow-sm bg-white rounded-3xl overflow-hidden relative group">
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{vital.title}</span>
-                      <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-2xl font-black text-gray-800">
-                          {currentDisplay !== null ? currentDisplay : 'No data'}
-                        </span>
-                        {currentDisplay !== null && <span className="text-xs text-gray-400">{vital.unit}</span>}
+              <Link key={vital.key} to={`/overview/vitals/${vital.key}`} className="block">
+                <Card className="border-none shadow-sm hover:shadow-md transition-shadow duration-300 bg-white rounded-3xl overflow-hidden relative group">
+                  <CardContent className="p-5">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{vital.title}</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-2xl font-black text-gray-800">
+                            {currentDisplay !== null ? currentDisplay : 'No data'}
+                          </span>
+                          {currentDisplay !== null && <span className="text-xs text-gray-400">{vital.unit}</span>}
+                        </div>
+                      </div>
+
+                      <div className="p-2 rounded-full bg-gray-50 text-[#6750A4] group-hover:bg-[#EADDFF] transition-colors shrink-0">
+                        <ArrowUpRight size={18} />
                       </div>
                     </div>
 
-                    <button 
-                      onClick={() => setSelectedVital(vital.key)}
-                      className="p-2 rounded-full bg-gray-50 text-[#6750A4] hover:bg-[#EADDFF] transition-colors shrink-0"
-                    >
-                      <ArrowUpRight size={18} />
-                    </button>
-                  </div>
-
-                  {/* Micro-Graph */}
-                  {hasData ? (
-                    <div className="h-16 w-full mt-3">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={dataSet}>
-                          <defs>
-                            <linearGradient id={`color-${vital.key}`} x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor={vital.color} stopOpacity={0.2}/>
-                              <stop offset="95%" stopColor={vital.color} stopOpacity={0}/>
-                            </linearGradient>
-                          </defs>
-                          <Tooltip content={() => null} />
-                          <Area 
-                            type="monotone" 
-                            dataKey="value" 
-                            stroke={vital.color} 
-                            strokeWidth={2}
-                            fillOpacity={1} 
-                            fill={`url(#color-${vital.key})`} 
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                  ) : (
-                    <div className="h-16 w-full mt-3 flex items-center justify-center bg-gray-50 rounded-2xl">
-                      <span className="text-xs text-gray-400 font-medium">No readings registered</span>
-                    </div>
-                  )}
-                  <span className="text-[10px] text-gray-400 block text-right mt-1">{vital.periodText}</span>
-                </CardContent>
-              </Card>
+                    {/* Micro-Graph */}
+                    {hasData ? (
+                      <div className="h-16 w-full mt-3">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={dataSet}>
+                            <defs>
+                              <linearGradient id={`color-${vital.key}`} x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={vital.color} stopOpacity={0.2}/>
+                                <stop offset="95%" stopColor={vital.color} stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <Tooltip content={() => null} />
+                            <Area 
+                              type="monotone" 
+                              dataKey="value" 
+                              stroke={vital.color} 
+                              strokeWidth={2}
+                              fillOpacity={1} 
+                              fill={`url(#color-${vital.key})`} 
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ) : (
+                      <div className="h-16 w-full mt-3 flex items-center justify-center bg-gray-50 rounded-2xl">
+                        <span className="text-xs text-gray-400 font-medium">No readings registered</span>
+                      </div>
+                    )}
+                    <span className="text-[10px] text-gray-400 block text-right mt-1">{vital.periodText}</span>
+                  </CardContent>
+                </Card>
+              </Link>
             );
           })}
         </div>
-
-        {/* Large Chart Modal & Log screen */}
-        {selectedVital && (() => {
-          const vitalObj = vitalTypes.find(v => v.key === selectedVital);
-          if (!vitalObj) return null;
-          const dataSet = vitalsData[selectedVital] || [];
-          const hasData = dataSet.length > 0;
-
-          // Format historical data points: show hour/time stamps for 'hr' (12h scale), and calendar dates for weekly/long-term metrics.
-          const formattedHistory = dataSet.map(item => {
-            let label = '';
-            if (selectedVital === 'hr') {
-              label = item.time || (item.date ? formatDate(item.date) : '');
-            } else {
-              label = item.date ? formatDate(item.date) : (item.time || '');
-            }
-            return {
-              ...item,
-              displayDate: label
-            };
-          });
-
-          return (
-            <Dialog open={true} onOpenChange={() => setSelectedVital(null)}>
-              <DialogContent className="rounded-3xl w-[92%] max-w-md mx-auto p-6 bg-white border-none">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                    <Activity size={20} style={{ color: vitalObj.color }} />
-                    {vitalObj.title} Analyzer
-                  </DialogTitle>
-                </DialogHeader>
-
-                <div className="mt-4 space-y-6">
-                  {/* Big interactive historical area chart */}
-                  {hasData ? (
-                    <div className="h-44 w-full bg-gray-50/50 p-2 rounded-2xl">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={formattedHistory}>
-                          <XAxis dataKey="displayDate" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                          <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={25} />
-                          <Tooltip />
-                          <Area 
-                            type="monotone" 
-                            dataKey="value" 
-                            stroke={vitalObj.color} 
-                            strokeWidth={2.5}
-                            fill={vitalObj.gradient} 
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                  ) : (
-                    <div className="h-44 w-full flex items-center justify-center bg-gray-50 rounded-2xl">
-                      <span className="text-sm text-gray-400 font-medium">No recorded graphs. Add below.</span>
-                    </div>
-                  )}
-
-                  {/* Daily Measurement Logging Form */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-bold text-gray-700">Add New Entry</h4>
-                    <div className="space-y-2">
-                      <Label htmlFor="vital-val" className="text-xs text-gray-500">Value ({vitalObj.unit})</Label>
-                      <Input
-                        id="vital-val"
-                        type="number"
-                        placeholder={`e.g. 75`}
-                        value={newValue}
-                        onChange={(e) => setNewValue(e.target.value)}
-                        className="rounded-2xl border-gray-250 h-11"
-                      />
-                    </div>
-                    
-                    <CustomDatePicker 
-                      label="Date"
-                      value={logDate}
-                      onChange={setLogDate}
-                    />
-                    
-                    {/* Hide Time Selector for Resting HR (rhr) */}
-                    {selectedVital !== 'rhr' && (
-                      <CustomTimePicker 
-                        label="Time"
-                        value={logTime}
-                        onChange={setLogTime}
-                      />
-                    )}
-                    
-                    {selectedVital === 'rhr' && (
-                      <div className="text-xs text-gray-400">
-                        * Resting HR represents overall baseline (no time log needed).
-                      </div>
-                    )}
-
-                    <Button 
-                      onClick={saveVitalLog}
-                      className="w-full text-white rounded-2xl h-11 font-medium transition-colors"
-                      style={{ backgroundColor: vitalObj.color }}
-                    >
-                      Save Entry
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          );
-        })()}
       </div>
     </MobileLayout>
   );

@@ -11,6 +11,7 @@ import UnitSettingsPage from "./pages/UnitSettingsPage";
 // New sub-pages import
 import ActivityPage from "./pages/overview/ActivityPage";
 import VitalsPage from "./pages/overview/VitalsPage";
+import VitalDetailPage from "./pages/overview/VitalDetailPage";
 import SleepPage from "./pages/overview/SleepPage";
 import NutritionPage from "./pages/overview/NutritionPage";
 import BodyMeasurementsPage from "./pages/overview/BodyMeasurementsPage";
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/overview" element={<Overview />} />
               <Route path="/overview/activity" element={<ActivityPage />} />
               <Route path="/overview/vitals" element={<VitalsPage />} />
+              <Route path="/overview/vitals/:vitalKey" element={<VitalDetailPage />} />
               <Route path="/overview/sleep" element={<SleepPage />} />
               <Route path="/overview/nutrition" element={<NutritionPage />} />
               <Route path="/overview/body-measurements" element={<BodyMeasurementsPage />} />
