@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, Footprints, Ruler } from 'lucide-react';
+import { ChevronLeft, Flame, Footprints, Ruler, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -52,45 +52,50 @@ const ActivityPage = () => {
     <MobileLayout title="Activity">
       <div className="space-y-6">
         <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
+          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors">
             <ChevronLeft size={24} className="text-[#6750A4]" />
           </Link>
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Dynamic Activity Progress Card */}
-        <Card className="border-none shadow-sm bg-gradient-to-br from-[#6750A4] to-[#4F378B] text-white rounded-3xl overflow-hidden">
-          <CardContent className="p-6">
-            <h3 className="font-semibold opacity-90 text-sm">Today's Active Total</h3>
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Footprints size={14} />
-                  <span>Steps</span>
-                </div>
-                <p className="text-xl font-bold">{totalSteps.toLocaleString()}</p>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Flame size={14} />
-                  <span>Active</span>
-                </div>
-                <p className="text-xl font-bold">
-                  {Math.round(convertedEnergyTotal.value)} <span className="text-xs font-normal">{convertedEnergyTotal.label}</span>
-                </p>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Ruler size={14} />
-                  <span>Distance</span>
-                </div>
-                <p className="text-xl font-bold">
-                  {displayDistance.toFixed(1)} <span className="text-xs font-normal">{distanceUnit}</span>
-                </p>
-              </div>
+        {/* Card-less Premium Hero Section based on layout reference photo */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#6750A4]/15 via-indigo-500/5 to-transparent p-6 flex justify-between items-center min-h-[220px]">
+          {/* 3 Most Important Metrics on the Left */}
+          <div className="flex flex-col gap-6 z-10">
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {totalSteps > 0 ? totalSteps.toLocaleString() : "0"}
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">STEPS</p>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {displayDistance.toFixed(2)}
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{distanceUnit.toUpperCase()}</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {Math.round(convertedEnergyTotal.value).toLocaleString()}
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{convertedEnergyTotal.label.toUpperCase()}</p>
+            </div>
+          </div>
+
+          {/* Aesthetic High-fidelity illustrative vector element on the right */}
+          <div className="absolute right-2 bottom-4 opacity-25 text-[#6750A4] pointer-events-none scale-110">
+            <svg width="200" height="200" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-pulse duration-3000">
+              <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 4" />
+              <path d="M50 20C58 35 42 65 50 80" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M30 45C38 52 42 38 50 45C58 52 62 38 70 45" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <Footprints size={64} className="text-[#6750A4]" />
+            </div>
+          </div>
+        </div>
 
         {/* Log Form */}
         <Card className="border-none shadow-sm bg-white rounded-3xl">

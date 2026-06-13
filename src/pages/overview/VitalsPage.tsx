@@ -3,13 +3,18 @@
 import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ArrowUpRight } from 'lucide-react';
+import { ChevronLeft, ArrowUpRight, Heart, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 
 const VitalsPage = () => {
   const { vitalsData } = useHealthData();
+
+  // Pick up top 3 metrics to display on Left header
+  const latestHR = vitalsData.hr && vitalsData.hr.length > 0 ? vitalsData.hr[vitalsData.hr.length - 1].value : null;
+  const latestSpO2 = vitalsData.spo2 && vitalsData.spo2.length > 0 ? vitalsData.spo2[vitalsData.spo2.length - 1].value : null;
+  const latestBP = vitalsData.bp && vitalsData.bp.length > 0 ? vitalsData.bp[vitalsData.bp.length - 1].value : null;
 
   const vitalTypes = [
     { key: 'hr', title: 'Heart Rate', current: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', periodText: 'Last 12 hours' },
@@ -28,6 +33,44 @@ const VitalsPage = () => {
             <ChevronLeft size={24} className="text-[#6750A4]" />
           </Link>
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
+        </div>
+
+        {/* Card-less pulse vector design header matching visual style */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-500/10 via-red-500/5 to-transparent p-6 flex justify-between items-center min-h-[220px]">
+          {/* 3 Top Metrics on Left */}
+          <div className="flex flex-col gap-6 z-10">
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {latestHR !== null ? `${latestHR}` : '--'} <span className="text-xs text-gray-400 font-bold">bpm</span>
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">HEART RATE</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {latestSpO2 !== null ? `${latestSpO2}` : '--'} <span className="text-xs text-gray-400 font-bold">%</span>
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">BLOOD OXYGEN</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {latestBP !== null ? `${latestBP}` : '--'} <span className="text-xs text-gray-400 font-bold">mmHg</span>
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">BLOOD PRESSURE</p>
+            </div>
+          </div>
+
+          {/* Glowing pulse element on the right */}
+          <div className="absolute right-4 bottom-4 opacity-25 text-rose-500 pointer-events-none">
+            <svg width="180" height="180" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-pulse duration-2000">
+              <circle cx="50" cy="50" r="38" stroke="currentColor" strokeWidth="1.2" strokeDasharray="2 3" />
+              <path d="M20 50 L40 50 L45 35 L50 65 L55 45 L60 55 L65 50 L80 50" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div className="absolute top-[44%] left-[44%] -translate-x-1/2 -translate-y-1/2">
+              <Heart size={44} className="text-rose-500 animate-pulse" />
+            </div>
+          </div>
         </div>
 
         {/* Dynamic Vitals Grid with sub-page transitions */}

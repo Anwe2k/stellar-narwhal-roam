@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, CupSoda } from 'lucide-react';
+import { ChevronLeft, Flame, CupSoda, UtensilsCrossed } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -63,43 +63,43 @@ const NutritionPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Combined summary visualizer card */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-sm bg-amber-50 text-amber-900 rounded-3xl">
-            <CardContent className="p-5">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 mb-2">
-                <Flame size={16} />
-              </div>
-              <span className="text-xs font-semibold text-gray-500 block">Total Consumed</span>
-              <p className="text-2xl font-black mt-1">
-                {totalCalsRaw > 0 ? (
-                  <>
-                    {convertedCal.value} <span className="text-xs font-normal text-gray-500">{convertedCal.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
-              </p>
-            </CardContent>
-          </Card>
+        {/* Card-less Elegant Dual Orange/Blue Gradient Header with 3 key stats on the left */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-cyan-500/10 to-transparent p-6 flex justify-between items-center min-h-[220px]">
+          {/* 3 Metrics on the Left */}
+          <div className="flex flex-col gap-6 z-10">
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {Math.round(convertedCal.value).toLocaleString()} <span className="text-sm font-normal text-gray-500">{convertedCal.label}</span>
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">TOTAL CONSUMED</p>
+            </div>
 
-          <Card className="border-none shadow-sm bg-cyan-50 text-cyan-900 rounded-3xl">
-            <CardContent className="p-5">
-              <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-700 mb-2">
-                <CupSoda size={16} />
-              </div>
-              <span className="text-xs font-semibold text-gray-500 block">Hydration</span>
-              <p className="text-2xl font-black mt-1">
-                {totalWaterRaw > 0 ? (
-                  <>
-                    {convertedWater.value} <span className="text-xs font-normal text-gray-500">{convertedWater.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
-              </p>
-            </CardContent>
-          </Card>
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {convertedWater.value.toLocaleString()} <span className="text-sm font-normal text-gray-500">{convertedWater.label}</span>
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">HYDRATION</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {calorieLogs.length}
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">MEALS LOGGED</p>
+            </div>
+          </div>
+
+          {/* Aesthetic Illustrative high-fidelity vector element on the right */}
+          <div className="absolute right-3 bottom-4 opacity-25 text-amber-600 pointer-events-none">
+            <svg width="180" height="180" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="38" stroke="currentColor" strokeWidth="1" strokeDasharray="2 4" />
+              <path d="M42 35 C42 45 48 55 58 55 C68 55 58 35 42 35 Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <div className="absolute top-[45%] left-[45%] -translate-x-1/2 -translate-y-1/2 flex gap-1">
+              <Flame size={32} className="text-amber-600" />
+              <CupSoda size={32} className="text-cyan-600 animate-bounce duration-3000" />
+            </div>
+          </div>
         </div>
 
         {/* Log calories form */}

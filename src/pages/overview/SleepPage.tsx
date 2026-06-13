@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Moon, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -71,30 +71,48 @@ const SleepPage = () => {
     <MobileLayout title="Sleep Tracker">
       <div className="space-y-6">
         <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
+          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors">
             <ChevronLeft size={24} className="text-[#6750A4]" />
           </Link>
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Average and Score Dashboard summary */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-sm bg-[#D0BCFF] text-[#381E72] rounded-3xl">
-            <CardContent className="p-5">
-              <span className="text-xs font-semibold opacity-80 uppercase">Avg Sleep</span>
-              <p className="text-3xl font-black mt-2">
-                {avgDuration} <span className="text-xs font-normal">hrs/day</span>
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-none shadow-sm bg-white rounded-3xl">
-            <CardContent className="p-5">
-              <span className="text-xs font-semibold text-gray-400 uppercase">Sleep Score</span>
-              <p className="text-3xl font-black text-[#6750A4] mt-2">
-                {sleepScore !== null ? `${sleepScore}/100` : 'No data'}
-              </p>
-            </CardContent>
-          </Card>
+        {/* Card-less Ambient Dark-Gradient Header presentation */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#381E72]/15 via-indigo-900/5 to-transparent p-6 flex justify-between items-center min-h-[220px]">
+          {/* 3 Key Metrics on the Left */}
+          <div className="flex flex-col gap-6 z-10">
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {avgDuration} <span className="text-sm font-normal text-gray-500">hrs</span>
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">AVG DURATION</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {sleepScore !== null ? `${sleepScore}/100` : '--'}
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">SLEEP SCORE</p>
+            </div>
+
+            <div className="space-y-0.5">
+              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+                {sleepLogs.length > 0 ? sleepLogs[sleepLogs.length - 1].startTime || bedtime : bedtime}
+              </h2>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">LAST BEDTIME</p>
+            </div>
+          </div>
+
+          {/* Aesthetic High-fidelity illustrative Star/Moon vector element on the right */}
+          <div className="absolute right-4 bottom-4 opacity-25 text-[#381E72] pointer-events-none">
+            <svg width="180" height="180" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-pulse duration-5000">
+              <circle cx="50" cy="50" r="38" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
+              <path d="M55 25C65 25 75 35 75 45C75 55 65 65 55 65C45 65 35 55 35 45" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <div className="absolute top-[42%] left-[45%] -translate-x-1/2 -translate-y-1/2">
+              <Moon size={56} className="text-[#381E72]" />
+            </div>
+          </div>
         </div>
 
         {/* Sleep phases visualization */}
