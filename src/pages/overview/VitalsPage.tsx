@@ -136,11 +136,13 @@ const VitalsPage = () => {
           const dataSet = vitalsData[selectedVital] || [];
           const hasData = dataSet.length > 0;
 
-          // Format raw date string using custom formatDate function
+          // Format historical data points: show hour/time stamps for 'hr' (12h scale), and calendar dates for weekly/long-term metrics.
           const formattedHistory = dataSet.map(item => {
-            let label = item.time || '';
-            if (item.date) {
-              label = formatDate(item.date);
+            let label = '';
+            if (selectedVital === 'hr') {
+              label = item.time || (item.date ? formatDate(item.date) : '');
+            } else {
+              label = item.date ? formatDate(item.date) : (item.time || '');
             }
             return {
               ...item,
