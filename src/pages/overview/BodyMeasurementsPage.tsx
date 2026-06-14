@@ -357,7 +357,7 @@ const BodyMeasurementsPage = () => {
                     <Area type="monotone" dataKey="val" stroke="#3B82F6" strokeWidth={2} fill="rgba(59, 130, 246, 0.05)" />
                   </AreaChart>
                 </ResponsiveContainer>
-              }
+              </div>
             ) : (
               <div className="p-6 text-center bg-gray-50 rounded-2xl">
                 <p className="text-sm text-gray-400 font-medium">No BMI records available.</p>
