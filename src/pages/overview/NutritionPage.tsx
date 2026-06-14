@@ -63,43 +63,35 @@ const NutritionPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Combined summary visualizer card */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-sm bg-amber-50 text-amber-900 rounded-3xl">
-            <CardContent className="p-5">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 mb-2">
-                <Flame size={16} />
-              </div>
-              <span className="text-xs font-semibold text-gray-500 block">Total Consumed</span>
-              <p className="text-2xl font-black mt-1">
-                {totalCalsRaw > 0 ? (
-                  <>
-                    {convertedCal.value} <span className="text-xs font-normal text-gray-500">{convertedCal.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
+        {/* Stacked top summary visualizer */}
+        <div className="flex items-center justify-between py-2">
+          <div className="space-y-5">
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {totalCalsRaw > 0 ? `${convertedCal.value} ${convertedCal.label}` : '0 kcal'}
               </p>
-            </CardContent>
-          </Card>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Calories Consumed</p>
+            </div>
+            
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {totalWaterRaw > 0 ? `${convertedWater.value} ${convertedWater.label}` : '0 ml'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Water Intake Volume</p>
+            </div>
 
-          <Card className="border-none shadow-sm bg-cyan-50 text-cyan-900 rounded-3xl">
-            <CardContent className="p-5">
-              <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-700 mb-2">
-                <CupSoda size={16} />
-              </div>
-              <span className="text-xs font-semibold text-gray-500 block">Hydration</span>
-              <p className="text-2xl font-black mt-1">
-                {totalWaterRaw > 0 ? (
-                  <>
-                    {convertedWater.value} <span className="text-xs font-normal text-gray-500">{convertedWater.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {calorieLogs.length + waterLogs.length}
               </p>
-            </CardContent>
-          </Card>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Dietary Logs Added</p>
+            </div>
+          </div>
+
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#C1E7F4] to-[#A8DADC] flex items-center justify-center relative overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <CupSoda size={84} className="text-[#004D61] relative z-10 opacity-90 animate-bounce duration-[4s]" />
+          </div>
         </div>
 
         {/* Log calories form */}

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -67,6 +67,10 @@ const SleepPage = () => {
     ? Math.min(100, Math.round((sleepLogs[sleepLogs.length - 1].hrs / 8) * 100))
     : null;
 
+  const lastBedtime = sleepLogs.length > 0 && sleepLogs[sleepLogs.length - 1].startTime
+    ? sleepLogs[sleepLogs.length - 1].startTime
+    : '22:00';
+
   return (
     <MobileLayout title="Sleep Tracker">
       <div className="space-y-6">
@@ -77,24 +81,35 @@ const SleepPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Average and Score Dashboard summary */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-sm bg-[#D0BCFF] text-[#381E72] rounded-3xl">
-            <CardContent className="p-5">
-              <span className="text-xs font-semibold opacity-80 uppercase">Avg Sleep</span>
-              <p className="text-3xl font-black mt-2">
-                {avgDuration} <span className="text-xs font-normal">hrs/day</span>
+        {/* Stacked top summary visualizer */}
+        <div className="flex items-center justify-between py-2">
+          <div className="space-y-5">
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {avgDuration} <span className="text-base font-normal text-gray-400">HRS</span>
               </p>
-            </CardContent>
-          </Card>
-          <Card className="border-none shadow-sm bg-white rounded-3xl">
-            <CardContent className="p-5">
-              <span className="text-xs font-semibold text-gray-400 uppercase">Sleep Score</span>
-              <p className="text-3xl font-black text-[#6750A4] mt-2">
-                {sleepScore !== null ? `${sleepScore}/100` : 'No data'}
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Average Duration</p>
+            </div>
+            
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {sleepScore !== null ? `${sleepScore}/100` : '--'}
               </p>
-            </CardContent>
-          </Card>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Sleep Quality Score</p>
+            </div>
+
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {lastBedtime}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Last Logged Bedtime</p>
+            </div>
+          </div>
+
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E8DEF8] to-[#D0BCFF] flex items-center justify-center relative overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <Moon size={84} className="text-[#381E72] relative z-10 opacity-90 animate-bounce duration-[6s]" />
+          </div>
         </div>
 
         {/* Sleep phases visualization */}

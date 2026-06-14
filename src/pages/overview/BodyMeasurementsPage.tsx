@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Scale } from 'lucide-react';
+import { ChevronLeft, Scale, Ruler } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -54,6 +54,8 @@ const BodyMeasurementsPage = () => {
     ? (currentWeightRaw / (heightMeters * heightMeters)).toFixed(1)
     : null;
 
+  const currentFatRaw = fatLogs.length > 0 ? fatLogs[fatLogs.length - 1].val : null;
+
   // Translate weight logs array to match settings unit preference
   const transformedWeightData = weightLogs.map((log) => ({
     day: log.day,
@@ -76,28 +78,44 @@ const BodyMeasurementsPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Main Body Stat cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-sm bg-white rounded-3xl">
-            <CardContent className="p-5">
-              <span className="text-xs text-gray-400 font-semibold block">Height</span>
-              <p className="text-2xl font-black text-[#6750A4] mt-2">
-                {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
+        {/* Stacked top summary visualizer */}
+        <div className="flex items-center justify-between py-2">
+          <div className="space-y-5">
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {currentWeightConverted !== null ? `${currentWeightConverted.value} ${currentWeightConverted.label}` : '--'}
               </p>
-            </CardContent>
-          </Card>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Body Weight</p>
+            </div>
+            
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {currentFatRaw !== null ? `${currentFatRaw} %` : '--'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Body Fat Percentage</p>
+            </div>
 
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {currentBMI !== null ? currentBMI : '--'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Current Body Mass Index (BMI)</p>
+            </div>
+          </div>
+
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E2F1E8] to-[#CBE5D5] flex items-center justify-center relative overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <Ruler size={84} className="text-[#00512C] relative z-10 opacity-90 animate-pulse duration-[5s]" />
+          </div>
+        </div>
+
+        {/* Basic info box */}
+        <div className="grid grid-cols-1 gap-4">
           <Card className="border-none shadow-sm bg-white rounded-3xl">
-            <CardContent className="p-5">
-              <span className="text-xs text-gray-400 font-semibold block">Weight</span>
-              <p className="text-2xl font-black text-[#6750A4] mt-2">
-                {currentWeightConverted !== null ? (
-                  <>
-                    {currentWeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentWeightConverted.label}</span>
-                  </>
-                ) : (
-                  <span className="text-sm font-medium text-gray-400">No data</span>
-                )}
+            <CardContent className="p-5 flex justify-between items-center">
+              <span className="text-xs text-gray-400 font-semibold block">Declared Height</span>
+              <p className="text-lg font-black text-[#6750A4]">
+                {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
               </p>
             </CardContent>
           </Card>

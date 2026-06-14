@@ -45,7 +45,7 @@ const ActivityPage = () => {
   const totalDistance = activityLogs.reduce((acc, log) => acc + log.distance, 0);
 
   const convertedEnergyTotal = convertEnergy(totalEnergy);
-  const distanceUnit = settings.length === 'metric' ? 'km' : 'miles';
+  const distanceUnit = settings.length === 'metric' ? 'KM' : 'MILES';
   const displayDistance = totalDistance * (settings.length === 'imperial' ? 0.621371 : 1);
 
   return (
@@ -58,39 +58,38 @@ const ActivityPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Dynamic Activity Progress Card */}
-        <Card className="border-none shadow-sm bg-gradient-to-br from-[#6750A4] to-[#4F378B] text-white rounded-3xl overflow-hidden">
-          <CardContent className="p-6">
-            <h3 className="font-semibold opacity-90 text-sm">Today's Active Total</h3>
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Footprints size={14} />
-                  <span>Steps</span>
-                </div>
-                <p className="text-xl font-bold">{totalSteps.toLocaleString()}</p>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Flame size={14} />
-                  <span>Active</span>
-                </div>
-                <p className="text-xl font-bold">
-                  {Math.round(convertedEnergyTotal.value)} <span className="text-xs font-normal">{convertedEnergyTotal.label}</span>
-                </p>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 opacity-80 text-xs">
-                  <Ruler size={14} />
-                  <span>Distance</span>
-                </div>
-                <p className="text-xl font-bold">
-                  {displayDistance.toFixed(1)} <span className="text-xs font-normal">{distanceUnit}</span>
-                </p>
-              </div>
+        {/* Top visual layout inspired by original photo */}
+        <div className="flex items-center justify-between py-2">
+          {/* 3 stacked key metrics */}
+          <div className="space-y-5">
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {totalSteps.toLocaleString()}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Steps Today</p>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {displayDistance.toFixed(2)}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">{distanceUnit}</p>
+            </div>
+
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {Math.round(convertedEnergyTotal.value).toLocaleString()}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Active {convertedEnergyTotal.label}</p>
+            </div>
+          </div>
+
+          {/* Large gorgeous category visual on the right */}
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#EADDFF] to-[#D0BCFF]/60 flex items-center justify-center relative overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px]" />
+            <Footprints size={84} className="text-[#6750A4] relative z-10 opacity-90 animate-pulse duration-[3s]" />
+          </div>
+        </div>
 
         {/* Log Form */}
         <Card className="border-none shadow-sm bg-white rounded-3xl">

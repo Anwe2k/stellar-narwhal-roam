@@ -3,7 +3,7 @@
 import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ArrowUpRight } from 'lucide-react';
+import { ChevronLeft, ArrowUpRight, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -20,6 +20,15 @@ const VitalsPage = () => {
     { key: 'temp', title: 'Body Temperature', current: 'Temperature', unit: '°C', color: '#8B5CF6', gradient: 'rgba(139, 92, 246, 0.1)', periodText: 'Last week' },
   ];
 
+  const getLatestValue = (key: string) => {
+    const dataSet = vitalsData[key] || [];
+    return dataSet.length > 0 ? dataSet[dataSet.length - 1].value : null;
+  };
+
+  const latestHR = getLatestValue('hr');
+  const latestSpO2 = getLatestValue('spo2');
+  const latestBP = getLatestValue('bp');
+
   return (
     <MobileLayout title="Vitals">
       <div className="space-y-6">
@@ -28,6 +37,37 @@ const VitalsPage = () => {
             <ChevronLeft size={24} className="text-[#6750A4]" />
           </Link>
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
+        </div>
+
+        {/* Stacked top summary visualizer inspired by photo */}
+        <div className="flex items-center justify-between py-2">
+          <div className="space-y-5">
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {latestHR !== null ? `${latestHR} bpm` : '--'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Latest Heart Rate</p>
+            </div>
+            
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {latestSpO2 !== null ? `${latestSpO2} %` : '--'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Blood Oxygen (SpO2)</p>
+            </div>
+
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {latestBP !== null ? `${latestBP} mmHg` : '--'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Blood Pressure (Systolic)</p>
+            </div>
+          </div>
+
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#FFDAD6] to-[#FFB2AB] flex items-center justify-center relative overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <Heart size={84} className="text-[#BA1A1A] relative z-10 opacity-90 animate-pulse" />
+          </div>
         </div>
 
         {/* Dynamic Vitals Grid with sub-page transitions */}
