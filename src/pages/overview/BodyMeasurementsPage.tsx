@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Scale, Ruler } from 'lucide-react';
+import { Scale, Ruler, ChevronRight, X } from 'lucide-react';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
@@ -19,6 +19,14 @@ const BodyMeasurementsPage = () => {
   const [weightInput, setWeightInput] = useState('');
   const [fatInput, setFatInput] = useState('');
   const [logDay, setLogDay] = useState(new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }));
+
+  // Height state initialized from localStorage with fallback
+  const [heightRaw, setHeightRaw] = useState<number>(() => {
+    const saved = localStorage.getItem('declared_height');
+    return saved ? parseFloat(saved) : 180;
+  });
+  const [isHeightDialogOpen, setIsHeightDialogOpen] = useState(false);
+  const [tempHeightInput, setTempHeightInput] = useState('');
 
   const logWeightEntry = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +48,20 @@ const BodyMeasurementsPage = () => {
     showSuccess('Body Fat percentage updated!');
   };
 
+  const saveHeight = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tempHeightInput) return;
+
+    const parsedHeight = parseFloat(tempHeightInput);
+    if (parsedHeight > 0) {
+      setHeightRaw(parsedHeight);
+      localStorage.setItem('declared_height', parsedHeight.toString());
+      setIsHeightDialogOpen(false);
+      showSuccess('Declared height updated successfully!');
+    }
+  };
+
   // Convert height and current weight
-  const heightRaw = 180; // static base height (cm)
   const currentHeightConverted = convertHeight(heightRaw);
   
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : null;
@@ -101,17 +121,73 @@ const BodyMeasurementsPage = () => {
           </div>
         </div>
 
-        {/* Basic info box */}
+        {/* Basic info box with interactive Height modal trigger */}
         <div className="grid grid-cols-1 gap-4">
-          <Card className="border-none shadow-none bg-white rounded-3xl">
+          <Card 
+            className="border-none shadow-none bg-white rounded-3xl cursor-pointer hover:bg-gray-50/50 transition-colors active:scale-[0.99]"
+            onClick={() => {
+              setTempHeightInput(heightRaw.toString());
+              setIsHeightDialogOpen(true);
+            }}
+          >
             <CardContent className="p-5 flex justify-between items-center">
-              <span className="text-xs text-gray-400 font-semibold block">Declared Height</span>
-              <p className="text-lg font-black text-[#6750A4]">
-                {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
-              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#E2F1E8] text-[#00512C] rounded-2xl flex items-center justify-center shrink-0">
+                  <Ruler size={20} />
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400 font-semibold block">Declared Height</span>
+                  <p className="text-lg font-black text-[#6750A4] mt-0.5">
+                    {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
+                  </p>
+                </div>
+              </div>
+              <ChevronRight size={18} className="text-gray-400 shrink-0" />
             </CardContent>
           </Card>
         </div>
+
+        {/* Height update Pop-up dialog overlay */}
+        {isHeightDialogOpen && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-250">
+            <div className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-sm p-6 space-y-4 animate-in slide-in-from-bottom-8 duration-300">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 className="font-bold text-lg text-gray-900">Update Declared Height</h3>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsHeightDialogOpen(false);
+                  }}
+                  className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              
+              <form onSubmit={saveHeight} className="space-y-4" onClick={(e) => e.stopPropagation()}>
+                <div className="space-y-1.5">
+                  <Label htmlFor="popup-height" className="text-xs font-medium text-gray-500">Height (cm)</Label>
+                  <Input
+                    id="popup-height"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g. 180"
+                    value={tempHeightInput}
+                    onChange={(e) => setTempHeightInput(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11 focus-visible:ring-[#6750A4]"
+                    autoFocus
+                  />
+                  <p className="text-[10px] text-gray-400 leading-normal">
+                    Please provide your height in centimeters. It will automatically convert to feet & inches depending on your preferences.
+                  </p>
+                </div>
+                <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium transition-colors">
+                  Save Height
+                </Button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Weight 30 days trends area graph */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
