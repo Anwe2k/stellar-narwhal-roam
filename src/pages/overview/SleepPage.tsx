@@ -9,7 +9,7 @@ import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'rec
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
-import SleepStageTimeline from '@/components/sleep/SleepStageTimeline';
+import SleepStageTimeline from '@/components/SleepStageTimeline';
 
 const getOptionalString = (value: unknown, key: string) => {
   if (typeof value === 'object' && value !== null && key in value) {
