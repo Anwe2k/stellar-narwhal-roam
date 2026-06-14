@@ -219,10 +219,12 @@ const SleepStagesChart = ({ sleepLogs, className }: SleepStagesChartProps) => {
         </div>
       </div>
 
-      <div className="rounded-[30px] bg-[#F8F7FF] p-4 w-full">
+      <div className="rounded-[30px] bg-[#F8F7FF] p-4">
         <svg
           viewBox="0 0 520 190"
-          className="h-[280px] w-full"
+          className="h-[180px] w-full"
+          role="img"
+          aria-label={`Sleep stages from ${formatTime(toTimeString(start))} to ${formatTime(toTimeString(end))}`}
         >
           <rect
             x={chartX}
