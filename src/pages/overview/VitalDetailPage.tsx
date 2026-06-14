@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Activity } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { useUnits } from '@/context/UnitContext';
@@ -81,15 +81,8 @@ const VitalDetailPage = () => {
   });
 
   return (
-    <MobileLayout title={vitalObj.title}>
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview/vitals" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
-            <ChevronLeft size={24} className="text-[#6750A4]" />
-          </Link>
-          <span className="text-sm font-medium text-gray-500">Back to Vitals</span>
-        </div>
-
+    <MobileLayout title={vitalObj.title} backPath="/overview/vitals">
+      <div className="space-y-6 pt-2">
         {/* Big visual summary card */}
         <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-6 flex items-center justify-between">
