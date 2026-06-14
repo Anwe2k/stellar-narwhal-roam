@@ -122,7 +122,7 @@ const BodyMeasurementsPage = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={transformedWeightData}>
                     <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 3', 'dataMax + 3']} />
                     <Tooltip />
                     <Area type="monotone" dataKey="val" stroke="#6750A4" strokeWidth={2} fill="rgba(103, 80, 164, 0.05)" />
                   </AreaChart>
@@ -145,7 +145,7 @@ const BodyMeasurementsPage = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={fatLogs}>
                     <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 1', 'dataMax + 1']} />
                     <Tooltip />
                     <Area type="monotone" dataKey="val" stroke="#10B981" strokeWidth={2} fill="rgba(16, 185, 129, 0.05)" />
                   </AreaChart>
@@ -173,7 +173,7 @@ const BodyMeasurementsPage = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={bmiLogs}>
                     <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 1', 'dataMax + 1']} />
                     <Tooltip />
                     <Area type="monotone" dataKey="val" stroke="#3B82F6" strokeWidth={2} fill="rgba(59, 130, 246, 0.05)" />
                   </AreaChart>

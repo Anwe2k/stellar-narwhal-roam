@@ -143,7 +143,7 @@ const SleepPage = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={sleepingHrData}>
                   <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                  <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} />
+                  <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 3', 'dataMax + 3']} />
                   <Tooltip />
                   <Area type="monotone" dataKey="bpm" stroke="#EF4444" strokeWidth={2} fill="rgba(239, 68, 68, 0.05)" />
                 </AreaChart>

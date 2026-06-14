@@ -5,7 +5,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
+import { AreaChart, Area, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 
 const VitalsPage = () => {
@@ -101,6 +101,7 @@ const VitalsPage = () => {
                                 <stop offset="95%" stopColor={vital.color} stopOpacity={0}/>
                               </linearGradient>
                             </defs>
+                            <YAxis hide domain={['dataMin - 3', 'dataMax + 3']} />
                             <Tooltip content={() => null} />
                             <Area 
                               type="monotone" 

@@ -115,7 +115,7 @@ const VitalDetailPage = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={formattedHistory}>
                     <XAxis dataKey="displayDate" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={25} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={25} domain={['dataMin - 5', 'dataMax + 5']} />
                     <Tooltip />
                     <Area 
                       type="monotone" 
