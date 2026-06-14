@@ -1,3 +1,6 @@
+"use client";
+
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
@@ -17,11 +20,11 @@ import { HealthDataProvider } from '@/context/HealthDataContext';
 import { UnitProvider } from '@/context/UnitContext';
 import { Toaster } from '@/components/ui/sonner';
 
-const App = () => {
+function App() {
   return (
-    <UnitProvider>
-      <HealthDataProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <UnitProvider>
+        <HealthDataProvider>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/index" element={<Index />} />
@@ -39,10 +42,10 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster position="top-center" />
-        </BrowserRouter>
-      </HealthDataProvider>
-    </UnitProvider>
+        </HealthDataProvider>
+      </UnitProvider>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
