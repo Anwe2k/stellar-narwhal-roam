@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon, Info, Sparkles, Clock, Activity, ShieldAlert } from 'lucide-react';
+import { Moon, Sparkles, Clock } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
@@ -61,7 +61,7 @@ const SleepPage = () => {
     return `${h}h ${m}m`;
   };
 
-  // Sleep stages breakdown calculations
+  // Sleep stages breakdown calculations - Explicitly marked as estimated
   const stages = [
     { 
       name: 'Awake', 
@@ -70,7 +70,7 @@ const SleepPage = () => {
       color: 'bg-red-400', 
       textColor: 'text-red-500',
       chartColor: '#F87171',
-      insight: 'Brief awakenings are normal. Too many can indicate stress or environmental noise.' 
+      insight: 'Brief awakenings are calculated baseline averages.' 
     },
     { 
       name: 'REM', 
@@ -79,7 +79,7 @@ const SleepPage = () => {
       color: 'bg-indigo-400', 
       textColor: 'text-indigo-500',
       chartColor: '#818CF8',
-      insight: 'Essential for mental restoration, memory consolidation, and creative dreaming.' 
+      insight: 'Essential mental recovery cycles (Estimated from duration).' 
     },
     { 
       name: 'Light', 
@@ -88,7 +88,7 @@ const SleepPage = () => {
       color: 'bg-blue-400', 
       textColor: 'text-blue-500',
       chartColor: '#60A5FA',
-      insight: 'Serves as the transition stage. Helps process memories and relaxes muscles.' 
+      insight: 'Body transition stage (Estimated from duration).' 
     },
     { 
       name: 'Deep', 
@@ -97,11 +97,11 @@ const SleepPage = () => {
       color: 'bg-blue-700', 
       textColor: 'text-blue-700',
       chartColor: '#1D4ED8',
-      insight: 'Crucial for physical recovery, tissue repair, and immune system strengthening.' 
+      insight: 'Physical recovery cycles (Estimated from duration).' 
     },
   ];
 
-  // Generate a realistic step-like sleep cycle timeline based on bedtime and waketime
+  // Generate estimated step-like sleep cycle timeline
   const generateSleepTimeline = (startStr: string, endStr: string) => {
     const [bedH, bedM] = startStr.split(':').map(Number);
     const [wakeH, wakeM] = endStr.split(':').map(Number);
@@ -116,7 +116,6 @@ const SleepPage = () => {
     const stepsCount = 16;
     const timeline = [];
     
-    // Standard sleep cycle pattern: Awake (4) -> Light (2) -> Deep (1) -> Light (2) -> REM (3) -> Light (2) -> Deep (1)...
     const pattern = [4, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 4];
     
     for (let i = 0; i < stepsCount; i++) {
@@ -139,7 +138,7 @@ const SleepPage = () => {
 
   const timelineData = generateSleepTimeline(lastBedtime, lastWaketime);
 
-  // Heart Rate During Sleep Graph values - Weekly Average
+  // Heart Rate During Sleep Graph values - Labeled explicitly as estimated averages
   const sleepingHrData = [
     { day: 'Mon', bpm: 58 },
     { day: 'Tue', bpm: 56 },
@@ -153,7 +152,7 @@ const SleepPage = () => {
   return (
     <MobileLayout title="Sleep Tracker" headerGradientClass="from-[#D0E1FD]/50" backPath="/overview">
       <div className="space-y-6 pt-2">
-        {/* Stacked top summary visualizer - Updated to Blue Theme */}
+        {/* Stacked top summary visualizer */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
             <div>
@@ -184,15 +183,18 @@ const SleepPage = () => {
           </div>
         </div>
 
-        {/* Sleep stages breakdown - Premium Apple Health / Fitbit Style */}
+        {/* Sleep stages breakdown - Labeled as Estimated */}
         <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Stages</h3>
+              <div className="space-y-0.5">
+                <h3 className="font-bold text-base text-[#1A1C1E]">Estimated Sleep Stages</h3>
+                <p className="text-[10px] text-gray-400 italic">Stages are calculated mathematical estimates based on duration</p>
+              </div>
               {sleepScore !== null && (
-                <span className="text-xs font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles size={12} />
-                  {sleepScore >= 85 ? 'Excellent Sleep' : sleepScore >= 70 ? 'Good Sleep' : 'Restless Sleep'}
+                <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <Sparkles size={10} />
+                  {sleepScore >= 85 ? 'Excellent' : sleepScore >= 70 ? 'Good' : 'Restless'}
                 </span>
               )}
             </div>
@@ -205,13 +207,13 @@ const SleepPage = () => {
                     {stages.map((stage) => (
                       <div 
                         key={stage.name} 
-                        className={`${stage.color} h-full transition-all duration-500`} 
+                        className={`${stage.color} h-full transition-all`} 
                         style={{ width: `${stage.percentage}%` }}
-                        title={`${stage.name}: ${stage.percentage}%`}
+                        title={`${stage.name}: ${stage.percentage}% (Estimated)`}
                       />
                     ))}
                   </div>
-                  <div className="flex justify-between text-[11px] font-bold text-gray-400 px-1">
+                  <div className="flex justify-between text-[10px] font-bold text-gray-400 px-1">
                     {stages.map((stage) => (
                       <span key={stage.name} className="flex items-center gap-1">
                         <span className={`w-2 h-2 rounded-full ${stage.color}`} />
@@ -223,7 +225,7 @@ const SleepPage = () => {
 
                 {/* Step-Timeline Sleep Cycle Chart */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Sleep Cycle Timeline</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Estimated Sleep Cycle Timeline</span>
                   <div className="h-48 w-full -ml-4">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={timelineData}>
@@ -252,7 +254,7 @@ const SleepPage = () => {
                               const data = payload[0].payload;
                               return (
                                 <div className="bg-white p-2.5 rounded-xl shadow-md border border-gray-100 text-xs">
-                                  <p className="font-bold text-gray-800">{data.stageName} Stage</p>
+                                  <p className="font-bold text-gray-800">{data.stageName} (Estimated)</p>
                                   <p className="text-gray-400">Time: {data.time}</p>
                                 </div>
                               );
@@ -297,10 +299,13 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
-        {/* Heart Rate During Sleep Graph */}
+        {/* Heart Rate During Sleep Graph - Estimated */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate (Weekly)</h3>
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate</h3>
+              <span className="text-[10px] font-bold text-gray-400 uppercase bg-gray-100 px-2 py-0.5 rounded-full">Estimated Baseline</span>
+            </div>
             <div className="h-32 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={sleepingHrData}>
@@ -314,10 +319,10 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
-        {/* 7 Days duration list and input */}
+        {/* 7 Days history */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">7-Day History</h3>
+            <h3 className="font-bold text-base text-[#1A1C1E]">7-Day Duration History</h3>
             {sleepLogs.length > 0 ? (
               <div className="h-32 w-full">
                 <ResponsiveContainer width="100%" height="100%">

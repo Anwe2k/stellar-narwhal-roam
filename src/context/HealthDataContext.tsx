@@ -8,12 +8,15 @@ export interface ActivityLog {
   energy: number; // kcal
   distance: number; // km
   time: string;
+  date: string;
 }
 
 export interface VitalLog {
   time?: string;
   date: string;
   value: number;
+  systolic?: number;
+  diastolic?: number;
 }
 
 export interface SleepLog {
@@ -29,12 +32,14 @@ export interface NutritionLog {
   val: number; // kcal
   desc: string;
   time: string;
+  date: string;
 }
 
 export interface WaterLog {
   id: number;
   val: number; // ml
   time: string;
+  date: string;
 }
 
 export interface WeightLog {
@@ -49,19 +54,19 @@ export interface FatLog {
 
 interface HealthDataContextType {
   activityLogs: ActivityLog[];
-  addActivityLog: (steps: number, energy: number, distance: number, customTime?: string) => void;
+  addActivityLog: (steps: number, energy: number, distance: number, date: string, customTime?: string) => void;
   
   vitalsData: Record<string, VitalLog[]>;
-  addVitalLog: (key: string, value: number, date: string, customTime?: string) => void;
+  addVitalLog: (key: string, value: number, date: string, customTime?: string, systolic?: number, diastolic?: number) => void;
   
   sleepLogs: SleepLog[];
   addSleepLog: (hrs: number, date: string, startTime?: string, endTime?: string) => void;
   
   calorieLogs: NutritionLog[];
-  addCalorieLog: (val: number, desc: string, customTime?: string) => void;
+  addCalorieLog: (val: number, desc: string, date: string, customTime?: string) => void;
   
   waterLogs: WaterLog[];
-  addWaterLog: (val: number, customTime?: string) => void;
+  addWaterLog: (val: number, date: string, customTime?: string) => void;
   
   weightLogs: WeightLog[];
   addWeightLog: (val: number, day: string) => void;
@@ -140,33 +145,33 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem('health_fat', JSON.stringify(fatLogs));
   }, [fatLogs]);
 
-  const addActivityLog = (steps: number, energy: number, distance: number, customTime?: string) => {
+  const addActivityLog = (steps: number, energy: number, distance: number, date: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const newLog: ActivityLog = {
       id: Date.now(),
       steps,
       energy,
       distance,
-      time: activeTime
+      time: activeTime,
+      date
     };
     setActivityLogs(prev => {
-      const filtered = prev.filter(log => log.time !== activeTime);
+      // Avoid identical timestamps on the *same day* only
+      const filtered = prev.filter(log => !(log.time === activeTime && log.date === date));
       return [newLog, ...filtered];
     });
   };
 
-  const addVitalLog = (key: string, value: number, date: string, customTime?: string) => {
+  const addVitalLog = (key: string, value: number, date: string, customTime?: string, systolic?: number, diastolic?: number) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newEntry: VitalLog = { time: activeTime, date, value };
+    const newEntry: VitalLog = { time: activeTime, date, value, systolic, diastolic };
     
     setVitalsData(prev => {
       const currentList = prev[key] || [];
       const filtered = currentList.filter(entry => {
         if (key === 'rhr') {
-          // Resting HR is unique per date only
           return entry.date !== date;
         } else {
-          // Other vitals are unique per date AND time combination
           return !(entry.date === date && entry.time === activeTime);
         }
       });
@@ -187,20 +192,20 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
   };
 
-  const addCalorieLog = (val: number, desc: string, customTime?: string) => {
+  const addCalorieLog = (val: number, desc: string, date: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newLog: NutritionLog = { id: Date.now(), val, desc, time: activeTime };
+    const newLog: NutritionLog = { id: Date.now(), val, desc, time: activeTime, date };
     setCalorieLogs(prev => {
-      const filtered = prev.filter(log => log.time !== activeTime);
+      const filtered = prev.filter(log => !(log.time === activeTime && log.date === date));
       return [...filtered, newLog];
     });
   };
 
-  const addWaterLog = (val: number, customTime?: string) => {
+  const addWaterLog = (val: number, date: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newLog: WaterLog = { id: Date.now(), val, time: activeTime };
+    const newLog: WaterLog = { id: Date.now(), val, time: activeTime, date };
     setWaterLogs(prev => {
-      const filtered = prev.filter(log => log.time !== activeTime);
+      const filtered = prev.filter(log => !(log.time === activeTime && log.date === date));
       return [...filtered, newLog];
     });
   };

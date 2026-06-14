@@ -14,14 +14,14 @@ import { showSuccess, showError } from '@/utils/toast';
 import { z } from 'zod';
 
 const BodyMeasurementsPage = () => {
-  const { settings, convertWeight, convertHeight } = useUnits();
+  const { settings, convertWeight, convertWeightInverse, convertHeight } = useUnits();
   const { weightLogs, addWeightLog, fatLogs, addFatLog } = useHealthData();
 
   const [weightInput, setWeightInput] = useState('');
   const [fatInput, setFatInput] = useState('');
   const [logDay, setLogDay] = useState(new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }));
 
-  // Height state initialized from localStorage with fallback
+  // Height state initialized from localStorage with fallback (canonical in cm)
   const [heightRaw, setHeightRaw] = useState<number>(() => {
     const saved = localStorage.getItem('declared_height');
     return saved ? parseFloat(saved) : 180;
@@ -49,8 +49,8 @@ const BodyMeasurementsPage = () => {
     weight: z.string().refine((val) => {
       if (val === '') return false;
       const num = parseFloat(val);
-      return !isNaN(num) && num >= 20 && num <= 500; // kg
-    }, { message: 'Weight must be a valid number between 20 and 500 kg' })
+      return !isNaN(num) && num > 0 && num <= 1000;
+    }, { message: 'Weight must be a valid positive number' })
   });
 
   const fatSchema = z.object({
@@ -69,8 +69,11 @@ const BodyMeasurementsPage = () => {
       return;
     }
 
-    const weight = parseFloat(weightInput);
-    addWeightLog(weight, logDay);
+    const val = parseFloat(weightInput);
+    // Convert entered weight (lbs, st) back into canonical kg
+    const kgWeight = convertWeightInverse(val);
+
+    addWeightLog(kgWeight, logDay);
     setWeightInput('');
     showSuccess('Weight measurement updated!');
   };
@@ -153,7 +156,6 @@ const BodyMeasurementsPage = () => {
   };
 
   const handleTouchEnd = () => {
-    // If swiped down past 110px, close the dialog with closing animation
     if (translateY > 110) {
       triggerClose();
     }
@@ -162,7 +164,6 @@ const BodyMeasurementsPage = () => {
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Closes the popup ONLY if user clicked the backdrop overlay wrapper itself
     if (e.target === e.currentTarget) {
       triggerClose();
     }
@@ -228,7 +229,7 @@ const BodyMeasurementsPage = () => {
           </Card>
         </div>
 
-        {/* Height update Pop-up dialog overlay with Swipe & Tap outside options */}
+        {/* Height update Pop-up dialog overlay */}
         {isHeightDialogOpen && (
           <div 
             onClick={handleBackdropClick}
@@ -251,7 +252,7 @@ const BodyMeasurementsPage = () => {
               }`} 
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Swipe/Drag Visual Handle Indicator */}
+              {/* Swipe Handle Indicator */}
               <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto -mt-2 mb-2 sm:hidden cursor-row-resize" />
 
               <div className="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -281,7 +282,7 @@ const BodyMeasurementsPage = () => {
                     autoFocus
                   />
                   <p className="text-[10px] text-gray-400 leading-normal">
-                    Please provide your height in centimeters. It will automatically convert to feet & inches depending on your preferences.
+                    Please provide your height in centimeters.
                   </p>
                 </div>
                 <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium transition-colors">
@@ -384,6 +385,16 @@ const BodyMeasurementsPage = () => {
                     placeholder="e.g. 75.2"
                     value={weightInput}
                     onChange={(e) => setWeightInput(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="weight-day-input" className="text-xs text-gray-500">Day Label</Label>
+                  <Input
+                    id="weight-day-input"
+                    type="text"
+                    value={logDay}
+                    onChange={(e) => setLogDay(e.target.value)}
                     className="rounded-2xl border-gray-200 h-11"
                   />
                 </div>

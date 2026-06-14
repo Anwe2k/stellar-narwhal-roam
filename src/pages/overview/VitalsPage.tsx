@@ -7,9 +7,13 @@ import { ArrowUpRight, Heart, Wind } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
+import { useUnits } from '@/context/UnitContext';
 
 const VitalsPage = () => {
   const { vitalsData } = useHealthData();
+  const { settings, convertTemperature } = useUnits();
+
+  const tempUnit = settings.temperature === 'f' ? '°F' : '°C';
 
   const vitalTypes = [
     { key: 'hr', title: 'Heart Rate', current: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', periodText: 'Last 12 hours' },
@@ -17,22 +21,35 @@ const VitalsPage = () => {
     { key: 'spo2', title: 'Blood Oxygen (SpO2)', current: 'SpO2', unit: '%', color: '#06B6D4', gradient: 'rgba(6, 182, 212, 0.1)', periodText: 'Last week' },
     { key: 'bp', title: 'Blood Pressure', current: 'BP', unit: 'mmHg', color: '#3B82F6', gradient: 'rgba(59, 130, 246, 0.1)', periodText: 'Last week' },
     { key: 'sugar', title: 'Blood Sugar', current: 'Blood Sugar', unit: 'mg/dL', color: '#10B981', gradient: 'rgba(16, 185, 129, 0.1)', periodText: 'Last week' },
-    { key: 'temp', title: 'Body Temperature', current: 'Temperature', unit: '°C', color: '#8B5CF6', gradient: 'rgba(139, 92, 246, 0.1)', periodText: 'Last week' },
+    { key: 'temp', title: 'Body Temperature', current: 'Temperature', unit: tempUnit, color: '#8B5CF6', gradient: 'rgba(139, 92, 246, 0.1)', periodText: 'Last week' },
   ];
 
-  const getLatestValue = (key: string) => {
+  const getLatestDisplay = (key: string) => {
     const dataSet = vitalsData[key] || [];
-    return dataSet.length > 0 ? dataSet[dataSet.length - 1].value : null;
+    if (dataSet.length === 0) return null;
+    const latest = dataSet[dataSet.length - 1];
+
+    if (key === 'bp') {
+      return latest.systolic && latest.diastolic 
+        ? `${latest.systolic}/${latest.diastolic}` 
+        : `${latest.value}`;
+    }
+
+    if (key === 'temp') {
+      return `${convertTemperature(latest.value).value}`;
+    }
+
+    return `${latest.value}`;
   };
 
-  const latestHR = getLatestValue('hr');
-  const latestSpO2 = getLatestValue('spo2');
-  const latestVO2 = getLatestValue('vo2max');
+  const latestHR = getLatestDisplay('hr');
+  const latestSpO2 = getLatestDisplay('spo2');
+  const latestVO2 = getLatestDisplay('vo2max');
 
   return (
     <MobileLayout title="Vitals" headerGradientClass="from-[#FFDAD6]/50" backPath="/overview">
       <div className="space-y-6 pt-2">
-        {/* Stacked top summary visualizer - Updated with VO2 Max card */}
+        {/* Stacked top summary visualizer */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
             <div>
@@ -94,7 +111,7 @@ const VitalsPage = () => {
           {vitalTypes.map((vital) => {
             const dataSet = vitalsData[vital.key] || [];
             const hasData = dataSet.length > 0;
-            const currentDisplay = hasData ? dataSet[dataSet.length - 1].value : null;
+            const displayVal = getLatestDisplay(vital.key);
 
             return (
               <Link key={vital.key} to={`/overview/vitals/${vital.key}`} className="block">
@@ -105,9 +122,9 @@ const VitalsPage = () => {
                         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{vital.title}</span>
                         <div className="flex items-baseline gap-1 mt-1">
                           <span className="text-2xl font-black text-gray-800">
-                            {currentDisplay !== null ? currentDisplay : 'No data'}
+                            {displayVal !== null ? displayVal : 'No data'}
                           </span>
-                          {currentDisplay !== null && <span className="text-xs text-gray-400">{vital.unit}</span>}
+                          {displayVal !== null && <span className="text-xs text-gray-400">{vital.unit}</span>}
                         </div>
                       </div>
 

@@ -11,11 +11,23 @@ const HealthSummary = () => {
   const { convertEnergy } = useUnits();
   const { activityLogs, vitalsData, sleepLogs } = useHealthData();
 
-  // Dynamic values computation
-  const totalSteps = activityLogs.reduce((acc, log) => acc + log.steps, 0);
-  const totalCaloriesBurned = activityLogs.reduce((acc, log) => acc + log.energy, 0);
-  const latestHR = vitalsData.hr && vitalsData.hr.length > 0 ? vitalsData.hr[vitalsData.hr.length - 1].value : null;
-  const totalSleep = sleepLogs.reduce((acc, log) => acc + log.hrs, 0);
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // Dynamic values computation for "today" only
+  const todayActivity = activityLogs.filter(log => log.date === todayStr);
+  const totalSteps = todayActivity.reduce((acc, log) => acc + log.steps, 0);
+  const totalCaloriesBurned = todayActivity.reduce((acc, log) => acc + log.energy, 0);
+  
+  // Heart rate from vitals
+  const hrLogs = vitalsData.hr || [];
+  const todayHRLogs = hrLogs.filter(log => log.date === todayStr);
+  const latestHR = todayHRLogs.length > 0 
+    ? todayHRLogs[todayHRLogs.length - 1].value 
+    : (hrLogs.length > 0 ? hrLogs[hrLogs.length - 1].value : null);
+
+  // Sleep logged for today
+  const todaySleepLog = sleepLogs.find(log => log.date === todayStr);
+  const totalSleep = todaySleepLog ? todaySleepLog.hrs : 0;
 
   const stats = [
     { 
@@ -27,22 +39,22 @@ const HealthSummary = () => {
     },
     { 
       label: 'Calories Burned', 
-      value: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).value.toLocaleString() : 'No data', 
-      unit: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).label : '', 
+      value: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).value.toLocaleString() : '0', 
+      unit: convertEnergy(totalCaloriesBurned).label, 
       icon: Flame, 
       color: 'bg-orange-100 text-orange-600' 
     },
     { 
       label: 'Steps', 
-      value: totalSteps > 0 ? totalSteps.toLocaleString() : 'No data', 
-      unit: totalSteps > 0 ? 'steps' : '', 
+      value: totalSteps > 0 ? totalSteps.toLocaleString() : '0', 
+      unit: 'steps', 
       icon: Footprints, 
       color: 'bg-blue-100 text-blue-600' 
     },
     { 
       label: 'Sleep', 
-      value: totalSleep > 0 ? totalSleep.toString() : 'No data', 
-      unit: totalSleep > 0 ? 'hrs' : '', 
+      value: totalSleep > 0 ? totalSleep.toString() : '0', 
+      unit: 'hrs', 
       icon: Moon, 
       color: 'bg-purple-100 text-purple-600' 
     },
