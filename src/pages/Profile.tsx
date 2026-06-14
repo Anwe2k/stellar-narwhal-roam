@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame, Globe, Clock, User } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame, Globe, Clock, User, Sunrise } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -19,6 +19,7 @@ const Profile = () => {
   const [bloodType, setBloodType] = useState('O+');
   const [country, setCountry] = useState('United States');
   const [bedtime, setBedtime] = useState('22:30');
+  const [wakeUpTime, setWakeUpTime] = useState('06:30');
   const [sex, setSex] = useState('Male');
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const Profile = () => {
     const savedBloodType = localStorage.getItem('profile_blood_type');
     const savedCountry = localStorage.getItem('profile_country');
     const savedBedtime = localStorage.getItem('profile_bedtime');
+    const savedWakeUpTime = localStorage.getItem('profile_wakeup_time');
     const savedSex = localStorage.getItem('profile_sex');
 
     if (savedName) setProfileName(savedName);
@@ -35,6 +37,7 @@ const Profile = () => {
     if (savedBloodType) setBloodType(savedBloodType);
     if (savedCountry) setCountry(savedCountry);
     if (savedBedtime) setBedtime(savedBedtime);
+    if (savedWakeUpTime) setWakeUpTime(savedWakeUpTime);
     if (savedSex) setSex(savedSex);
 
     if (savedDob) {
@@ -119,15 +122,18 @@ const Profile = () => {
                 </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
+                <p className="text-xs text-gray-400 font-semibold">Wake Up Time</p>
+                <div className="flex items-center gap-1">
+                  <Sunrise size={14} className="text-gray-400 shrink-0" />
+                  <p className="text-lg font-black text-[#1A1C1E]">{wakeUpTime}</p>
+                </div>
+              </div>
+              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Country</p>
                 <div className="flex items-center gap-1">
                   <Globe size={14} className="text-gray-400 shrink-0" />
                   <p className="text-lg font-black text-[#1A1C1E] truncate max-w-full">{country}</p>
                 </div>
-              </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Weight</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{weightConverted.value} {weightConverted.label}</p>
               </div>
             </div>
           </CardContent>

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Save, User, Mail, Calendar, Globe, Clock, Heart, Users } from 'lucide-react';
+import { Camera, Save, User, Mail, Calendar, Globe, Clock, Heart, Users, Sunrise } from 'lucide-react';
 import { showSuccess } from '@/utils/toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ const ProfileSettings = () => {
   const [dob, setDob] = useState('1995-06-15');
   const [country, setCountry] = useState('United States');
   const [bedtime, setBedtime] = useState('22:30');
+  const [wakeUpTime, setWakeUpTime] = useState('06:30');
   const [sex, setSex] = useState('Male');
   const [bloodType, setBloodType] = useState('O+');
   const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop');
@@ -28,6 +29,7 @@ const ProfileSettings = () => {
     const savedDob = localStorage.getItem('profile_dob');
     const savedCountry = localStorage.getItem('profile_country');
     const savedBedtime = localStorage.getItem('profile_bedtime');
+    const savedWakeUpTime = localStorage.getItem('profile_wakeup_time');
     const savedSex = localStorage.getItem('profile_sex');
     const savedBloodType = localStorage.getItem('profile_blood_type');
 
@@ -36,6 +38,7 @@ const ProfileSettings = () => {
     if (savedDob) setDob(savedDob);
     if (savedCountry) setCountry(savedCountry);
     if (savedBedtime) setBedtime(savedBedtime);
+    if (savedWakeUpTime) setWakeUpTime(savedWakeUpTime);
     if (savedSex) setSex(savedSex);
     if (savedBloodType) setBloodType(savedBloodType);
   }, []);
@@ -47,6 +50,7 @@ const ProfileSettings = () => {
     localStorage.setItem('profile_dob', dob);
     localStorage.setItem('profile_country', country);
     localStorage.setItem('profile_bedtime', bedtime);
+    localStorage.setItem('profile_wakeup_time', wakeUpTime);
     localStorage.setItem('profile_sex', sex);
     localStorage.setItem('profile_blood_type', bloodType);
 
@@ -134,18 +138,34 @@ const ProfileSettings = () => {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="profile-bedtime" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Clock size={14} className="text-[#6750A4]" />
-                  Target Bedtime
-                </Label>
-                <Input
-                  id="profile-bedtime"
-                  type="time"
-                  value={bedtime}
-                  onChange={(e) => setBedtime(e.target.value)}
-                  className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-bedtime" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Clock size={14} className="text-[#6750A4]" />
+                    Target Bedtime
+                  </Label>
+                  <Input
+                    id="profile-bedtime"
+                    type="time"
+                    value={bedtime}
+                    onChange={(e) => setBedtime(e.target.value)}
+                    className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-wakeup" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sunrise size={14} className="text-[#6750A4]" />
+                    Wake Up Time
+                  </Label>
+                  <Input
+                    id="profile-wakeup"
+                    type="time"
+                    value={wakeUpTime}
+                    onChange={(e) => setWakeUpTime(e.target.value)}
+                    className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
