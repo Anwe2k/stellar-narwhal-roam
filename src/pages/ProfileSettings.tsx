@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Save, User, Mail, Calendar, Globe, Clock, Heart, Users, Sunrise } from 'lucide-react';
+import { Camera, Save, User, Mail, Calendar, Globe, Heart, Users } from 'lucide-react';
 import { showSuccess } from '@/utils/toast';
 import { useNavigate } from 'react-router-dom';
+import { CustomTimePicker } from '@/components/ui/CustomDateTimePicker';
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
@@ -139,33 +140,16 @@ const ProfileSettings = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-bedtime" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock size={14} className="text-[#6750A4]" />
-                    Target Bedtime
-                  </Label>
-                  <Input
-                    id="profile-bedtime"
-                    type="time"
-                    value={bedtime}
-                    onChange={(e) => setBedtime(e.target.value)}
-                    className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-wakeup" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sunrise size={14} className="text-[#6750A4]" />
-                    Wake Up Time
-                  </Label>
-                  <Input
-                    id="profile-wakeup"
-                    type="time"
-                    value={wakeUpTime}
-                    onChange={(e) => setWakeUpTime(e.target.value)}
-                    className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
-                  />
-                </div>
+                <CustomTimePicker 
+                  label="Target Bedtime"
+                  value={bedtime}
+                  onChange={setBedtime}
+                />
+                <CustomTimePicker 
+                  label="Wake Up Time"
+                  value={wakeUpTime}
+                  onChange={setWakeUpTime}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

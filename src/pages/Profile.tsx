@@ -10,7 +10,7 @@ import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 
 const Profile = () => {
-  const { convertWeight, convertHeight } = useUnits();
+  const { convertWeight, convertHeight, formatTime } = useUnits();
   const { weightLogs } = useHealthData();
 
   const [profileName, setProfileName] = useState('Alex Johnson');
@@ -118,14 +118,14 @@ const Profile = () => {
                 <p className="text-xs text-gray-400 font-semibold">Target Bedtime</p>
                 <div className="flex items-center gap-1">
                   <Clock size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{bedtime}</p>
+                  <p className="text-lg font-black text-[#1A1C1E]">{formatTime(bedtime)}</p>
                 </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Wake Up Time</p>
                 <div className="flex items-center gap-1">
                   <Sunrise size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{wakeUpTime}</p>
+                  <p className="text-lg font-black text-[#1A1C1E]">{formatTime(wakeUpTime)}</p>
                 </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
