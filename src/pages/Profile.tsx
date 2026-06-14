@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Settings, Bell, Shield, LogOut, ChevronRight, Scale, Ruler, Flame, Activity } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -14,23 +13,31 @@ const Profile = () => {
   const { convertWeight, convertHeight } = useUnits();
   const { weightLogs } = useHealthData();
 
-  // Profile details stored in localStorage
   const [profileName, setProfileName] = useState('Alex Johnson');
   const [profileEmail, setProfileEmail] = useState('alex.j@example.com');
+  const [age, setAge] = useState('28 years');
 
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
     const savedEmail = localStorage.getItem('profile_email');
+    const savedDob = localStorage.getItem('profile_dob');
     if (savedName) setProfileName(savedName);
     if (savedEmail) setProfileEmail(savedEmail);
+    if (savedDob) {
+      const birthDate = new Date(savedDob);
+      const differenceMs = Date.now() - birthDate.getTime();
+      const ageDate = new Date(differenceMs);
+      const calculatedAge = Math.abs(ageDate.getUTCFullYear() - 1970);
+      if (!isNaN(calculatedAge)) {
+        setAge(`${calculatedAge} years`);
+      }
+    }
   }, []);
 
-  // Convert basic metrics (Weight fallback: 75kg, Height: 180cm)
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : 75;
   const weightConverted = convertWeight(currentWeightRaw);
   const heightConverted = convertHeight(180);
 
-  // Settings Gear action redirects directly to Units & Formats
   const gearAction = (
     <Link 
       to="/settings/units" 
@@ -49,7 +56,6 @@ const Profile = () => {
     >
       <div className="space-y-6">
         
-        {/* Transparent Schematic Design Header Block pointing to custom Profile Settings */}
         <Link 
           to="/profile-settings"
           className="flex items-center justify-between p-2 mt-4 bg-transparent rounded-3xl active:scale-[0.98] transition-transform duration-200 group"
@@ -71,7 +77,6 @@ const Profile = () => {
           </div>
         </Link>
 
-        {/* First high-rounded body panel (Vitals Summary metrics card) */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
@@ -82,7 +87,7 @@ const Profile = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Age</p>
-                <p className="text-lg font-black text-[#1A1C1E]">28 years</p>
+                <p className="text-lg font-black text-[#1A1C1E]">{age}</p>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Blood Type</p>
@@ -100,7 +105,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Second high-rounded body panel (Interactive settings panel list) */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-2 space-y-0.5">
             {[

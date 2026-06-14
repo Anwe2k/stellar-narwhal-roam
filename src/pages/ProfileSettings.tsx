@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Save, User, Mail } from 'lucide-react';
+import { Camera, Save, User, Mail, Calendar } from 'lucide-react';
 import { showSuccess } from '@/utils/toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,13 +15,23 @@ const ProfileSettings = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('Alex Johnson');
   const [email, setEmail] = useState('alex.j@example.com');
+  const [dob, setDob] = useState('1995-06-15');
   const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop');
+
+  useEffect(() => {
+    const savedName = localStorage.getItem('profile_name');
+    const savedEmail = localStorage.getItem('profile_email');
+    const savedDob = localStorage.getItem('profile_dob');
+    if (savedName) setName(savedName);
+    if (savedEmail) setEmail(savedEmail);
+    if (savedDob) setDob(savedDob);
+  }, []);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate saving profile details
     localStorage.setItem('profile_name', name);
     localStorage.setItem('profile_email', email);
+    localStorage.setItem('profile_dob', dob);
     showSuccess('Profile updated successfully!');
     navigate('/profile');
   };
@@ -77,6 +87,20 @@ const ProfileSettings = () => {
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <Label htmlFor="profile-dob" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Calendar size={14} className="text-[#6750A4]" />
+                  Date of Birth
+                </Label>
+                <Input
+                  id="profile-dob"
+                  type="date"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                  className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
+                />
+              </div>
+
               <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-12 font-bold transition-all shadow-md mt-4 flex items-center justify-center gap-2">
                 <Save size={18} />
                 Save Profile Changes
@@ -89,4 +113,4 @@ const ProfileSettings = () => {
   );
 };
 
-export default ProfileSettings;
+export default Profile;
