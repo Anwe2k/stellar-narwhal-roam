@@ -222,7 +222,7 @@ const SleepStagesChart = ({ sleepLogs, className }: SleepStagesChartProps) => {
       <div className="rounded-[30px] bg-[#F8F7FF] p-4">
         <svg
           viewBox="0 0 520 190"
-          className="w-full"
+          className="h-[180px] w-full"
           role="img"
           aria-label={`Sleep stages from ${formatTime(toTimeString(start))} to ${formatTime(toTimeString(end))}`}
         >
