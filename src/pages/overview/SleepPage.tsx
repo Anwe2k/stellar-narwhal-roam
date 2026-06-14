@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Moon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Moon } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
@@ -72,15 +71,8 @@ const SleepPage = () => {
     : '22:00';
 
   return (
-    <MobileLayout title="Sleep Tracker" headerGradientClass="from-[#D0BCFF]/40">
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
-            <ChevronLeft size={24} className="text-[#6750A4]" />
-          </Link>
-          <span className="text-sm font-medium text-gray-500">Back to Categories</span>
-        </div>
-
+    <MobileLayout title="Sleep Tracker" headerGradientClass="from-[#D0BCFF]/40" backPath="/overview">
+      <div className="space-y-6 pt-2">
         {/* Stacked top summary visualizer */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">

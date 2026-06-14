@@ -6,8 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Flame, Footprints, Ruler } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Footprints } from 'lucide-react';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker } from '@/components/ui/CustomDateTimePicker';
@@ -49,15 +48,8 @@ const ActivityPage = () => {
   const displayDistance = totalDistance * (settings.length === 'imperial' ? 0.621371 : 1);
 
   return (
-    <MobileLayout title="Activity" headerGradientClass="from-[#EADDFF]/50">
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
-            <ChevronLeft size={24} className="text-[#6750A4]" />
-          </Link>
-          <span className="text-sm font-medium text-gray-500">Back to Categories</span>
-        </div>
-
+    <MobileLayout title="Activity" headerGradientClass="from-[#EADDFF]/50" backPath="/overview">
+      <div className="space-y-6 pt-2">
         {/* Top visual layout inspired by original photo */}
         <div className="flex items-center justify-between py-2">
           {/* 3 stacked key metrics */}

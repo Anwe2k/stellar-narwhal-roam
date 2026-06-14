@@ -1,17 +1,18 @@
 "use client";
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Activity, User } from 'lucide-react';
+import { NavLink, Link } from 'react-router-dom';
+import { LayoutDashboard, Activity, User, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MobileLayoutProps {
   children: React.ReactNode;
   title: string;
   headerGradientClass?: string;
+  backPath?: string;
 }
 
-const MobileLayout = ({ children, title, headerGradientClass }: MobileLayoutProps) => {
+const MobileLayout = ({ children, title, headerGradientClass, backPath }: MobileLayoutProps) => {
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Activity, label: 'Overview', path: '/overview' },
@@ -25,9 +26,17 @@ const MobileLayout = ({ children, title, headerGradientClass }: MobileLayoutProp
         <div className={cn("absolute top-0 left-0 right-0 h-80 bg-gradient-to-b to-transparent pointer-events-none -z-0", headerGradientClass)} />
       )}
 
-      {/* Header */}
-      <header className="px-6 pt-8 pb-4 sticky top-0 bg-[#F7F9FC]/80 backdrop-blur-md z-10">
-        <h1 className="text-3xl font-bold tracking-tight text-[#1A1C1E]">{title}</h1>
+      {/* Transparent Sticky Header */}
+      <header className="px-6 pt-8 pb-4 sticky top-0 bg-transparent z-10 flex items-center gap-2">
+        {backPath && (
+          <Link 
+            to={backPath} 
+            className="p-2 -ml-2 rounded-full hover:bg-black/5 active:bg-black/10 transition-colors shrink-0 flex items-center justify-center text-[#1A1C1E]"
+          >
+            <ChevronLeft size={26} strokeWidth={2.5} />
+          </Link>
+        )}
+        <h1 className="text-3xl font-black tracking-tight text-[#1A1C1E]">{title}</h1>
       </header>
 
       {/* Main Content */}

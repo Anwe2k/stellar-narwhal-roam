@@ -6,8 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Scale, Ruler } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Scale, Ruler } from 'lucide-react';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
@@ -69,15 +68,8 @@ const BodyMeasurementsPage = () => {
   }));
 
   return (
-    <MobileLayout title="Measurements" headerGradientClass="from-[#E2F1E8]/50">
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
-            <ChevronLeft size={24} className="text-[#6750A4]" />
-          </Link>
-          <span className="text-sm font-medium text-gray-500">Back to Categories</span>
-        </div>
-
+    <MobileLayout title="Measurements" headerGradientClass="from-[#E2F1E8]/50" backPath="/overview">
+      <div className="space-y-6 pt-2">
         {/* Stacked top summary visualizer */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
