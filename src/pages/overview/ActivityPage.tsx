@@ -49,7 +49,7 @@ const ActivityPage = () => {
   const displayDistance = totalDistance * (settings.length === 'imperial' ? 0.621371 : 1);
 
   return (
-    <MobileLayout title="Activity">
+    <MobileLayout title="Activity" headerGradientClass="from-[#EADDFF]/50">
       <div className="space-y-6">
         <div className="flex items-center gap-2 -mt-2">
           <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">

@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils';
 interface MobileLayoutProps {
   children: React.ReactNode;
   title: string;
+  headerGradientClass?: string;
 }
 
-const MobileLayout = ({ children, title }: MobileLayoutProps) => {
+const MobileLayout = ({ children, title, headerGradientClass }: MobileLayoutProps) => {
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Activity, label: 'Overview', path: '/overview' },
@@ -18,14 +19,19 @@ const MobileLayout = ({ children, title }: MobileLayoutProps) => {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F7F9FC] text-[#1A1C1E] font-sans pb-20">
+    <div className="flex flex-col min-h-screen bg-[#F7F9FC] text-[#1A1C1E] font-sans pb-20 relative overflow-x-hidden">
+      {/* Background Top Gradient */}
+      {headerGradientClass && (
+        <div className={cn("absolute top-0 left-0 right-0 h-80 bg-gradient-to-b to-transparent pointer-events-none -z-0", headerGradientClass)} />
+      )}
+
       {/* Header */}
       <header className="px-6 pt-8 pb-4 sticky top-0 bg-[#F7F9FC]/80 backdrop-blur-md z-10">
         <h1 className="text-3xl font-bold tracking-tight text-[#1A1C1E]">{title}</h1>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <main className="flex-1 px-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
         {children}
       </main>
 
@@ -46,7 +52,7 @@ const MobileLayout = ({ children, title }: MobileLayoutProps) => {
               <>
                 <div className={cn(
                   "p-1 px-5 rounded-full transition-all duration-300",
-                  isActive ? "bg-[#EADDFF]" : "group-hover:bg-gray-100"
+                  isActive ? "bg-[#EADDFF]" : "group-hover:bg-gray-150"
                 )}>
                   <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                 </div>

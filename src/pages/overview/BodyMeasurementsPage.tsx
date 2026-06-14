@@ -69,7 +69,7 @@ const BodyMeasurementsPage = () => {
   }));
 
   return (
-    <MobileLayout title="Measurements">
+    <MobileLayout title="Measurements" headerGradientClass="from-[#E2F1E8]/50">
       <div className="space-y-6">
         <div className="flex items-center gap-2 -mt-2">
           <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">

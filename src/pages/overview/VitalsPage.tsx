@@ -30,7 +30,7 @@ const VitalsPage = () => {
   const latestBP = getLatestValue('bp');
 
   return (
-    <MobileLayout title="Vitals">
+    <MobileLayout title="Vitals" headerGradientClass="from-[#FFDAD6]/50">
       <div className="space-y-6">
         <div className="flex items-center gap-2 -mt-2">
           <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">

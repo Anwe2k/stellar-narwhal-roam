@@ -54,7 +54,7 @@ const NutritionPage = () => {
   const convertedWater = convertWater(totalWaterRaw);
 
   return (
-    <MobileLayout title="Nutrition">
+    <MobileLayout title="Nutrition" headerGradientClass="from-[#C1E7F4]/50">
       <div className="space-y-6">
         <div className="flex items-center gap-2 -mt-2">
           <Link to="/overview" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
