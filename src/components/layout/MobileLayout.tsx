@@ -10,9 +10,10 @@ interface MobileLayoutProps {
   title: string;
   headerGradientClass?: string;
   backPath?: string;
+  rightAction?: React.ReactNode;
 }
 
-const MobileLayout = ({ children, title, headerGradientClass, backPath }: MobileLayoutProps) => {
+const MobileLayout = ({ children, title, headerGradientClass, backPath, rightAction }: MobileLayoutProps) => {
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: Activity, label: 'Overview', path: '/overview' },
@@ -27,16 +28,23 @@ const MobileLayout = ({ children, title, headerGradientClass, backPath }: Mobile
       )}
 
       {/* Transparent Sticky Header */}
-      <header className="px-6 pt-8 pb-4 sticky top-0 bg-transparent z-10 flex items-center gap-2">
-        {backPath && (
-          <Link 
-            to={backPath} 
-            className="p-2 -ml-2 rounded-full hover:bg-black/5 active:bg-black/10 transition-colors shrink-0 flex items-center justify-center text-[#1A1C1E]"
-          >
-            <ChevronLeft size={26} strokeWidth={2.5} />
-          </Link>
+      <header className="px-6 pt-8 pb-4 sticky top-0 bg-transparent z-10 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {backPath && (
+            <Link 
+              to={backPath} 
+              className="p-2 -ml-2 rounded-full hover:bg-black/5 active:bg-black/10 transition-colors shrink-0 flex items-center justify-center text-[#1A1C1E]"
+            >
+              <ChevronLeft size={26} strokeWidth={2.5} />
+            </Link>
+          )}
+          <h1 className="text-3xl font-black tracking-tight text-[#1A1C1E]">{title}</h1>
+        </div>
+        {rightAction && (
+          <div className="flex items-center shrink-0">
+            {rightAction}
+          </div>
         )}
-        <h1 className="text-3xl font-black tracking-tight text-[#1A1C1E]">{title}</h1>
       </header>
 
       {/* Main Content */}
