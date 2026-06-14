@@ -150,7 +150,7 @@ const BodyMeasurementsPage = () => {
         {/* Height update Pop-up dialog overlay */}
         {isHeightDialogOpen && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-250">
-            <div className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-sm p-6 space-y-4 animate-in slide-in-from-bottom-8 duration-300">
+            <div className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-sm p-6 pb-10 sm:pb-6 space-y-4 animate-in slide-in-from-bottom-8 duration-300">
               <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                 <h3 className="font-bold text-lg text-gray-900">Update Declared Height</h3>
                 <button 

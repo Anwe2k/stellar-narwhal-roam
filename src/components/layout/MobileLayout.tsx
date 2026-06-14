@@ -40,7 +40,7 @@ const MobileLayout = ({ children, title, headerGradientClass, backPath }: Mobile
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
+      <main className="flex-1 px-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
         {children}
       </main>
 
