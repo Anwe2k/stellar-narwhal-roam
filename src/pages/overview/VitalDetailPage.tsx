@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Activity } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { useUnits } from '@/context/UnitContext';
@@ -15,12 +15,12 @@ import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTi
 import { showSuccess } from '@/utils/toast';
 
 const vitalTypes = [
-  { key: 'hr', title: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', description: 'Beats per minute measures how fast your heart beats. Normal is between 60-100 bpm.' },
-  { key: 'rhr', title: 'Resting Heart Rate', unit: 'bpm', color: '#F97316', gradient: 'rgba(249, 115, 22, 0.1)', description: 'Your heart rate when calm and rested. An indicator of cardiovascular fitness.' },
-  { key: 'spo2', title: 'Blood Oxygen (SpO2)', unit: '%', color: '#06B6D4', gradient: 'rgba(6, 182, 212, 0.1)', description: 'The percentage of oxygen-saturated hemoglobin relative to total hemoglobin in the blood.' },
-  { key: 'bp', title: 'Blood Pressure', unit: 'mmHg', color: '#3B82F6', gradient: 'rgba(59, 130, 246, 0.1)', description: 'Pressure of circulating blood against blood vessel walls. Normal systolic pressure is < 120.' },
-  { key: 'sugar', title: 'Blood Sugar', unit: 'mg/dL', color: '#10B981', gradient: 'rgba(16, 185, 129, 0.1)', description: 'The concentration of glucose in your blood. Checked fasting or after meals.' },
-  { key: 'temp', title: 'Body Temperature', unit: '°C', color: '#8B5CF6', gradient: 'rgba(139, 92, 246, 0.1)', description: 'The normal core body temperature is around 37°C. Tracks fever or hypothermia.' },
+  { key: 'hr', title: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradientClass: 'from-red-500/20', gradient: 'rgba(239, 68, 68, 0.1)', description: 'Beats per minute measures how fast your heart beats. Normal is between 60-100 bpm.' },
+  { key: 'rhr', title: 'Resting Heart Rate', unit: 'bpm', color: '#F97316', gradientClass: 'from-orange-500/20', gradient: 'rgba(249, 115, 22, 0.1)', description: 'Your heart rate when calm and rested. An indicator of cardiovascular fitness.' },
+  { key: 'spo2', title: 'Blood Oxygen (SpO2)', unit: '%', color: '#06B6D4', gradientClass: 'from-cyan-500/20', gradient: 'rgba(6, 182, 212, 0.1)', description: 'The percentage of oxygen-saturated hemoglobin relative to total hemoglobin in the blood.' },
+  { key: 'bp', title: 'Blood Pressure', unit: 'mmHg', color: '#3B82F6', gradientClass: 'from-blue-500/20', gradient: 'rgba(59, 130, 246, 0.1)', description: 'Pressure of circulating blood against blood vessel walls. Normal systolic pressure is < 120.' },
+  { key: 'sugar', title: 'Blood Sugar', unit: 'mg/dL', color: '#10B981', gradientClass: 'from-emerald-500/20', gradient: 'rgba(16, 185, 129, 0.1)', description: 'The concentration of glucose in your blood. Checked fasting or after meals.' },
+  { key: 'temp', title: 'Body Temperature', unit: '°C', color: '#8B5CF6', gradientClass: 'from-violet-500/20', gradient: 'rgba(139, 92, 246, 0.1)', description: 'The normal core body temperature is around 37°C. Tracks fever or hypothermia.' },
 ];
 
 const VitalDetailPage = () => {
@@ -41,7 +41,7 @@ const VitalDetailPage = () => {
 
   if (!vitalObj) {
     return (
-      <MobileLayout title="Not Found">
+      <MobileLayout title="Not Found" backPath="/overview/vitals">
         <div className="space-y-4 text-center py-12">
           <p className="text-gray-500">Metric not found</p>
           <Link to="/overview/vitals" className="text-[#6750A4] font-bold">Back to Vitals</Link>
@@ -81,15 +81,8 @@ const VitalDetailPage = () => {
   });
 
   return (
-    <MobileLayout title={vitalObj.title}>
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 -mt-2">
-          <Link to="/overview/vitals" className="p-2 -ml-2 rounded-full hover:bg-gray-150 transition-colors">
-            <ChevronLeft size={24} className="text-[#6750A4]" />
-          </Link>
-          <span className="text-sm font-medium text-gray-500">Back to Vitals</span>
-        </div>
-
+    <MobileLayout title={vitalObj.title} backPath="/overview/vitals" headerGradientClass={vitalObj.gradientClass}>
+      <div className="space-y-6 pt-2">
         {/* Big visual summary card */}
         <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-6 flex items-center justify-between">
