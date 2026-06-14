@@ -36,7 +36,7 @@ const ActivityChart = () => {
             <Bar 
               dataKey="steps" 
               fill="#6750A4" 
-              radius={[6, 6, 0, 0]} 
+              radius={[12, 12, 0, 0]} 
               barSize={20}
             />
           </BarChart>
