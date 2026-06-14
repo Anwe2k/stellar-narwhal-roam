@@ -4,25 +4,39 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame, Globe, Clock, User as UserIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 
 const Profile = () => {
-  const { convertWeight, convertHeight } = useUnits();
+  const { convertWeight, convertHeight, formatTime } = useUnits();
   const { weightLogs } = useHealthData();
 
   const [profileName, setProfileName] = useState('Alex Johnson');
   const [profileEmail, setProfileEmail] = useState('alex.j@example.com');
   const [age, setAge] = useState('28 years');
+  const [bloodType, setBloodType] = useState('O+');
+  const [sex, setSex] = useState('Male');
+  const [bedtime, setBedtime] = useState('22:00');
+  const [country, setCountry] = useState('United States');
 
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
     const savedEmail = localStorage.getItem('profile_email');
     const savedDob = localStorage.getItem('profile_dob');
+    const savedBloodType = localStorage.getItem('profile_blood_type');
+    const savedSex = localStorage.getItem('profile_sex');
+    const savedBedtime = localStorage.getItem('profile_bedtime');
+    const savedCountry = localStorage.getItem('profile_country');
+
     if (savedName) setProfileName(savedName);
     if (savedEmail) setProfileEmail(savedEmail);
+    if (savedBloodType) setBloodType(savedBloodType);
+    if (savedSex) setSex(savedSex);
+    if (savedBedtime) setBedtime(savedBedtime);
+    if (savedCountry) setCountry(savedCountry);
+
     if (savedDob) {
       const birthDate = new Date(savedDob);
       const differenceMs = Date.now() - birthDate.getTime();
@@ -54,7 +68,7 @@ const Profile = () => {
       headerGradientClass="from-[#C1C8FF] via-[#DCE1FF]/40" 
       rightAction={gearAction}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 pb-6">
         
         <Link 
           to="/profile-settings"
@@ -77,6 +91,7 @@ const Profile = () => {
           </div>
         </Link>
 
+        {/* Dynamic Metrics Overview */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
@@ -86,25 +101,42 @@ const Profile = () => {
             
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Age</p>
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-1">Age</p>
                 <p className="text-lg font-black text-[#1A1C1E]">{age}</p>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Blood Type</p>
-                <p className="text-lg font-black text-[#1A1C1E]">O+</p>
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-1">Blood Type</p>
+                <p className="text-lg font-black text-[#1A1C1E]">{bloodType}</p>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Weight</p>
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-1">Weight</p>
                 <p className="text-lg font-black text-[#1A1C1E]">{weightConverted.value} {weightConverted.label}</p>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Height</p>
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-1">Height</p>
                 <p className="text-lg font-black text-[#1A1C1E]">{heightConverted.value} {heightConverted.label}</p>
               </div>
+              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-1">Target Bedtime</p>
+                <p className="text-lg font-black text-[#1A1C1E]">{formatTime(bedtime)}</p>
+              </div>
+              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
+                <p className="text-xs text-gray-400 font-semibold flex items-center gap-1">Biological Sex</p>
+                <p className="text-lg font-black text-[#1A1C1E]">{sex}</p>
+              </div>
+            </div>
+
+            <div className="bg-[#F7F9FC] p-4 rounded-2xl flex items-center justify-between">
+              <div>
+                <span className="text-xs text-gray-400 font-semibold block">Home Country</span>
+                <span className="text-base font-black text-[#1A1C1E] mt-0.5 block">{country}</span>
+              </div>
+              <Globe size={24} className="text-[#6750A4]/80 shrink-0" />
             </div>
           </CardContent>
         </Card>
 
+        {/* Support actions */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-2 space-y-0.5">
             {[
