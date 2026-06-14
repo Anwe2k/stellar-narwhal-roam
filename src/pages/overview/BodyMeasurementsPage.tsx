@@ -28,6 +28,10 @@ const BodyMeasurementsPage = () => {
   const [isHeightDialogOpen, setIsHeightDialogOpen] = useState(false);
   const [tempHeightInput, setTempHeightInput] = useState('');
 
+  // Touch Swipe Gesture State
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [translateY, setTranslateY] = useState(0);
+
   const logWeightEntry = (e: React.FormEvent) => {
     e.preventDefault();
     if (!weightInput) return;
@@ -86,6 +90,37 @@ const BodyMeasurementsPage = () => {
     day: log.day,
     val: parseFloat((log.val / (heightMeters * heightMeters)).toFixed(1)),
   }));
+
+  // Gesture Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const currentY = e.targetTouches[0].clientY;
+    const diff = currentY - touchStart;
+    // Only allow swiping DOWN
+    if (diff > 0) {
+      setTranslateY(diff);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    // If swiped down past 110px, close the dialog
+    if (translateY > 110) {
+      setIsHeightDialogOpen(false);
+    }
+    setTranslateY(0);
+    setTouchStart(null);
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Closes the popup ONLY if user clicked the backdrop overlay wrapper itself
+    if (e.target === e.currentTarget) {
+      setIsHeightDialogOpen(false);
+    }
+  };
 
   return (
     <MobileLayout title="Measurements" headerGradientClass="from-[#E2F1E8]/50" backPath="/overview">
@@ -147,10 +182,26 @@ const BodyMeasurementsPage = () => {
           </Card>
         </div>
 
-        {/* Height update Pop-up dialog overlay */}
+        {/* Height update Pop-up dialog overlay with Swipe & Tap outside options */}
         {isHeightDialogOpen && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-250">
-            <div className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full sm:max-w-sm p-6 pb-12 sm:pb-6 space-y-4 animate-in slide-in-from-bottom-8 duration-300">
+          <div 
+            onClick={handleBackdropClick}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-250 cursor-pointer"
+          >
+            <div 
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={{
+                transform: `translateY(${translateY}px)`,
+                transition: touchStart === null ? 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)' : 'none'
+              }}
+              className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full sm:max-w-sm p-6 pb-12 sm:pb-6 space-y-4 animate-in slide-in-from-bottom-8 duration-300 cursor-default select-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Swipe/Drag Visual Handle Indicator */}
+              <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto -mt-2 mb-2 sm:hidden cursor-row-resize" />
+
               <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                 <h3 className="font-bold text-lg text-gray-900">Update Declared Height</h3>
                 <button 
