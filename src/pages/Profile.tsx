@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +13,17 @@ import { useHealthData } from '@/context/HealthDataContext';
 const Profile = () => {
   const { convertWeight, convertHeight } = useUnits();
   const { weightLogs } = useHealthData();
+
+  // Profile details stored in localStorage
+  const [profileName, setProfileName] = useState('Alex Johnson');
+  const [profileEmail, setProfileEmail] = useState('alex.j@example.com');
+
+  useEffect(() => {
+    const savedName = localStorage.getItem('profile_name');
+    const savedEmail = localStorage.getItem('profile_email');
+    if (savedName) setProfileName(savedName);
+    if (savedEmail) setProfileEmail(savedEmail);
+  }, []);
 
   // Convert basic metrics (Weight fallback: 75kg, Height: 180cm)
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : 75;
@@ -38,10 +49,10 @@ const Profile = () => {
     >
       <div className="space-y-6">
         
-        {/* Schematic Design Header Block: Row with Avatar, large Name, and inline Link */}
+        {/* Transparent Schematic Design Header Block pointing to custom Profile Settings */}
         <Link 
-          to="/settings/units"
-          className="flex items-center justify-between p-2 mt-4 bg-white/20 backdrop-blur-sm rounded-3xl active:scale-[0.98] transition-transform duration-200 group"
+          to="/profile-settings"
+          className="flex items-center justify-between p-2 mt-4 bg-transparent rounded-3xl active:scale-[0.98] transition-transform duration-200 group"
         >
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16 border-2 border-white/80 shadow-md">
@@ -50,9 +61,9 @@ const Profile = () => {
             </Avatar>
             <div>
               <h2 className="text-2xl font-black text-[#1A1C1E] tracking-tight group-hover:text-[#6750A4] transition-colors">
-                Alex Johnson
+                {profileName}
               </h2>
-              <p className="text-xs text-gray-500 font-semibold">alex.j@example.com</p>
+              <p className="text-xs text-gray-500 font-semibold">{profileEmail}</p>
             </div>
           </div>
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1A1C1E] shadow-sm group-hover:translate-x-1 transition-transform">

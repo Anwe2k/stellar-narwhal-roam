@@ -1,53 +1,25 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Overview from "./pages/Overview";
-import Profile from "./pages/Profile";
-import UnitSettingsPage from "./pages/UnitSettingsPage";
+"use client";
 
-// New sub-pages import
-import ActivityPage from "./pages/overview/ActivityPage";
-import VitalsPage from "./pages/overview/VitalsPage";
-import VitalDetailPage from "./pages/overview/VitalDetailPage";
-import SleepPage from "./pages/overview/SleepPage";
-import NutritionPage from "./pages/overview/NutritionPage";
-import BodyMeasurementsPage from "./pages/overview/BodyMeasurementsPage";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Index from '@/pages/Index';
+import Profile from '@/pages/Profile';
+import ProfileSettings from '@/pages/ProfileSettings';
+import BodyMeasurementsPage from '@/pages/overview/BodyMeasurementsPage';
+import UnitsSettingsPage from '@/pages/settings/UnitsSettingsPage';
+import OverviewPage from '@/pages/OverviewPage';
 
-import NotFound from "./pages/NotFound";
-import { UnitProvider } from "./context/UnitContext";
-import { HealthDataProvider } from "./context/HealthDataContext";
-
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <UnitProvider>
-        <HealthDataProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/overview" element={<Overview />} />
-              <Route path="/overview/activity" element={<ActivityPage />} />
-              <Route path="/overview/vitals" element={<VitalsPage />} />
-              <Route path="/overview/vitals/:vitalKey" element={<VitalDetailPage />} />
-              <Route path="/overview/sleep" element={<SleepPage />} />
-              <Route path="/overview/nutrition" element={<NutritionPage />} />
-              <Route path="/overview/body-measurements" element={<BodyMeasurementsPage />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/settings/units" element={<UnitSettingsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </HealthDataProvider>
-      </UnitProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/overview" element={<OverviewPage />} />
+      <Route path="/overview/measurements" element={<BodyMeasurementsPage />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/profile-settings" element={<ProfileSettings />} />
+      <Route path="/settings/units" element={<UnitsSettingsPage />} />
+    </Routes>
+  );
+}
 
 export default App;
