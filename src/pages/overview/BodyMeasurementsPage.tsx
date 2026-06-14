@@ -25,12 +25,24 @@ const BodyMeasurementsPage = () => {
     const saved = localStorage.getItem('declared_height');
     return saved ? parseFloat(saved) : 180;
   });
+  
+  // Dialog management states
   const [isHeightDialogOpen, setIsHeightDialogOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [tempHeightInput, setTempHeightInput] = useState('');
 
   // Touch Swipe Gesture State
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [translateY, setTranslateY] = useState(0);
+
+  // Trigger close sequence with smooth fade & slide out animations
+  const triggerClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsHeightDialogOpen(false);
+      setIsClosing(false);
+    }, 230); // Matches the exit duration
+  };
 
   const logWeightEntry = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +72,7 @@ const BodyMeasurementsPage = () => {
     if (parsedHeight > 0) {
       setHeightRaw(parsedHeight);
       localStorage.setItem('declared_height', parsedHeight.toString());
-      setIsHeightDialogOpen(false);
+      triggerClose();
       showSuccess('Declared height updated successfully!');
     }
   };
@@ -107,9 +119,9 @@ const BodyMeasurementsPage = () => {
   };
 
   const handleTouchEnd = () => {
-    // If swiped down past 110px, close the dialog
+    // If swiped down past 110px, close the dialog with closing animation
     if (translateY > 110) {
-      setIsHeightDialogOpen(false);
+      triggerClose();
     }
     setTranslateY(0);
     setTouchStart(null);
@@ -118,7 +130,7 @@ const BodyMeasurementsPage = () => {
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Closes the popup ONLY if user clicked the backdrop overlay wrapper itself
     if (e.target === e.currentTarget) {
-      setIsHeightDialogOpen(false);
+      triggerClose();
     }
   };
 
@@ -186,7 +198,9 @@ const BodyMeasurementsPage = () => {
         {isHeightDialogOpen && (
           <div 
             onClick={handleBackdropClick}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-250 cursor-pointer"
+            className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 cursor-pointer duration-200 ${
+              isClosing ? 'animate-out fade-out fill-mode-forwards' : 'animate-in fade-in'
+            }`}
           >
             <div 
               onTouchStart={handleTouchStart}
@@ -196,7 +210,11 @@ const BodyMeasurementsPage = () => {
                 transform: `translateY(${translateY}px)`,
                 transition: touchStart === null ? 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)' : 'none'
               }}
-              className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full sm:max-w-sm p-6 pb-12 sm:pb-6 space-y-4 animate-in slide-in-from-bottom-8 duration-300 cursor-default select-none"
+              className={`bg-white rounded-t-[32px] sm:rounded-[32px] w-full sm:max-w-sm p-6 pb-12 sm:pb-6 space-y-4 cursor-default select-none ${
+                isClosing 
+                  ? 'animate-out fade-out slide-out-to-bottom-12 duration-200 fill-mode-forwards' 
+                  : 'animate-in fade-in slide-in-from-bottom-12 duration-300'
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Swipe/Drag Visual Handle Indicator */}
@@ -207,7 +225,7 @@ const BodyMeasurementsPage = () => {
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsHeightDialogOpen(false);
+                    triggerClose();
                   }}
                   className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
                 >
