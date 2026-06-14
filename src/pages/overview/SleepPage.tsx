@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon } from 'lucide-react';
+import { Moon, Info } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
+import { cn } from '@/lib/utils';
 
 const SleepPage = () => {
   const { sleepLogs, addSleepLog } = useHealthData();
@@ -31,13 +32,23 @@ const SleepPage = () => {
     setComputedHrs(finalHrs);
   }, [bedtime, waketime]);
 
-  // Default sleeping phase ratios based on latest sleep record or fallback
-  const phaseData = sleepLogs.length > 0 ? [
-    { name: 'Awake', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 6), fill: '#FFB2AB' },
-    { name: 'REM', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#D0BCFF' },
-    { name: 'Light', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 30), fill: '#A8DADC' },
-    { name: 'Deep', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#6750A4' },
-  ] : [];
+  const latestSleep = sleepLogs.length > 0 ? sleepLogs[sleepLogs.length - 1] : null;
+  const totalHrs = latestSleep ? latestSleep.hrs : 0;
+
+  // Helper to format hours into "Xh Ym"
+  const formatDuration = (hrs: number) => {
+    const h = Math.floor(hrs);
+    const m = Math.round((hrs - h) * 60);
+    return `${h}h ${m}m`;
+  };
+
+  // Sleep phase breakdown logic (using standard healthy sleep ratios)
+  const phases = [
+    { name: 'Awake', percentage: 5, color: 'bg-[#FFB2AB]', text: 'text-[#FFB2AB]' },
+    { name: 'REM', percentage: 20, color: 'bg-[#D0BCFF]', text: 'text-[#D0BCFF]' },
+    { name: 'Light', percentage: 50, color: 'bg-[#A8DADC]', text: 'text-[#A8DADC]' },
+    { name: 'Deep', percentage: 25, color: 'bg-[#6750A4]', text: 'text-[#6750A4]' },
+  ];
 
   // Heart Rate During Sleep Graph values - Weekly Average
   const sleepingHrData = [
@@ -104,39 +115,56 @@ const SleepPage = () => {
           </div>
         </div>
 
-        {/* Sleep phases visualization */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Phases Breakdown</h3>
-            {sleepLogs.length > 0 ? (
-              <>
-                <div className="h-28 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={phaseData} layout="vertical">
-                      <XAxis type="number" hide />
-                      <YAxis dataKey="name" type="category" stroke="#888" fontSize={11} width={50} axisLine={false} tickLine={false} />
-                      <Tooltip />
-                      <Bar dataKey="duration" radius={[0, 8, 8, 0]} barSize={12} fill="#6750A4" />
-                    </BarChart>
-                  </ResponsiveContainer>
+        {/* Sleep stages visualization - Reworked to match image */}
+        <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
+          <CardContent className="p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg text-[#1A1C1E]">Sleep stages</h3>
+              <Info size={18} className="text-gray-300" />
+            </div>
+
+            {latestSleep ? (
+              <div className="space-y-8">
+                {/* Segmented Horizontal Bar */}
+                <div className="h-10 w-full flex rounded-full overflow-hidden">
+                  {phases.map((phase) => (
+                    <div 
+                      key={phase.name}
+                      style={{ width: `${phase.percentage}%` }}
+                      className={cn(phase.color, "h-full transition-all duration-500")}
+                    />
+                  ))}
                 </div>
-                <div className="grid grid-cols-4 gap-1 text-[10px] text-center text-gray-400">
-                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#FFB2AB] mr-1"></span>Awake</div>
-                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#D0BCFF] mr-1"></span>REM</div>
-                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#A8DADC] mr-1"></span>Light</div>
-                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#6750A4] mr-1"></span>Deep</div>
+
+                {/* Detailed Legend */}
+                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                  {phases.map((phase) => {
+                    const duration = (totalHrs * phase.percentage) / 100;
+                    return (
+                      <div key={phase.name} className="flex items-start gap-3">
+                        <div className={cn("w-1.5 h-10 rounded-full shrink-0", phase.color)} />
+                        <div className="space-y-0.5">
+                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{phase.name}</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-xl font-black text-[#1A1C1E]">{phase.percentage}%</span>
+                            <span className="text-xs font-medium text-gray-400">({formatDuration(duration)})</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
+              <div className="py-10 text-center bg-gray-50 rounded-[24px]">
+                <p className="text-sm text-gray-400 font-medium px-6">Log a sleep period below to see your sleep stage breakdown.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Heart Rate During Sleep Graph */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate (Weekly)</h3>
             <div className="h-32 w-full">
@@ -153,7 +181,7 @@ const SleepPage = () => {
         </Card>
 
         {/* 7 Days duration list and input */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">7-Day History</h3>
             {sleepLogs.length > 0 ? (
@@ -168,7 +196,7 @@ const SleepPage = () => {
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+              <div className="p-6 text-center bg-gray-50 rounded-[24px]">
                 <p className="text-sm text-gray-400 font-medium">No 7-day sleep duration logged yet.</p>
               </div>
             )}
@@ -176,7 +204,7 @@ const SleepPage = () => {
         </Card>
 
         {/* Period selection inputs */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Log Sleep Period</h3>
             <form onSubmit={handleSave} className="space-y-4">
