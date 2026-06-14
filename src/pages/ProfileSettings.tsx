@@ -113,4 +113,4 @@ const ProfileSettings = () => {
   );
 };
 
-export default Profile;
+export default ProfileSettings;
