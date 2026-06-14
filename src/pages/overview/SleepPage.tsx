@@ -9,7 +9,6 @@ import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tool
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
-import SleepStagesChart from '@/components/overview/SleepStagesChart';
 
 const SleepPage = () => {
   const { sleepLogs, addSleepLog } = useHealthData();
@@ -31,6 +30,14 @@ const SleepPage = () => {
     const finalHrs = Math.round((diffMins / 60) * 10) / 10;
     setComputedHrs(finalHrs);
   }, [bedtime, waketime]);
+
+  // Default sleeping phase ratios based on latest sleep record or fallback
+  const phaseData = sleepLogs.length > 0 ? [
+    { name: 'Awake', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 6), fill: '#FFB2AB' },
+    { name: 'REM', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#D0BCFF' },
+    { name: 'Light', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 30), fill: '#A8DADC' },
+    { name: 'Deep', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#6750A4' },
+  ] : [];
 
   // Heart Rate During Sleep Graph values - Weekly Average
   const sleepingHrData = [
@@ -97,11 +104,34 @@ const SleepPage = () => {
           </div>
         </div>
 
-        {/* Sleep stages visualization */}
+        {/* Sleep phases visualization */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Stages</h3>
-            <SleepStagesChart sleepLogs={sleepLogs} />
+            <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Phases Breakdown</h3>
+            {sleepLogs.length > 0 ? (
+              <>
+                <div className="h-28 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={phaseData} layout="vertical">
+                      <XAxis type="number" hide />
+                      <YAxis dataKey="name" type="category" stroke="#888" fontSize={11} width={50} axisLine={false} tickLine={false} />
+                      <Tooltip />
+                      <Bar dataKey="duration" radius={[0, 8, 8, 0]} barSize={12} fill="#6750A4" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="grid grid-cols-4 gap-1 text-[10px] text-center text-gray-400">
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#FFB2AB] mr-1"></span>Awake</div>
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#D0BCFF] mr-1"></span>REM</div>
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#A8DADC] mr-1"></span>Light</div>
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#6750A4] mr-1"></span>Deep</div>
+                </div>
+              </>
+            ) : (
+              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+                <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
