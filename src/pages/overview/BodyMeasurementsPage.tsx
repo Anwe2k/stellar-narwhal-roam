@@ -11,8 +11,6 @@ import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { showSuccess } from '@/utils/toast';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/datepicker.css';
 
 const BodyMeasurementsPage = () => {
   const { settings, convertWeight, convertHeight } = useUnits();
@@ -20,7 +18,7 @@ const BodyMeasurementsPage = () => {
 
   const [weightInput, setWeightInput] = useState('');
   const [fatInput, setFatInput] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [logDay, setLogDay] = useState(new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }));
 
   // Height state initialized from localStorage with fallback
   const [heightRaw, setHeightRaw] = useState<number>(() => {
@@ -51,8 +49,7 @@ const BodyMeasurementsPage = () => {
     if (!weightInput) return;
 
     const parsedWeight = parseFloat(weightInput);
-    const dateString = selectedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    addWeightLog(parsedWeight, dateString);
+    addWeightLog(parsedWeight, logDay);
     setWeightInput('');
     showSuccess('Weight measurement updated!');
   };
@@ -62,8 +59,7 @@ const BodyMeasurementsPage = () => {
     if (!fatInput) return;
 
     const parsedFat = parseFloat(fatInput);
-    const dateString = selectedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    addFatLog(parsedFat, dateString);
+    addFatLog(parsedFat, logDay);
     setFatInput('');
     showSuccess('Body Fat percentage updated!');
   };
@@ -339,20 +335,6 @@ const BodyMeasurementsPage = () => {
         {/* Logging inputs */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
-            {/* Date Picker */}
-            <div className="mb-4">
-              <Label htmlFor="date-picker" className="text-xs font-medium text-gray-500 mb-1 block">
-                Select Date for Logging
-              </Label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                dateFormat="MMM d"
-                className="w-full rounded-2xl border-gray-200 h-11"
-                customInput={<Input id="date-picker" readOnly />}
-              />
-            </div>
-
             <div className="border-b border-gray-100 pb-4">
               <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
                 <Scale size={18} className="text-[#6750A4]" />
