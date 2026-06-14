@@ -21,7 +21,6 @@ const ProfileSettings = () => {
   const [sex, setSex] = useState('Male');
   const [bloodType, setBloodType] = useState('O+');
   const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop');
-  const [timeFormat, setTimeFormat] = useState('24h');
 
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
@@ -31,9 +30,6 @@ const ProfileSettings = () => {
     const savedBedtime = localStorage.getItem('profile_bedtime');
     const savedSex = localStorage.getItem('profile_sex');
     const savedBloodType = localStorage.getItem('profile_blood_type');
-    
-    // Check various potential keys for stored time format preferences
-    const savedFormat = localStorage.getItem('time_format') || localStorage.getItem('settings_time_format') || '24h';
 
     if (savedName) setName(savedName);
     if (savedEmail) setEmail(savedEmail);
@@ -42,7 +38,6 @@ const ProfileSettings = () => {
     if (savedBedtime) setBedtime(savedBedtime);
     if (savedSex) setSex(savedSex);
     if (savedBloodType) setBloodType(savedBloodType);
-    if (savedFormat) setTimeFormat(savedFormat);
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
@@ -57,21 +52,6 @@ const ProfileSettings = () => {
 
     showSuccess('Profile updated successfully!');
     navigate('/profile');
-  };
-
-  // Helper to render preview of target bedtime in correct format
-  const getBedtimePreview = (timeStr: string) => {
-    if (!timeStr) return '';
-    if (timeFormat === '24h') return timeStr;
-    try {
-      const [hoursStr, minutesStr] = timeStr.split(':');
-      const hours = parseInt(hoursStr, 10);
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-      return `${displayHours}:${minutesStr} ${ampm}`;
-    } catch (e) {
-      return timeStr;
-    }
   };
 
   return (
@@ -155,27 +135,17 @@ const ProfileSettings = () => {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="profile-bedtime" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock size={14} className="text-[#6750A4]" />
-                    Target Bedtime
-                  </Label>
-                  <span className="text-[10px] bg-[#6750A4]/10 text-[#6750A4] px-2 py-0.5 rounded-full font-bold">
-                    {timeFormat === '12h' ? '12-Hour Format' : '24-Hour Format'}
-                  </span>
-                </div>
-                <div className="relative">
-                  <Input
-                    id="profile-bedtime"
-                    type="time"
-                    value={bedtime}
-                    onChange={(e) => setBedtime(e.target.value)}
-                    className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm pr-20"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg pointer-events-none">
-                    {getBedtimePreview(bedtime)}
-                  </div>
-                </div>
+                <Label htmlFor="profile-bedtime" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Clock size={14} className="text-[#6750A4]" />
+                  Target Bedtime
+                </Label>
+                <Input
+                  id="profile-bedtime"
+                  type="time"
+                  value={bedtime}
+                  onChange={(e) => setBedtime(e.target.value)}
+                  className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

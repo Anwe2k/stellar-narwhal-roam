@@ -20,7 +20,6 @@ const Profile = () => {
   const [country, setCountry] = useState('United States');
   const [bedtime, setBedtime] = useState('22:30');
   const [sex, setSex] = useState('Male');
-  const [timeFormat, setTimeFormat] = useState('24h');
 
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
@@ -30,9 +29,6 @@ const Profile = () => {
     const savedCountry = localStorage.getItem('profile_country');
     const savedBedtime = localStorage.getItem('profile_bedtime');
     const savedSex = localStorage.getItem('profile_sex');
-    
-    // Check various potential keys for stored time format preferences
-    const savedFormat = localStorage.getItem('time_format') || localStorage.getItem('settings_time_format') || '24h';
 
     if (savedName) setProfileName(savedName);
     if (savedEmail) setProfileEmail(savedEmail);
@@ -40,7 +36,6 @@ const Profile = () => {
     if (savedCountry) setCountry(savedCountry);
     if (savedBedtime) setBedtime(savedBedtime);
     if (savedSex) setSex(savedSex);
-    if (savedFormat) setTimeFormat(savedFormat);
 
     if (savedDob) {
       const birthDate = new Date(savedDob);
@@ -56,21 +51,6 @@ const Profile = () => {
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : 75;
   const weightConverted = convertWeight(currentWeightRaw);
   const heightConverted = convertHeight(180);
-
-  // Formats stored 'HH:mm' string according to active time format preference
-  const formatBedtimeDisplay = (timeStr: string) => {
-    if (!timeStr) return '--:--';
-    if (timeFormat === '24h') return timeStr;
-    try {
-      const [hoursStr, minutesStr] = timeStr.split(':');
-      const hours = parseInt(hoursStr, 10);
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-      return `${displayHours}:${minutesStr} ${ampm}`;
-    } catch (e) {
-      return timeStr;
-    }
-  };
 
   const gearAction = (
     <Link 
@@ -135,7 +115,7 @@ const Profile = () => {
                 <p className="text-xs text-gray-400 font-semibold">Target Bedtime</p>
                 <div className="flex items-center gap-1">
                   <Clock size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{formatBedtimeDisplay(bedtime)}</p>
+                  <p className="text-lg font-black text-[#1A1C1E]">{bedtime}</p>
                 </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
