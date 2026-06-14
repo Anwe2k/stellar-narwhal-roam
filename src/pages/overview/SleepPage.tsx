@@ -5,30 +5,10 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Moon } from 'lucide-react';
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
-import SleepStageTimeline from '@/components/sleep/SleepStageTimeline';
-
-const getOptionalString = (value: unknown, key: string) => {
-  if (typeof value === 'object' && value !== null && key in value) {
-    const rawValue = (value as Record<string, unknown>)[key];
-    return rawValue == null ? '' : String(rawValue);
-  }
-
-  return '';
-};
-
-const formatDateLabel = (dateValue: string) => {
-  if (!dateValue) return 'Today';
-
-  const parsedDate = new Date(`${dateValue}T00:00:00`);
-
-  if (Number.isNaN(parsedDate.getTime())) return 'Today';
-
-  return parsedDate.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' });
-};
 
 const SleepPage = () => {
   const { sleepLogs, addSleepLog } = useHealthData();
@@ -37,31 +17,29 @@ const SleepPage = () => {
   const [computedHrs, setComputedHrs] = useState(8);
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
 
+  // Recalculate computed hours when bedtime or waketime changes
   useEffect(() => {
     const [bedH, bedM] = bedtime.split(':').map(Number);
     const [wakeH, wakeM] = waketime.split(':').map(Number);
     
     let diffMins = (wakeH * 60 + wakeM) - (bedH * 60 + bedM);
     if (diffMins < 0) {
+      // Sleep crossed midnight
       diffMins += 24 * 60;
     }
     const finalHrs = Math.round((diffMins / 60) * 10) / 10;
     setComputedHrs(finalHrs);
   }, [bedtime, waketime]);
 
-  const latestSleep = sleepLogs.length > 0 ? sleepLogs[sleepLogs.length - 1] : null;
-  const hasSleepLog = sleepLogs.length > 0;
-  const latestSleepDuration = latestSleep?.hrs ?? computedHrs;
-  const latestSleepDate = latestSleep ? getOptionalString(latestSleep, 'date') : logDate;
-  const latestSleepStartTime = latestSleep?.startTime || bedtime;
-  const latestSleepWakeTime = latestSleep
-    ? getOptionalString(latestSleep, 'wakeTime') ||
-      getOptionalString(latestSleep, 'wakeUpTime') ||
-      getOptionalString(latestSleep, 'waketime') ||
-      getOptionalString(latestSleep, 'endTime') ||
-      waketime
-    : waketime;
+  // Default sleeping phase ratios based on latest sleep record or fallback
+  const phaseData = sleepLogs.length > 0 ? [
+    { name: 'Awake', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 6), fill: '#FFB2AB' },
+    { name: 'REM', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#D0BCFF' },
+    { name: 'Light', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 30), fill: '#A8DADC' },
+    { name: 'Deep', duration: Math.round(sleepLogs[sleepLogs.length - 1].hrs * 12), fill: '#6750A4' },
+  ] : [];
 
+  // Heart Rate During Sleep Graph values - Weekly Average
   const sleepingHrData = [
     { day: 'Mon', bpm: 58 },
     { day: 'Tue', bpm: 56 },
@@ -95,6 +73,7 @@ const SleepPage = () => {
   return (
     <MobileLayout title="Sleep Tracker" headerGradientClass="from-[#D0BCFF]/40" backPath="/overview">
       <div className="space-y-6 pt-2">
+        {/* Stacked top summary visualizer */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
             <div>
@@ -125,18 +104,38 @@ const SleepPage = () => {
           </div>
         </div>
 
+        {/* Sleep phases visualization */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6">
-            <SleepStageTimeline
-              totalHours={latestSleepDuration}
-              startTime={latestSleepStartTime}
-              wakeTime={latestSleepWakeTime}
-              dateLabel={formatDateLabel(latestSleepDate)}
-              showPreviewLabel={!hasSleepLog}
-            />
+          <CardContent className="p-6 space-y-4">
+            <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Phases Breakdown</h3>
+            {sleepLogs.length > 0 ? (
+              <>
+                <div className="h-28 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={phaseData} layout="vertical">
+                      <XAxis type="number" hide />
+                      <YAxis dataKey="name" type="category" stroke="#888" fontSize={11} width={50} axisLine={false} tickLine={false} />
+                      <Tooltip />
+                      <Bar dataKey="duration" radius={[0, 8, 8, 0]} barSize={12} fill="#6750A4" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="grid grid-cols-4 gap-1 text-[10px] text-center text-gray-400">
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#FFB2AB] mr-1"></span>Awake</div>
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#D0BCFF] mr-1"></span>REM</div>
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#A8DADC] mr-1"></span>Light</div>
+                  <div><span className="inline-block w-2.5 h-2.5 rounded-full bg-[#6750A4] mr-1"></span>Deep</div>
+                </div>
+              </>
+            ) : (
+              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+                <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
+        {/* Heart Rate During Sleep Graph */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate (Weekly)</h3>
@@ -153,6 +152,7 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
+        {/* 7 Days duration list and input */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">7-Day History</h3>
@@ -175,6 +175,7 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
+        {/* Period selection inputs */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Log Sleep Period</h3>
