@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon, Sparkles, Clock } from 'lucide-react';
+import { Moon, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
@@ -16,6 +16,7 @@ const SleepPage = () => {
   const [waketime, setWaketime] = useState('06:00');
   const [computedHrs, setComputedHrs] = useState(8);
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  const [showInsights, setShowInsights] = useState(false);
 
   // Recalculate computed hours when bedtime or waketime changes
   useEffect(() => {
@@ -274,22 +275,35 @@ const SleepPage = () => {
                   </div>
                 </div>
 
-                {/* Detailed Stage Insights List */}
-                <div className="space-y-3 pt-2 border-t border-gray-100">
-                  {stages.map((stage) => (
-                    <div key={stage.name} className="flex gap-3 items-start p-3 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                      <div className={`w-2.5 h-2.5 rounded-full ${stage.color} mt-1.5 shrink-0`} />
-                      <div className="space-y-1">
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-bold text-sm text-gray-800">{stage.name}</span>
-                          <span className="text-xs font-bold text-gray-500">{formatHrs(stage.duration)}</span>
-                          <span className="text-[10px] font-semibold text-gray-400">({stage.percentage}%)</span>
-                        </div>
-                        <p className="text-xs text-gray-500 leading-relaxed">{stage.insight}</p>
-                      </div>
-                    </div>
-                  ))}
+                {/* Collapsible Trigger Button */}
+                <div className="pt-2 border-t border-gray-100">
+                  <button 
+                    onClick={() => setShowInsights(!showInsights)}
+                    className="flex items-center justify-between w-full text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    <span>{showInsights ? "Hide Stage Insights" : "Show Stage Insights"}</span>
+                    {showInsights ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
                 </div>
+
+                {/* Detailed Stage Insights List (Collapsible) */}
+                {showInsights && (
+                  <div className="space-y-3 pt-2 border-t border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {stages.map((stage) => (
+                      <div key={stage.name} className="flex gap-3 items-start p-3 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                        <div className={`w-2.5 h-2.5 rounded-full ${stage.color} mt-1.5 shrink-0`} />
+                        <div className="space-y-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-bold text-sm text-gray-800">{stage.name}</span>
+                            <span className="text-xs font-bold text-gray-500">{formatHrs(stage.duration)}</span>
+                            <span className="text-[10px] font-semibold text-gray-400">({stage.percentage}%)</span>
+                          </div>
+                          <p className="text-xs text-gray-500 leading-relaxed">{stage.insight}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="p-6 text-center bg-gray-50 rounded-2xl">
