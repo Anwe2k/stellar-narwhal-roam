@@ -4,16 +4,11 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon, Sparkles, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Moon, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 const SleepPage = () => {
   const { sleepLogs, addSleepLog } = useHealthData();
@@ -21,7 +16,7 @@ const SleepPage = () => {
   const [waketime, setWaketime] = useState('06:00');
   const [computedHrs, setComputedHrs] = useState(8);
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
-  const [isStagesOpen, setIsStagesOpen] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
   // Recalculate computed hours when bedtime or waketime changes
   useEffect(() => {
@@ -58,6 +53,7 @@ const SleepPage = () => {
   const lastWaketime = lastLog && lastLog.endTime ? lastLog.endTime : '06:00';
   const lastHrs = lastLog ? lastLog.hrs : 8;
 
+  // Helper to format hours into hours and minutes
   const formatHrs = (hours: number) => {
     const h = Math.floor(hours);
     const m = Math.round((hours - h) * 60);
@@ -66,6 +62,7 @@ const SleepPage = () => {
     return `${h}h ${m}m`;
   };
 
+  // Sleep stages breakdown calculations - Explicitly marked as estimated
   const stages = [
     { 
       name: 'Awake', 
@@ -105,6 +102,7 @@ const SleepPage = () => {
     },
   ];
 
+  // Generate estimated step-like sleep cycle timeline
   const generateSleepTimeline = (startStr: string, endStr: string) => {
     const [bedH, bedM] = startStr.split(':').map(Number);
     const [wakeH, wakeM] = endStr.split(':').map(Number);
@@ -141,6 +139,7 @@ const SleepPage = () => {
 
   const timelineData = generateSleepTimeline(lastBedtime, lastWaketime);
 
+  // Heart Rate During Sleep Graph values - Labeled explicitly as estimated averages
   const sleepingHrData = [
     { day: 'Mon', bpm: 58 },
     { day: 'Tue', bpm: 56 },
@@ -154,6 +153,7 @@ const SleepPage = () => {
   return (
     <MobileLayout title="Sleep Tracker" headerGradientClass="from-[#D0E1FD]/50" backPath="/overview">
       <div className="space-y-6 pt-2">
+        {/* Stacked top summary visualizer */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
             <div>
@@ -184,129 +184,136 @@ const SleepPage = () => {
           </div>
         </div>
 
-        <Collapsible
-          open={isStagesOpen}
-          onOpenChange={setIsStagesOpen}
-          className="w-full"
-        >
-          <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
-            <CardContent className="p-6 space-y-4">
-              <CollapsibleTrigger asChild>
-                <div className="flex justify-between items-center cursor-pointer group">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-base text-[#1A1C1E]">Estimated Sleep Stages</h3>
-                      {isStagesOpen ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
-                    </div>
-                    <p className="text-[10px] text-gray-400 italic">Stages are calculated mathematical estimates based on duration</p>
-                  </div>
-                  {sleepScore !== null && (
-                    <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
-                      <Sparkles size={10} />
-                      {sleepScore >= 85 ? 'Excellent' : sleepScore >= 70 ? 'Good' : 'Restless'}
-                    </span>
-                  )}
-                </div>
-              </CollapsibleTrigger>
+        {/* Sleep stages breakdown - Labeled as Estimated */}
+        <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
+          <CardContent className="p-6 space-y-6">
+            <div className="flex justify-between items-center">
+              <div className="space-y-0.5">
+                <h3 className="font-bold text-base text-[#1A1C1E]">Estimated Sleep Stages</h3>
+                <p className="text-[10px] text-gray-400 italic">Stages are calculated mathematical estimates based on duration</p>
+              </div>
+              {sleepScore !== null && (
+                <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <Sparkles size={10} />
+                  {sleepScore >= 85 ? 'Excellent' : sleepScore >= 70 ? 'Good' : 'Restless'}
+                </span>
+              )}
+            </div>
 
-              {sleepLogs.length > 0 ? (
-                <>
-                  <div className="h-2 w-full rounded-full flex overflow-hidden bg-gray-100 mt-2">
+            {sleepLogs.length > 0 ? (
+              <div className="space-y-6">
+                {/* Horizontal Proportion Bar */}
+                <div className="space-y-2">
+                  <div className="h-4 w-full rounded-full flex overflow-hidden bg-gray-100">
                     {stages.map((stage) => (
                       <div 
                         key={stage.name} 
                         className={`${stage.color} h-full transition-all`} 
                         style={{ width: `${stage.percentage}%` }}
+                        title={`${stage.name}: ${stage.percentage}% (Estimated)`}
                       />
                     ))}
                   </div>
-
-                  <CollapsibleContent className="space-y-6 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="flex justify-between text-[10px] font-bold text-gray-400 px-1">
-                      {stages.map((stage) => (
-                        <span key={stage.name} className="flex items-center gap-1">
-                          <span className={`w-2 h-2 rounded-full ${stage.color}`} />
-                          {stage.name}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Estimated Sleep Cycle Timeline</span>
-                      <div className="h-48 w-full -ml-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={timelineData}>
-                            <XAxis 
-                              dataKey="time" 
-                              stroke="#9CA3AF" 
-                              fontSize={10} 
-                              axisLine={false} 
-                              tickLine={false} 
-                            />
-                            <YAxis 
-                              stroke="#9CA3AF" 
-                              fontSize={10} 
-                              axisLine={false} 
-                              tickLine={false} 
-                              domain={[1, 4]}
-                              ticks={[1, 2, 3, 4]}
-                              tickFormatter={(value) => {
-                                return ['Deep', 'Light', 'REM', 'Awake'][value - 1];
-                              }}
-                              width={45}
-                            />
-                            <Tooltip 
-                              content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
-                                  const data = payload[0].payload;
-                                  return (
-                                    <div className="bg-white p-2.5 rounded-xl shadow-md border border-gray-100 text-xs">
-                                      <p className="font-bold text-gray-800">{data.stageName} (Estimated)</p>
-                                      <p className="text-gray-400">Time: {data.time}</p>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-                            <Area 
-                              type="stepAfter" 
-                              dataKey="stageValue" 
-                              stroke="#3B82F6" 
-                              strokeWidth={2.5}
-                              fill="rgba(59, 130, 246, 0.08)" 
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-2 border-t border-gray-100">
-                      {stages.map((stage) => (
-                        <div key={stage.name} className="flex gap-3 items-start p-3 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                          <div className={`w-2.5 h-2.5 rounded-full ${stage.color} mt-1.5 shrink-0`} />
-                          <div className="space-y-1">
-                            <div className="flex items-baseline gap-2">
-                              <span className="font-bold text-sm text-gray-800">{stage.name}</span>
-                              <span className="text-xs font-bold text-gray-500">{formatHrs(stage.duration)}</span>
-                              <span className="text-[10px] font-semibold text-gray-400">({stage.percentage}%)</span>
-                            </div>
-                            <p className="text-xs text-gray-500 leading-relaxed">{stage.insight}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CollapsibleContent>
-                </>
-              ) : (
-                <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                  <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
+                  <div className="flex justify-between text-[10px] font-bold text-gray-400 px-1">
+                    {stages.map((stage) => (
+                      <span key={stage.name} className="flex items-center gap-1">
+                        <span className={`w-2 h-2 rounded-full ${stage.color}`} />
+                        {stage.name} ({stage.percentage}%)
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </Collapsible>
 
+                {/* Step-Timeline Sleep Cycle Chart */}
+                <div className="space-y-2">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Estimated Sleep Cycle Timeline</span>
+                  <div className="h-48 w-full -ml-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={timelineData}>
+                        <XAxis 
+                          dataKey="time" 
+                          stroke="#9CA3AF" 
+                          fontSize={10} 
+                          axisLine={false} 
+                          tickLine={false} 
+                        />
+                        <YAxis 
+                          stroke="#9CA3AF" 
+                          fontSize={10} 
+                          axisLine={false} 
+                          tickLine={false} 
+                          domain={[1, 4]}
+                          ticks={[1, 2, 3, 4]}
+                          tickFormatter={(value) => {
+                            return ['Deep', 'Light', 'REM', 'Awake'][value - 1];
+                          }}
+                          width={45}
+                        />
+                        <Tooltip 
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-white p-2.5 rounded-xl shadow-md border border-gray-100 text-xs">
+                                  <p className="font-bold text-gray-800">{data.stageName} (Estimated)</p>
+                                  <p className="text-gray-400">Time: {data.time}</p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Area 
+                          type="stepAfter" 
+                          dataKey="stageValue" 
+                          stroke="#3B82F6" 
+                          strokeWidth={2.5}
+                          fill="rgba(59, 130, 246, 0.08)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Collapsible Trigger Button */}
+                <div className="pt-2 border-t border-gray-100">
+                  <button 
+                    onClick={() => setShowInsights(!showInsights)}
+                    className="flex items-center justify-between w-full text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    <span>{showInsights ? "Hide Stage Insights" : "Show Stage Insights"}</span>
+                    {showInsights ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                </div>
+
+                {/* Detailed Stage Insights List (Collapsible) */}
+                {showInsights && (
+                  <div className="space-y-3 pt-2 border-t border-gray-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {stages.map((stage) => (
+                      <div key={stage.name} className="flex gap-3 items-start p-3 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                        <div className={`w-2.5 h-2.5 rounded-full ${stage.color} mt-1.5 shrink-0`} />
+                        <div className="space-y-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-bold text-sm text-gray-800">{stage.name}</span>
+                            <span className="text-xs font-bold text-gray-500">{formatHrs(stage.duration)}</span>
+                            <span className="text-[10px] font-semibold text-gray-400">({stage.percentage}%)</span>
+                          </div>
+                          <p className="text-xs text-gray-500 leading-relaxed">{stage.insight}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+                <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Heart Rate During Sleep Graph - Estimated */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <div className="flex justify-between items-center">
@@ -326,6 +333,7 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
+        {/* 7 Days history */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">7-Day Duration History</h3>
@@ -348,6 +356,7 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
+        {/* Period selection inputs */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Log Sleep Period</h3>
