@@ -12,7 +12,8 @@ import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'rec
 import { useHealthData } from '@/context/HealthDataContext';
 import { useUnits } from '@/context/UnitContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
-import { showSuccess } from '@/utils/toast';
+import { showSuccess, showError } from '@/utils/toast';
+import { z } from 'zod';
 
 const vitalTypes = [
   { key: 'hr', title: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', description: 'Beats per minute measures how fast your heart beats. Normal is between 60-100 bpm.' },
@@ -50,22 +51,54 @@ const VitalDetailPage = () => {
     );
   }
 
-  const dataSet = vitalsData[vitalObj.key] || [];
-  const hasData = dataSet.length > 0;
-  const currentDisplay = hasData ? dataSet[dataSet.length - 1].value : null;
+  // Validation schemas for each vital type
+  const vitalValidationSchemas: Record<string, z.ZodTypeAny> = {
+    hr: z.number().min(30).max(250),
+    rhr: z.number().min(30).max(120),
+    spo2: z.number().min(70).max(100),
+    bp: z.number().min(0).max(300), // Note: BP is systolic/diastolic but we store single value for now
+    sugar: z.number().min(0).max(500),
+    temp: z.number().min(30).max(45),
+  };
+
+  const vitalSchema = z.object({
+    value: z.string().refine((val) => {
+      if (val === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && vitalValidationSchemas[vitalKey].safeParse(num).success;
+    }, { message: `Invalid value for ${vitalObj.title}` }),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Invalid date format. Use YYYY-MM-DD' }),
+    time: vitalKey === 'rhr' 
+      ? z.string().optional() 
+      : z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, { message: 'Invalid time format. Use HH:MM (24-hour)' })
+  });
 
   const saveVitalLog = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newValue) return;
+    const formData = {
+      value: newValue,
+      date: logDate,
+      time: vitalKey === 'rhr' ? undefined : logTime
+    };
 
-    const valNum = parseFloat(newValue);
-    const activeTime = vitalObj.key === 'rhr' ? undefined : logTime;
+    const result = vitalSchema.safeParse(formData);
+    if (!result.success) {
+      showError(result.error.errors[0].message);
+      return;
+    }
 
-    addVitalLog(vitalObj.key, valNum, logDate, activeTime);
+    const { value, date, time } = result.data;
+    const valNum = parseFloat(value);
+    const activeTime = vitalKey === 'rhr' ? undefined : time;
 
+    addVitalLog(vitalKey, valNum, logDate, activeTime);
     setNewValue('');
     showSuccess(`${vitalObj.title} logged successfully!`);
   };
+
+  const dataSet = vitalsData[vitalObj.key] || [];
+  const hasData = dataSet.length > 0;
+  const currentDisplay = hasData ? dataSet[dataSet.length - 1].value : null;
 
   const formattedHistory = dataSet.map(item => {
     let label = '';

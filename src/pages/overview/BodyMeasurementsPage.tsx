@@ -10,7 +10,8 @@ import { Scale, Ruler, ChevronRight, X } from 'lucide-react';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
-import { showSuccess } from '@/utils/toast';
+import { showSuccess, showError } from '@/utils/toast';
+import { z } from 'zod';
 
 const BodyMeasurementsPage = () => {
   const { settings, convertWeight, convertHeight } = useUnits();
@@ -44,37 +45,70 @@ const BodyMeasurementsPage = () => {
     }, 230); // Matches the exit duration
   };
 
+  const weightSchema = z.object({
+    weight: z.string().refine((val) => {
+      if (val === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num >= 20 && num <= 500; // kg
+    }, { message: 'Weight must be a valid number between 20 and 500 kg' })
+  });
+
+  const fatSchema = z.object({
+    fat: z.string().refine((val) => {
+      if (val === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num >= 0 && num <= 100; // percentage
+    }, { message: 'Body fat must be a valid number between 0 and 100%' })
+  });
+
   const logWeightEntry = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!weightInput) return;
+    const result = weightSchema.safeParse({ weight: weightInput });
+    if (!result.success) {
+      showError(result.error.errors[0].message);
+      return;
+    }
 
-    const parsedWeight = parseFloat(weightInput);
-    addWeightLog(parsedWeight, logDay);
+    const weight = parseFloat(weightInput);
+    addWeightLog(weight, logDay);
     setWeightInput('');
     showSuccess('Weight measurement updated!');
   };
 
   const logFatEntry = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fatInput) return;
+    const result = fatSchema.safeParse({ fat: fatInput });
+    if (!result.success) {
+      showError(result.error.errors[0].message);
+      return;
+    }
 
-    const parsedFat = parseFloat(fatInput);
-    addFatLog(parsedFat, logDay);
+    const fat = parseFloat(fatInput);
+    addFatLog(fat, logDay);
     setFatInput('');
     showSuccess('Body Fat percentage updated!');
   };
 
   const saveHeight = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!tempHeightInput) return;
+    const result = z.object({
+      height: z.string().refine((val) => {
+        if (val === '') return false;
+        const num = parseFloat(val);
+        return !isNaN(num) && num >= 50 && num <= 250; // cm
+      }, { message: 'Height must be a valid number between 50 and 250 cm' })
+    }).safeParse({ height: tempHeightInput });
+
+    if (!result.success) {
+      showError(result.error.errors[0].message);
+      return;
+    }
 
     const parsedHeight = parseFloat(tempHeightInput);
-    if (parsedHeight > 0) {
-      setHeightRaw(parsedHeight);
-      localStorage.setItem('declared_height', parsedHeight.toString());
-      triggerClose();
-      showSuccess('Declared height updated successfully!');
-    }
+    setHeightRaw(parsedHeight);
+    localStorage.setItem('declared_height', parsedHeight.toString());
+    triggerClose();
+    showSuccess('Declared height updated successfully!');
   };
 
   // Convert height and current weight
@@ -200,7 +234,7 @@ const BodyMeasurementsPage = () => {
             onClick={handleBackdropClick}
             className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 cursor-pointer duration-200 ${
               isClosing ? 'animate-out fade-out fill-mode-forwards' : 'animate-in fade-in'
-            }`}
+            }`} 
           >
             <div 
               onTouchStart={handleTouchStart}
@@ -214,7 +248,7 @@ const BodyMeasurementsPage = () => {
                 isClosing 
                   ? 'animate-out fade-out slide-out-to-bottom-12 duration-200 fill-mode-forwards' 
                   : 'animate-in fade-in slide-in-from-bottom-12 duration-300'
-              }`}
+              }`} 
               onClick={(e) => e.stopPropagation()}
             >
               {/* Swipe/Drag Visual Handle Indicator */}
@@ -323,7 +357,7 @@ const BodyMeasurementsPage = () => {
                     <Area type="monotone" dataKey="val" stroke="#3B82F6" strokeWidth={2} fill="rgba(59, 130, 246, 0.05)" />
                   </AreaChart>
                 </ResponsiveContainer>
-              </div>
+              }
             ) : (
               <div className="p-6 text-center bg-gray-50 rounded-2xl">
                 <p className="text-sm text-gray-400 font-medium">No BMI records available.</p>

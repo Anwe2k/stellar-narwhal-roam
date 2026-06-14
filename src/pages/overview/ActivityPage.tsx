@@ -10,7 +10,8 @@ import { Footprints } from 'lucide-react';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { CustomTimePicker } from '@/components/ui/CustomDateTimePicker';
-import { showSuccess } from '@/utils/toast';
+import { showSuccess, showError } from '@/utils/toast';
+import { z } from 'zod';
 
 const ActivityPage = () => {
   const { settings, convertEnergy, formatTime } = useUnits();
@@ -24,15 +25,49 @@ const ActivityPage = () => {
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   });
 
+  const activitySchema = z.object({
+    steps: z.string().optional().refine((val) => {
+      if (val === undefined) return true;
+      if (val === '') return false;
+      const num = parseInt(val, 10);
+      return !isNaN(num) && num >= 0 && num <= 100000;
+    }, { message: 'Steps must be a valid number between 0 and 100000' }),
+    energy: z.string().optional().refine((val) => {
+      if (val === undefined) return true;
+      if (val === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num >= 0 && num <= 10000;
+    }, { message: 'Energy must be a valid number between 0 and 10000' }),
+    distance: z.string().optional().refine((val) => {
+      if (val === undefined) return true;
+      if (val === '') return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num >= 0 && num <= 100;
+    }, { message: 'Distance must be a valid number between 0 and 100' }),
+    time: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, { message: 'Invalid time format. Use HH:MM (24-hour)' })
+  });
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    const steps = stepsInput ? parseInt(stepsInput) : 0;
-    const energy = energyInput ? parseFloat(energyInput) : 0;
-    const distance = distanceInput ? parseFloat(distanceInput) : 0;
+    const formData = {
+      steps: stepsInput || undefined,
+      energy: energyInput || undefined,
+      distance: distanceInput || undefined,
+      time: timeInput
+    };
 
-    if (!steps && !energy && !distance) return;
+    const result = activitySchema.safeParse(formData);
+    if (!result.success) {
+      showError(result.error.errors[0].message);
+      return;
+    }
 
-    addActivityLog(steps, energy, distance, timeInput);
+    const { steps, energy, distance, time } = result.data;
+    const stepsNum = steps ? parseInt(steps, 10) : 0;
+    const energyNum = energy ? parseFloat(energy) : 0;
+    const distanceNum = distance ? parseFloat(distance) : 0;
+
+    addActivityLog(stepsNum, energyNum, distanceNum, time);
     setStepsInput('');
     setEnergyInput('');
     setDistanceInput('');
