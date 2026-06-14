@@ -10,7 +10,7 @@ import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 
 const Profile = () => {
-  const { convertWeight, convertHeight, settings } = useUnits();
+  const { convertWeight, convertHeight } = useUnits();
   const { weightLogs } = useHealthData();
 
   const [profileName, setProfileName] = useState('Alex Johnson');
@@ -54,22 +54,6 @@ const Profile = () => {
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : 75;
   const weightConverted = convertWeight(currentWeightRaw);
   const heightConverted = convertHeight(180);
-
-  // Format helper to support 12-hour or 24-hour mode
-  const formatTimeStr = (time24: string) => {
-    if (!time24) return '--:--';
-    if (!settings || settings.timeFormat === '24h') {
-      return time24;
-    }
-    
-    const [hourStr, minStr] = time24.split(':');
-    const hour = parseInt(hourStr, 10);
-    if (isNaN(hour)) return time24;
-    
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${minStr || '00'} ${ampm}`;
-  };
 
   const gearAction = (
     <Link 
@@ -134,14 +118,14 @@ const Profile = () => {
                 <p className="text-xs text-gray-400 font-semibold">Target Bedtime</p>
                 <div className="flex items-center gap-1">
                   <Clock size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{formatTimeStr(bedtime)}</p>
+                  <p className="text-lg font-black text-[#1A1C1E]">{bedtime}</p>
                 </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Wake Up Time</p>
                 <div className="flex items-center gap-1">
                   <Sunrise size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{formatTimeStr(wakeUpTime)}</p>
+                  <p className="text-lg font-black text-[#1A1C1E]">{wakeUpTime}</p>
                 </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
