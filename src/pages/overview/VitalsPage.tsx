@@ -3,7 +3,7 @@
 import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowUpRight, Heart } from 'lucide-react';
+import { ArrowUpRight, Heart, Wind } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -27,12 +27,12 @@ const VitalsPage = () => {
 
   const latestHR = getLatestValue('hr');
   const latestSpO2 = getLatestValue('spo2');
-  const latestBP = getLatestValue('bp');
+  const latestVO2 = getLatestValue('vo2max');
 
   return (
     <MobileLayout title="Vitals" headerGradientClass="from-[#FFDAD6]/50" backPath="/overview">
       <div className="space-y-6 pt-2">
-        {/* Stacked top summary visualizer inspired by photo */}
+        {/* Stacked top summary visualizer - Updated with VO2 Max card */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
             <div>
@@ -44,16 +44,17 @@ const VitalsPage = () => {
             
             <div>
               <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
-                {latestSpO2 !== null ? `${latestSpO2} %` : '--'}
+                {latestVO2 !== null ? `${latestVO2}` : '--'} 
+                {latestVO2 !== null && <span className="text-sm font-bold text-gray-400 ml-1">ml/kg/min</span>}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Blood Oxygen (SpO2)</p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Cardio Fitness (VO2 Max)</p>
             </div>
 
             <div>
               <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
-                {latestBP !== null ? `${latestBP} mmHg` : '--'}
+                {latestSpO2 !== null ? `${latestSpO2} %` : '--'}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Blood Pressure (Systolic)</p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Blood Oxygen (SpO2)</p>
             </div>
           </div>
 
@@ -63,8 +64,33 @@ const VitalsPage = () => {
           </div>
         </div>
 
-        {/* Dynamic Vitals Grid with sub-page transitions */}
-        <div className="grid grid-cols-1 gap-4">
+        {/* Dedicated VO2 Max Card */}
+        <Link to="/overview/vitals/vo2max" className="block group">
+          <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden relative">
+            <CardContent className="p-5 flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0">
+                  <Wind size={24} />
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">VO2 Max</span>
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <span className="text-2xl font-black text-gray-800">
+                      {latestVO2 !== null ? latestVO2 : 'No data'}
+                    </span>
+                    {latestVO2 !== null && <span className="text-xs text-gray-400">ml/kg/min</span>}
+                  </div>
+                </div>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0 text-[#44474E] group-hover:translate-x-1 transition-transform">
+                <ArrowUpRight size={18} />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Other Vitals Grid */}
+        <div className="grid grid-cols-1 gap-4 pb-10">
           {vitalTypes.map((vital) => {
             const dataSet = vitalsData[vital.key] || [];
             const hasData = dataSet.length > 0;
