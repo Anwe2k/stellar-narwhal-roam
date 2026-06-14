@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Save, User, Mail, Calendar } from 'lucide-react';
+import { Camera, Save, User, Mail, Calendar, Globe, Clock, Heart, Users } from 'lucide-react';
 import { showSuccess } from '@/utils/toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,15 +16,28 @@ const ProfileSettings = () => {
   const [name, setName] = useState('Alex Johnson');
   const [email, setEmail] = useState('alex.j@example.com');
   const [dob, setDob] = useState('1995-06-15');
+  const [country, setCountry] = useState('United States');
+  const [bedtime, setBedtime] = useState('22:30');
+  const [sex, setSex] = useState('Male');
+  const [bloodType, setBloodType] = useState('O+');
   const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop');
 
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
     const savedEmail = localStorage.getItem('profile_email');
     const savedDob = localStorage.getItem('profile_dob');
+    const savedCountry = localStorage.getItem('profile_country');
+    const savedBedtime = localStorage.getItem('profile_bedtime');
+    const savedSex = localStorage.getItem('profile_sex');
+    const savedBloodType = localStorage.getItem('profile_blood_type');
+
     if (savedName) setName(savedName);
     if (savedEmail) setEmail(savedEmail);
     if (savedDob) setDob(savedDob);
+    if (savedCountry) setCountry(savedCountry);
+    if (savedBedtime) setBedtime(savedBedtime);
+    if (savedSex) setSex(savedSex);
+    if (savedBloodType) setBloodType(savedBloodType);
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
@@ -32,13 +45,18 @@ const ProfileSettings = () => {
     localStorage.setItem('profile_name', name);
     localStorage.setItem('profile_email', email);
     localStorage.setItem('profile_dob', dob);
+    localStorage.setItem('profile_country', country);
+    localStorage.setItem('profile_bedtime', bedtime);
+    localStorage.setItem('profile_sex', sex);
+    localStorage.setItem('profile_blood_type', bloodType);
+
     showSuccess('Profile updated successfully!');
     navigate('/profile');
   };
 
   return (
     <MobileLayout title="Edit Profile" backPath="/profile" headerGradientClass="from-[#C1C8FF] via-[#DCE1FF]/40">
-      <div className="space-y-6 pt-4">
+      <div className="space-y-6 pt-4 pb-8">
         {/* Avatar edit section */}
         <div className="flex flex-col items-center justify-center space-y-3">
           <div className="relative group cursor-pointer">
@@ -99,6 +117,77 @@ const ProfileSettings = () => {
                   onChange={(e) => setDob(e.target.value)}
                   className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="profile-country" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Globe size={14} className="text-[#6750A4]" />
+                  Country
+                </Label>
+                <Input
+                  id="profile-country"
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
+                  placeholder="e.g. United States"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="profile-bedtime" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Clock size={14} className="text-[#6750A4]" />
+                  Target Bedtime
+                </Label>
+                <Input
+                  id="profile-bedtime"
+                  type="time"
+                  value={bedtime}
+                  onChange={(e) => setBedtime(e.target.value)}
+                  className="rounded-2xl border-gray-150 h-12 focus-visible:ring-[#6750A4] font-semibold text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-sex" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Users size={14} className="text-[#6750A4]" />
+                    Sex
+                  </Label>
+                  <select
+                    id="profile-sex"
+                    value={sex}
+                    onChange={(e) => setSex(e.target.value)}
+                    className="w-full rounded-2xl border border-gray-200 bg-white px-3 h-12 text-sm font-semibold text-gray-800 outline-none focus:border-[#6750A4] focus:ring-1 focus:ring-[#6750A4] transition-all"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-bloodtype" className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Heart size={14} className="text-[#6750A4]" />
+                    Blood Type
+                  </Label>
+                  <select
+                    id="profile-bloodtype"
+                    value={bloodType}
+                    onChange={(e) => setBloodType(e.target.value)}
+                    className="w-full rounded-2xl border border-gray-200 bg-white px-3 h-12 text-sm font-semibold text-gray-800 outline-none focus:border-[#6750A4] focus:ring-1 focus:ring-[#6750A4] transition-all"
+                  >
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
               </div>
 
               <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-12 font-bold transition-all shadow-md mt-4 flex items-center justify-center gap-2">

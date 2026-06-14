@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame, Globe, Clock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -16,13 +16,27 @@ const Profile = () => {
   const [profileName, setProfileName] = useState('Alex Johnson');
   const [profileEmail, setProfileEmail] = useState('alex.j@example.com');
   const [age, setAge] = useState('28 years');
+  const [bloodType, setBloodType] = useState('O+');
+  const [country, setCountry] = useState('United States');
+  const [bedtime, setBedtime] = useState('22:30');
+  const [sex, setSex] = useState('Male');
 
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
     const savedEmail = localStorage.getItem('profile_email');
     const savedDob = localStorage.getItem('profile_dob');
+    const savedBloodType = localStorage.getItem('profile_blood_type');
+    const savedCountry = localStorage.getItem('profile_country');
+    const savedBedtime = localStorage.getItem('profile_bedtime');
+    const savedSex = localStorage.getItem('profile_sex');
+
     if (savedName) setProfileName(savedName);
     if (savedEmail) setProfileEmail(savedEmail);
+    if (savedBloodType) setBloodType(savedBloodType);
+    if (savedCountry) setCountry(savedCountry);
+    if (savedBedtime) setBedtime(savedBedtime);
+    if (savedSex) setSex(savedSex);
+
     if (savedDob) {
       const birthDate = new Date(savedDob);
       const differenceMs = Date.now() - birthDate.getTime();
@@ -91,15 +105,29 @@ const Profile = () => {
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Blood Type</p>
-                <p className="text-lg font-black text-[#1A1C1E]">O+</p>
+                <p className="text-lg font-black text-[#1A1C1E]">{bloodType}</p>
+              </div>
+              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
+                <p className="text-xs text-gray-400 font-semibold">Sex</p>
+                <p className="text-lg font-black text-[#1A1C1E]">{sex}</p>
+              </div>
+              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
+                <p className="text-xs text-gray-400 font-semibold">Target Bedtime</p>
+                <div className="flex items-center gap-1">
+                  <Clock size={14} className="text-gray-400 shrink-0" />
+                  <p className="text-lg font-black text-[#1A1C1E]">{bedtime}</p>
+                </div>
+              </div>
+              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
+                <p className="text-xs text-gray-400 font-semibold">Country</p>
+                <div className="flex items-center gap-1">
+                  <Globe size={14} className="text-gray-400 shrink-0" />
+                  <p className="text-lg font-black text-[#1A1C1E] truncate max-w-full">{country}</p>
+                </div>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Weight</p>
                 <p className="text-lg font-black text-[#1A1C1E]">{weightConverted.value} {weightConverted.label}</p>
-              </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Height</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{heightConverted.value} {heightConverted.label}</p>
               </div>
             </div>
           </CardContent>
