@@ -142,7 +142,7 @@ const ActivityPage = () => {
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-4">Log Active Workout</h3>
             <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="steps" className="text-xs font-medium text-gray-500">Steps Taken</Label>
                   <Input
@@ -167,7 +167,7 @@ const ActivityPage = () => {
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 flex flex-col gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="distance" className="text-xs font-medium text-gray-500">Distance ({settings.length === 'metric' ? 'km' : 'miles'})</Label>
                   <Input
@@ -181,18 +181,16 @@ const ActivityPage = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <CustomDatePicker 
-                    label="Workout Date"
-                    value={logDate}
-                    onChange={setLogDate}
-                  />
-                  <CustomTimePicker 
-                    label="Workout Time"
-                    value={timeInput}
-                    onChange={setTimeInput}
-                  />
-                </div>
+                <CustomDatePicker 
+                  label="Workout Date"
+                  value={logDate}
+                  onChange={setLogDate}
+                />
+                <CustomTimePicker 
+                  label="Workout Time"
+                  value={timeInput}
+                  onChange={setTimeInput}
+                />
               </div>
 
               <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium">

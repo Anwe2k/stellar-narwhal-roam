@@ -151,7 +151,7 @@ const NutritionPage = () => {
               Log Calorie Intake
             </h3>
             <form onSubmit={handleCalorieSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="calories-val" className="text-xs text-gray-500">Amount ({settings.energy === 'kj' ? 'kJ' : 'kcal'})</Label>
                   <Input
@@ -169,7 +169,7 @@ const NutritionPage = () => {
                   onChange={setMealDate}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="calories-desc" className="text-xs text-gray-500">Description / Meal Name</Label>
                   <Input
@@ -202,7 +202,7 @@ const NutritionPage = () => {
               Log Water Consumption
             </h3>
             <form onSubmit={handleWaterSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="water-val" className="text-xs text-gray-500">Amount ({settings.water === 'ml' ? 'ml' : 'fl oz'})</Label>
                   <Input
@@ -220,8 +220,7 @@ const NutritionPage = () => {
                   onChange={setWaterDate}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="invisible" />
+              <div className="flex flex-col gap-4">
                 <CustomTimePicker 
                   label="Water Log Time"
                   value={waterTime}

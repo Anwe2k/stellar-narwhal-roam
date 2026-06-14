@@ -252,7 +252,7 @@ const VitalDetailPage = () => {
             <form onSubmit={saveVitalLog} className="space-y-4">
               
               {vitalObj.key === 'bp' ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="systolic-val" className="text-xs text-gray-500">Systolic (mmHg)</Label>
                     <Input
@@ -291,7 +291,7 @@ const VitalDetailPage = () => {
                 </div>
               )}
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-4">
                 <CustomDatePicker 
                   label="Date"
                   value={logDate}
