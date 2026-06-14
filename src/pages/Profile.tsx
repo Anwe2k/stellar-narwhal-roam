@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { Settings, Bell, Shield, LogOut, ChevronRight, Scale, Ruler, Flame, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
@@ -12,12 +13,6 @@ import { useHealthData } from '@/context/HealthDataContext';
 const Profile = () => {
   const { convertWeight, convertHeight } = useUnits();
   const { weightLogs } = useHealthData();
-
-  // Load editable personal settings with fallbacks
-  const userName = localStorage.getItem('user_name') || 'Alex Johnson';
-  const userEmail = localStorage.getItem('user_email') || 'alex.j@example.com';
-  const userAge = localStorage.getItem('user_age') || '28';
-  const userBloodType = localStorage.getItem('user_blood_type') || 'O+';
 
   // Convert basic metrics (Weight fallback: 75kg, Height: 180cm)
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : 75;
@@ -43,10 +38,10 @@ const Profile = () => {
     >
       <div className="space-y-6">
         
-        {/* Schematic Design Header Block: Row with Avatar, large Name, completely transparent */}
+        {/* Schematic Design Header Block: Row with Avatar, large Name, and inline Link */}
         <Link 
-          to="/settings/personal"
-          className="flex items-center justify-between p-2 mt-4 bg-transparent active:scale-[0.98] transition-transform duration-200 group"
+          to="/settings/units"
+          className="flex items-center justify-between p-2 mt-4 bg-white/20 backdrop-blur-sm rounded-3xl active:scale-[0.98] transition-transform duration-200 group"
         >
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16 border-2 border-white/80 shadow-md">
@@ -55,9 +50,9 @@ const Profile = () => {
             </Avatar>
             <div>
               <h2 className="text-2xl font-black text-[#1A1C1E] tracking-tight group-hover:text-[#6750A4] transition-colors">
-                {userName}
+                Alex Johnson
               </h2>
-              <p className="text-xs text-gray-500 font-semibold">{userEmail}</p>
+              <p className="text-xs text-gray-500 font-semibold">alex.j@example.com</p>
             </div>
           </div>
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1A1C1E] shadow-sm group-hover:translate-x-1 transition-transform">
@@ -76,11 +71,11 @@ const Profile = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Age</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{userAge} years</p>
+                <p className="text-lg font-black text-[#1A1C1E]">28 years</p>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Blood Type</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{userBloodType}</p>
+                <p className="text-lg font-black text-[#1A1C1E]">O+</p>
               </div>
               <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                 <p className="text-xs text-gray-400 font-semibold">Weight</p>
