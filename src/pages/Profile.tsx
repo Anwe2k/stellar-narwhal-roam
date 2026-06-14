@@ -61,7 +61,7 @@ const Profile = () => {
       className="p-2.5 rounded-full bg-white/40 backdrop-blur-md text-[#535C8A] hover:bg-white/60 active:scale-95 transition-all shadow-sm"
       title="Settings"
     >
-      <Settings size={22} className="animate-spin duration-[12s]" />
+      <Settings size={22} className="animate-[spin_1s_ease-in-out]" />
     </Link>
   );
 
