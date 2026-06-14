@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Scale, Ruler } from 'lucide-react';
+import { ChevronLeft, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -47,7 +47,6 @@ const BodyMeasurementsPage = () => {
   
   const currentWeightRaw = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1].val : null;
   const currentWeightConverted = currentWeightRaw !== null ? convertWeight(currentWeightRaw) : null;
-  const currentFatRaw = fatLogs.length > 0 ? fatLogs[fatLogs.length - 1].val : null;
 
   // Compute live BMI (BMI = Weight_kg / Height_m ^ 2)
   const heightMeters = heightRaw / 100;
@@ -77,49 +76,31 @@ const BodyMeasurementsPage = () => {
           <span className="text-sm font-medium text-gray-500">Back to Categories</span>
         </div>
 
-        {/* Card-less elegant stacked stats metric design header layout */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent p-6 flex justify-between items-center min-h-[220px]">
-          {/* 3 Metrics on the Left */}
-          <div className="flex flex-col gap-6 z-10">
-            <div className="space-y-0.5">
-              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
-                {currentHeightConverted.value} <span className="text-sm font-normal text-gray-500">{currentHeightConverted.label}</span>
-              </h2>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">HEIGHT</p>
-            </div>
+        {/* Main Body Stat cards */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="border-none shadow-sm bg-white rounded-3xl">
+            <CardContent className="p-5">
+              <span className="text-xs text-gray-400 font-semibold block">Height</span>
+              <p className="text-2xl font-black text-[#6750A4] mt-2">
+                {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
+              </p>
+            </CardContent>
+          </Card>
 
-            <div className="space-y-0.5">
-              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
+          <Card className="border-none shadow-sm bg-white rounded-3xl">
+            <CardContent className="p-5">
+              <span className="text-xs text-gray-400 font-semibold block">Weight</span>
+              <p className="text-2xl font-black text-[#6750A4] mt-2">
                 {currentWeightConverted !== null ? (
                   <>
-                    {currentWeightConverted.value} <span className="text-xs font-normal text-gray-500">{currentWeightConverted.label}</span>
+                    {currentWeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentWeightConverted.label}</span>
                   </>
                 ) : (
-                  '--'
+                  <span className="text-sm font-medium text-gray-400">No data</span>
                 )}
-              </h2>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">CURRENT WEIGHT</p>
-            </div>
-
-            <div className="space-y-0.5">
-              <h2 className="text-3xl font-black tracking-tight text-[#1A1C1E]">
-                {currentFatRaw !== null ? `${currentFatRaw}%` : '--'}
-              </h2>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">BODY FAT</p>
-            </div>
-          </div>
-
-          {/* Scalable metric vector illustration on the right */}
-          <div className="absolute right-4 bottom-4 opacity-25 text-emerald-600 pointer-events-none">
-            <svg width="180" height="180" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-pulse duration-4000">
-              <circle cx="50" cy="50" r="38" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-              <line x1="50" y1="12" x2="50" y2="88" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="12" y1="50" x2="88" y2="50" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-            <div className="absolute top-[45%] left-[45%] -translate-x-1/2 -translate-y-1/2">
-              <Scale size={48} className="text-emerald-600" />
-            </div>
-          </div>
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Weight 30 days trends area graph */}
