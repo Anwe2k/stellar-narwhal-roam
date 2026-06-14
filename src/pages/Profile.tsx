@@ -24,7 +24,7 @@ const Profile = () => {
     <MobileLayout title="Profile">
       <div className="space-y-6">
         <div className="flex flex-col items-center py-4">
-          <Avatar className="w-24 h-24 border-4 border-white shadow-md">
+          <Avatar className="w-24 h-24 border-4 border-white">
             <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop" />
             <AvatarFallback>AX</AvatarFallback>
           </Avatar>
@@ -32,7 +32,7 @@ const Profile = () => {
           <p className="text-sm text-gray-500">alex.j@example.com</p>
         </div>
 
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Basic Info</Label>
@@ -61,7 +61,7 @@ const Profile = () => {
         {/* Units Tab & Rest Settings */}
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider px-1">Settings</h3>
-          <div className="bg-white rounded-3xl overflow-hidden shadow-sm">
+          <div className="bg-white rounded-3xl overflow-hidden">
             
             {/* Measurement Units tab */}
             <Link 

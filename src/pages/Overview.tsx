@@ -3,7 +3,7 @@
 import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, Flame, Footprints, Moon, Heart, Scale, CupSoda } from 'lucide-react';
+import { ChevronRight, Footprints, Moon, Heart, Scale, CupSoda } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Overview = () => {
@@ -55,7 +55,7 @@ const Overview = () => {
             const Icon = section.icon;
             return (
               <Link key={section.title} to={section.path} className="block group">
-                <Card className="border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-3xl overflow-hidden">
+                <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
                   <CardContent className="p-5 flex items-center justify-between">
                     <div className="flex items-center gap-4 min-w-0">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${section.color} transition-transform group-hover:scale-105 duration-300`}>

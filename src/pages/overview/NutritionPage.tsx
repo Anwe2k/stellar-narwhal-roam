@@ -80,14 +80,14 @@ const NutritionPage = () => {
             </div>
           </div>
 
-          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#C1E7F4] to-[#A8DADC] flex items-center justify-center relative overflow-hidden shadow-sm">
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#C1E7F4] to-[#A8DADC] flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
             <CupSoda size={84} className="text-[#004D61] relative z-10 opacity-90 animate-bounce duration-[4s]" />
           </div>
         </div>
 
         {/* Log calories form */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
               <Flame size={18} className="text-amber-600" />
@@ -131,7 +131,7 @@ const NutritionPage = () => {
         </Card>
 
         {/* Log Water Form */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
               <CupSoda size={18} className="text-cyan-600" />

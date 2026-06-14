@@ -51,7 +51,7 @@ const HealthSummary = () => {
   return (
     <div className="grid grid-cols-2 gap-4 mt-4">
       {stats.map((stat) => (
-        <Card key={stat.label} className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
+        <Card key={stat.label} className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-5">
             <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-3", stat.color)}>
               <stat.icon size={20} />

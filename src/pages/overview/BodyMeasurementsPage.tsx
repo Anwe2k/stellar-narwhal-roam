@@ -95,7 +95,7 @@ const BodyMeasurementsPage = () => {
             </div>
           </div>
 
-          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E2F1E8] to-[#CBE5D5] flex items-center justify-center relative overflow-hidden shadow-sm">
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E2F1E8] to-[#CBE5D5] flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
             <Ruler size={84} className="text-[#00512C] relative z-10 opacity-90 animate-pulse duration-[5s]" />
           </div>
@@ -103,7 +103,7 @@ const BodyMeasurementsPage = () => {
 
         {/* Basic info box */}
         <div className="grid grid-cols-1 gap-4">
-          <Card className="border-none shadow-sm bg-white rounded-3xl">
+          <Card className="border-none shadow-none bg-white rounded-3xl">
             <CardContent className="p-5 flex justify-between items-center">
               <span className="text-xs text-gray-400 font-semibold block">Declared Height</span>
               <p className="text-lg font-black text-[#6750A4]">
@@ -114,7 +114,7 @@ const BodyMeasurementsPage = () => {
         </div>
 
         {/* Weight 30 days trends area graph */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Weight Trend (30 days)</h3>
             {weightLogs.length > 0 ? (
@@ -137,7 +137,7 @@ const BodyMeasurementsPage = () => {
         </Card>
 
         {/* Body Fat 30 days trends area graph */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Body Fat (%) (30 days)</h3>
             {fatLogs.length > 0 ? (
@@ -160,7 +160,7 @@ const BodyMeasurementsPage = () => {
         </Card>
 
         {/* BMI 30 days trends area graph */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-base text-[#1A1C1E]">BMI Trend</h3>
@@ -188,7 +188,7 @@ const BodyMeasurementsPage = () => {
         </Card>
 
         {/* Logging inputs */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <div className="border-b border-gray-100 pb-4">
               <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">

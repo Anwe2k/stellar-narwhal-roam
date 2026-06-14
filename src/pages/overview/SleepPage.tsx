@@ -98,14 +98,14 @@ const SleepPage = () => {
             </div>
           </div>
 
-          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E8DEF8] to-[#D0BCFF] flex items-center justify-center relative overflow-hidden shadow-sm">
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E8DEF8] to-[#D0BCFF] flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
             <Moon size={84} className="text-[#381E72] relative z-10 opacity-90 animate-bounce duration-[6s]" />
           </div>
         </div>
 
         {/* Sleep phases visualization */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Phases Breakdown</h3>
             {sleepLogs.length > 0 ? (
@@ -136,7 +136,7 @@ const SleepPage = () => {
         </Card>
 
         {/* Heart Rate During Sleep Graph */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate (Weekly)</h3>
             <div className="h-32 w-full">
@@ -153,7 +153,7 @@ const SleepPage = () => {
         </Card>
 
         {/* 7 Days duration list and input */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">7-Day History</h3>
             {sleepLogs.length > 0 ? (
@@ -176,7 +176,7 @@ const SleepPage = () => {
         </Card>
 
         {/* Period selection inputs */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Log Sleep Period</h3>
             <form onSubmit={handleSave} className="space-y-4">

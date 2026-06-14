@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip } from 'recharts';
 
 const data = [
   { name: 'Mon', steps: 4000 },
@@ -16,7 +16,7 @@ const data = [
 
 const ActivityChart = () => {
   return (
-    <Card className="mt-6 border-none shadow-sm bg-white rounded-3xl">
+    <Card className="mt-6 border-none shadow-none bg-white rounded-3xl">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold">Weekly Activity</CardTitle>
       </CardHeader>
@@ -31,7 +31,7 @@ const ActivityChart = () => {
             />
             <Tooltip 
               cursor={{ fill: '#f3f4f6' }}
-              contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+              contentStyle={{ borderRadius: '12px', border: 'none' }}
             />
             <Bar 
               dataKey="steps" 

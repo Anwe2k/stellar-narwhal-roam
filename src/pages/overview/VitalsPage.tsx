@@ -5,7 +5,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AreaChart, Area, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
 
 const VitalsPage = () => {
@@ -57,7 +57,7 @@ const VitalsPage = () => {
             </div>
           </div>
 
-          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#FFDAD6] to-[#FFB2AB] flex items-center justify-center relative overflow-hidden shadow-sm">
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#FFDAD6] to-[#FFB2AB] flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
             <Heart size={84} className="text-[#BA1A1A] relative z-10 opacity-90 animate-pulse" />
           </div>
@@ -72,7 +72,7 @@ const VitalsPage = () => {
 
             return (
               <Link key={vital.key} to={`/overview/vitals/${vital.key}`} className="block">
-                <Card className="border-none shadow-sm hover:shadow-md transition-shadow duration-300 bg-white rounded-3xl overflow-hidden relative group">
+                <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden relative group">
                   <CardContent className="p-5">
                     <div className="flex justify-between items-start">
                       <div>
@@ -101,7 +101,6 @@ const VitalsPage = () => {
                                 <stop offset="95%" stopColor={vital.color} stopOpacity={0}/>
                               </linearGradient>
                             </defs>
-                            <YAxis hide domain={['dataMin - 3', 'dataMax + 3']} />
                             <Tooltip content={() => null} />
                             <Area 
                               type="monotone" 

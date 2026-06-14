@@ -84,7 +84,7 @@ const VitalDetailPage = () => {
     <MobileLayout title={vitalObj.title} backPath="/overview/vitals">
       <div className="space-y-6 pt-2">
         {/* Big visual summary card */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
+        <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-6 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Current Reading</span>
@@ -107,7 +107,7 @@ const VitalDetailPage = () => {
         </p>
 
         {/* Chart */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl overflow-hidden">
+        <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Trends</h3>
             {hasData ? (
@@ -136,7 +136,7 @@ const VitalDetailPage = () => {
         </Card>
 
         {/* Log Form */}
-        <Card className="border-none shadow-sm bg-white rounded-3xl">
+        <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
             <h3 className="text-base font-bold text-[#1A1C1E] mb-4">Add Entry</h3>
             <form onSubmit={saveVitalLog} className="space-y-4">
@@ -189,12 +189,12 @@ const VitalDetailPage = () => {
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-1">History</h4>
           {dataSet.length === 0 ? (
-            <div className="bg-white p-6 rounded-3xl text-center shadow-sm">
+            <div className="bg-white p-6 rounded-3xl text-center">
               <p className="text-sm text-gray-400 font-medium">No logged data yet.</p>
             </div>
           ) : (
             [...dataSet].reverse().map((log, idx) => (
-              <div key={idx} className="bg-white p-4 rounded-3xl flex justify-between items-center shadow-sm animate-in fade-in">
+              <div key={idx} className="bg-white p-4 rounded-3xl flex justify-between items-center animate-in fade-in">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${vitalObj.color}15`, color: vitalObj.color }}>
                     <Activity size={20} />
