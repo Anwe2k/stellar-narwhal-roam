@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Index from './pages/Index';
 import Overview from './pages/Overview';
 import Profile from './pages/Profile';
-import UnitSettingsPage from './pages/UnitSettingsPage';
+import UnitsFormats from './pages/settings/UnitsFormats';
 import BodyMeasurementsPage from './pages/overview/BodyMeasurementsPage';
 import HydrationPage from './pages/overview/HydrationPage';
 import PersonalSettings from './pages/PersonalSettings';
@@ -23,7 +23,7 @@ function App() {
             <Route path="/overview/measurements" element={<BodyMeasurementsPage />} />
             <Route path="/overview/hydration" element={<HydrationPage />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/settings/units" element={<UnitSettingsPage />} />
+            <Route path="/settings/units" element={<UnitsFormats />} />
             <Route path="/settings/personal" element={<PersonalSettings />} />
             {/* Fallback to index */}
             <Route path="*" element={<Navigate to="/" replace />} />
