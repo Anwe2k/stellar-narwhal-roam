@@ -47,6 +47,18 @@ export interface FatLog {
   val: number; // %
 }
 
+export interface TapeMeasurementLog {
+  id: number;
+  date: string;
+  day: string;
+  neck?: number;   // cm
+  waist?: number;  // cm
+  chest?: number;  // cm
+  hips?: number;   // cm
+  biceps?: number; // cm
+  thighs?: number; // cm
+}
+
 interface HealthDataContextType {
   activityLogs: ActivityLog[];
   addActivityLog: (steps: number, energy: number, distance: number, customTime?: string) => void;
@@ -68,6 +80,16 @@ interface HealthDataContextType {
   
   fatLogs: FatLog[];
   addFatLog: (val: number, day: string) => void;
+
+  tapeLogs: TapeMeasurementLog[];
+  addTapeLog: (date: string, measurements: {
+    neck?: number;
+    waist?: number;
+    chest?: number;
+    hips?: number;
+    biceps?: number;
+    thighs?: number;
+  }) => void;
   
   clearAllData: () => void;
 }
@@ -112,6 +134,11 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [tapeLogs, setTapeLogs] = useState<TapeMeasurementLog[]>(() => {
+    const saved = localStorage.getItem('health_tape_measurements');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('health_activity', JSON.stringify(activityLogs));
   }, [activityLogs]);
@@ -139,6 +166,10 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   useEffect(() => {
     localStorage.setItem('health_fat', JSON.stringify(fatLogs));
   }, [fatLogs]);
+
+  useEffect(() => {
+    localStorage.setItem('health_tape_measurements', JSON.stringify(tapeLogs));
+  }, [tapeLogs]);
 
   const addActivityLog = (steps: number, energy: number, distance: number, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -221,6 +252,30 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
   };
 
+  const addTapeLog = (date: string, measurements: {
+    neck?: number;
+    waist?: number;
+    chest?: number;
+    hips?: number;
+    biceps?: number;
+    thighs?: number;
+  }) => {
+    const parsedDate = new Date(date);
+    const dayLabel = parsedDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    
+    const newLog: TapeMeasurementLog = {
+      id: Date.now(),
+      date,
+      day: dayLabel,
+      ...measurements
+    };
+
+    setTapeLogs(prev => {
+      const filtered = prev.filter(log => log.date !== date);
+      return [...filtered, newLog].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    });
+  };
+
   const clearAllData = () => {
     setActivityLogs([]);
     setVitalsData({ hr: [], rhr: [], spo2: [], bp: [], sugar: [], temp: [] });
@@ -229,6 +284,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setWaterLogs([]);
     setWeightLogs([]);
     setFatLogs([]);
+    setTapeLogs([]);
   };
 
   return (
@@ -240,6 +296,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       waterLogs, addWaterLog,
       weightLogs, addWeightLog,
       fatLogs, addFatLog,
+      tapeLogs, addTapeLog,
       clearAllData
     }}>
       {children}
