@@ -18,17 +18,9 @@ interface UnitContextType {
   updateSetting: <K extends keyof UnitSettings>(key: K, value: UnitSettings[K]) => void;
   // Conversion helper functions
   convertWeight: (kgVal: number) => { value: number; label: string };
-  convertWeightInverse: (val: number) => number; // convert to kg
   convertHeight: (cmVal: number) => { value: string; label: string };
-  convertHeightInverse: (val: number) => number; // convert to cm
   convertWater: (mlVal: number) => { value: number; label: string };
-  convertWaterInverse: (val: number) => number; // convert to ml
   convertEnergy: (kcalVal: number) => { value: number; label: string };
-  convertEnergyInverse: (val: number) => number; // convert to kcal
-  convertTemperature: (cVal: number) => { value: number; label: string };
-  convertTemperatureInverse: (val: number) => number; // convert to c
-  convertDistance: (kmVal: number) => { value: number; label: string };
-  convertDistanceInverse: (val: number) => number; // convert to km
   formatTime: (timeString: string) => string;
   formatDate: (dateString: string) => string;
 }
@@ -73,16 +65,6 @@ export const UnitProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { value: kgVal, label: 'kg' };
   };
 
-  const convertWeightInverse = (val: number) => {
-    if (settings.weight === 'lbs') {
-      return val / 2.20462;
-    }
-    if (settings.weight === 'st') {
-      return val / 0.157473;
-    }
-    return val;
-  };
-
   const convertHeight = (cmVal: number) => {
     if (settings.length === 'imperial') {
       const totalInches = cmVal / 2.54;
@@ -93,22 +75,11 @@ export const UnitProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { value: `${cmVal}`, label: 'cm' };
   };
 
-  const convertHeightInverse = (val: number) => {
-    return val; // simple cm direct input
-  };
-
   const convertWater = (mlVal: number) => {
     if (settings.water === 'oz') {
       return { value: Math.round(mlVal * 0.033814), label: 'fl oz' };
     }
     return { value: mlVal, label: 'ml' };
-  };
-
-  const convertWaterInverse = (val: number) => {
-    if (settings.water === 'oz') {
-      return val / 0.033814;
-    }
-    return val;
   };
 
   const convertEnergy = (kcalVal: number) => {
@@ -118,47 +89,9 @@ export const UnitProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { value: kcalVal, label: 'kcal' };
   };
 
-  const convertEnergyInverse = (val: number) => {
-    if (settings.energy === 'kj') {
-      return val / 4.184;
-    }
-    return val;
-  };
-
-  const convertTemperature = (cVal: number) => {
-    if (settings.temperature === 'f') {
-      return { value: Math.round(((cVal * 9) / 5 + 32) * 10) / 10, label: '°F' };
-    }
-    return { value: Math.round(cVal * 10) / 10, label: '°C' };
-  };
-
-  const convertTemperatureInverse = (val: number) => {
-    if (settings.temperature === 'f') {
-      return ((val - 32) * 5) / 9;
-    }
-    return val;
-  };
-
-  const convertDistance = (kmVal: number) => {
-    if (settings.length === 'imperial') {
-      return { value: Math.round(kmVal * 0.621371 * 100) / 100, label: 'mi' };
-    }
-    return { value: Math.round(kmVal * 100) / 100, label: 'km' };
-  };
-
-  const convertDistanceInverse = (val: number) => {
-    if (settings.length === 'imperial') {
-      return val / 0.621371;
-    }
-    return val;
-  };
-
   const formatTime = (timeString: string) => {
-    if (!timeString) return '';
-    const parts = timeString.split(':');
-    if (parts.length < 2) return timeString;
-    const hoursStr = parts[0];
-    const minutesStr = parts[1];
+    // Expecting "HH:MM" e.g. "14:30" or "10:30"
+    const [hoursStr, minutesStr] = timeString.split(':');
     let hours = parseInt(hoursStr, 10);
     const minutes = minutesStr;
     
@@ -167,7 +100,7 @@ export const UnitProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (settings.timeFormat === '12h') {
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
-      hours = hours ? hours : 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
       return `${hours}:${minutes} ${ampm}`;
     }
     
@@ -190,24 +123,7 @@ export const UnitProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <UnitContext.Provider value={{
-      settings,
-      updateSetting,
-      convertWeight,
-      convertWeightInverse,
-      convertHeight,
-      convertHeightInverse,
-      convertWater,
-      convertWaterInverse,
-      convertEnergy,
-      convertEnergyInverse,
-      convertTemperature,
-      convertTemperatureInverse,
-      convertDistance,
-      convertDistanceInverse,
-      formatTime,
-      formatDate
-    }}>
+    <UnitContext.Provider value={{ settings, updateSetting, convertWeight, convertHeight, convertWater, convertEnergy, formatTime, formatDate }}>
       {children}
     </UnitContext.Provider>
   );

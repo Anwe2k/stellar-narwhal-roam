@@ -12,7 +12,7 @@ import { showSuccess, showError } from '@/utils/toast';
 
 const VO2MaxDetailPage = () => {
   const { vitalsData, addVitalLog, weightLogs } = useHealthData();
-  const { settings, convertWeight } = useUnits();
+  const { convertWeight } = useUnits();
 
   // Calculation states
   const [method, setMethod] = useState<'ratio' | 'rockport'>('ratio');
@@ -77,8 +77,8 @@ const VO2MaxDetailPage = () => {
         {/* Hero Card */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
-            <div className={`w-16 h-16 rounded-full ${latestValue > 0 ? category.bg : 'bg-gray-100'} flex items-center justify-center`}>
-              <Wind size={32} className={latestValue > 0 ? category.color : 'text-gray-400'} />
+            <div className={`w-16 h-16 rounded-full ${category.bg} flex items-center justify-center`}>
+              <Wind size={32} className={category.color} />
             </div>
             <div>
               <p className="text-5xl font-black text-[#1A1C1E] tracking-tighter">
@@ -86,15 +86,9 @@ const VO2MaxDetailPage = () => {
               </p>
               <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">ml/kg/min</p>
             </div>
-            {latestValue > 0 ? (
-              <div className={`px-4 py-1.5 rounded-full ${category.bg} ${category.color} text-xs font-black uppercase tracking-wider`}>
-                {category.label} Fitness
-              </div>
-            ) : (
-              <div className="px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 text-xs font-black uppercase tracking-wider">
-                No Data Logged
-              </div>
-            )}
+            <div className={`px-4 py-1.5 rounded-full ${category.bg} ${category.color} text-xs font-black uppercase tracking-wider`}>
+              {category.label} Fitness
+            </div>
             <p className="text-xs text-gray-400 leading-relaxed max-w-[240px]">
               VO2 Max is the single best measure of cardiovascular fitness and aerobic power.
             </p>
@@ -197,10 +191,7 @@ const VO2MaxDetailPage = () => {
                   <div className="bg-blue-50 p-3 rounded-2xl flex gap-3 items-center">
                     <Timer size={18} className="text-blue-500 shrink-0" />
                     <p className="text-[10px] text-blue-700 leading-tight">
-                      {settings.length === 'metric' 
-                        ? "For the most accurate result, walk exactly 1.6 km as fast as possible and record your heart rate immediately at the finish."
-                        : "For the most accurate result, walk exactly 1 mile as fast as possible and record your heart rate immediately at the finish."
-                      }
+                      For the most accurate result, walk exactly 1 mile as fast as possible and record your heart rate immediately at the finish.
                     </p>
                   </div>
                 </div>

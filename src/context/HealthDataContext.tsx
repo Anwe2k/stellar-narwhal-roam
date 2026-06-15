@@ -8,15 +8,12 @@ export interface ActivityLog {
   energy: number; // kcal
   distance: number; // km
   time: string;
-  date: string;
 }
 
 export interface VitalLog {
   time?: string;
   date: string;
   value: number;
-  systolic?: number;
-  diastolic?: number;
 }
 
 export interface SleepLog {
@@ -32,14 +29,12 @@ export interface NutritionLog {
   val: number; // kcal
   desc: string;
   time: string;
-  date: string;
 }
 
 export interface WaterLog {
   id: number;
   val: number; // ml
   time: string;
-  date: string;
 }
 
 export interface WeightLog {
@@ -52,41 +47,27 @@ export interface FatLog {
   val: number; // %
 }
 
-export interface TapeMeasurementLog {
-  id: number;
-  date: string;
-  neck?: number;   // stored in cm
-  waist?: number;  // stored in cm
-  chest?: number;  // stored in cm
-  hips?: number;   // stored in cm
-  biceps?: number; // stored in cm
-  thighs?: number; // stored in cm
-}
-
 interface HealthDataContextType {
   activityLogs: ActivityLog[];
-  addActivityLog: (steps: number, energy: number, distance: number, date: string, customTime?: string) => void;
+  addActivityLog: (steps: number, energy: number, distance: number, customTime?: string) => void;
   
   vitalsData: Record<string, VitalLog[]>;
-  addVitalLog: (key: string, value: number, date: string, customTime?: string, systolic?: number, diastolic?: number) => void;
+  addVitalLog: (key: string, value: number, date: string, customTime?: string) => void;
   
   sleepLogs: SleepLog[];
   addSleepLog: (hrs: number, date: string, startTime?: string, endTime?: string) => void;
   
   calorieLogs: NutritionLog[];
-  addCalorieLog: (val: number, desc: string, date: string, customTime?: string) => void;
+  addCalorieLog: (val: number, desc: string, customTime?: string) => void;
   
   waterLogs: WaterLog[];
-  addWaterLog: (val: number, date: string, customTime?: string) => void;
+  addWaterLog: (val: number, customTime?: string) => void;
   
   weightLogs: WeightLog[];
   addWeightLog: (val: number, day: string) => void;
   
   fatLogs: FatLog[];
   addFatLog: (val: number, day: string) => void;
-
-  tapeLogs: TapeMeasurementLog[];
-  addTapeLog: (date: string, neck?: number, waist?: number, chest?: number, hips?: number, biceps?: number, thighs?: number) => void;
   
   clearAllData: () => void;
 }
@@ -131,11 +112,6 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [tapeLogs, setTapeLogs] = useState<TapeMeasurementLog[]>(() => {
-    const saved = localStorage.getItem('health_tape_measurements');
-    return saved ? JSON.parse(saved) : [];
-  });
-
   useEffect(() => {
     localStorage.setItem('health_activity', JSON.stringify(activityLogs));
   }, [activityLogs]);
@@ -164,37 +140,33 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem('health_fat', JSON.stringify(fatLogs));
   }, [fatLogs]);
 
-  useEffect(() => {
-    localStorage.setItem('health_tape_measurements', JSON.stringify(tapeLogs));
-  }, [tapeLogs]);
-
-  const addActivityLog = (steps: number, energy: number, distance: number, date: string, customTime?: string) => {
+  const addActivityLog = (steps: number, energy: number, distance: number, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const newLog: ActivityLog = {
       id: Date.now(),
       steps,
       energy,
       distance,
-      time: activeTime,
-      date
+      time: activeTime
     };
     setActivityLogs(prev => {
-      // Avoid identical timestamps on the *same day* only
-      const filtered = prev.filter(log => !(log.time === activeTime && log.date === date));
+      const filtered = prev.filter(log => log.time !== activeTime);
       return [newLog, ...filtered];
     });
   };
 
-  const addVitalLog = (key: string, value: number, date: string, customTime?: string, systolic?: number, diastolic?: number) => {
+  const addVitalLog = (key: string, value: number, date: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newEntry: VitalLog = { time: activeTime, date, value, systolic, diastolic };
+    const newEntry: VitalLog = { time: activeTime, date, value };
     
     setVitalsData(prev => {
       const currentList = prev[key] || [];
       const filtered = currentList.filter(entry => {
         if (key === 'rhr') {
+          // Resting HR is unique per date only
           return entry.date !== date;
         } else {
+          // Other vitals are unique per date AND time combination
           return !(entry.date === date && entry.time === activeTime);
         }
       });
@@ -215,20 +187,20 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
   };
 
-  const addCalorieLog = (val: number, desc: string, date: string, customTime?: string) => {
+  const addCalorieLog = (val: number, desc: string, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newLog: NutritionLog = { id: Date.now(), val, desc, time: activeTime, date };
+    const newLog: NutritionLog = { id: Date.now(), val, desc, time: activeTime };
     setCalorieLogs(prev => {
-      const filtered = prev.filter(log => !(log.time === activeTime && log.date === date));
+      const filtered = prev.filter(log => log.time !== activeTime);
       return [...filtered, newLog];
     });
   };
 
-  const addWaterLog = (val: number, date: string, customTime?: string) => {
+  const addWaterLog = (val: number, customTime?: string) => {
     const activeTime = customTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    const newLog: WaterLog = { id: Date.now(), val, time: activeTime, date };
+    const newLog: WaterLog = { id: Date.now(), val, time: activeTime };
     setWaterLogs(prev => {
-      const filtered = prev.filter(log => !(log.time === activeTime && log.date === date));
+      const filtered = prev.filter(log => log.time !== activeTime);
       return [...filtered, newLog];
     });
   };
@@ -249,23 +221,6 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
   };
 
-  const addTapeLog = (date: string, neck?: number, waist?: number, chest?: number, hips?: number, biceps?: number, thighs?: number) => {
-    const newLog: TapeMeasurementLog = {
-      id: Date.now(),
-      date,
-      neck,
-      waist,
-      chest,
-      hips,
-      biceps,
-      thighs
-    };
-    setTapeLogs(prev => {
-      const filtered = prev.filter(log => log.date !== date);
-      return [newLog, ...filtered];
-    });
-  };
-
   const clearAllData = () => {
     setActivityLogs([]);
     setVitalsData({ hr: [], rhr: [], spo2: [], bp: [], sugar: [], temp: [] });
@@ -274,7 +229,6 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setWaterLogs([]);
     setWeightLogs([]);
     setFatLogs([]);
-    setTapeLogs([]);
   };
 
   return (
@@ -286,7 +240,6 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       waterLogs, addWaterLog,
       weightLogs, addWeightLog,
       fatLogs, addFatLog,
-      tapeLogs, addTapeLog,
       clearAllData
     }}>
       {children}

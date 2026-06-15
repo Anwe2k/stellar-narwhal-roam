@@ -6,33 +6,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Scale, Ruler, ChevronRight, X, Sparkles, Footprints, Flame, ShieldAlert, List } from 'lucide-react';
+import { Scale, Ruler, ChevronRight, X } from 'lucide-react';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
-import { showSuccess, showError } from '@/utils/toast';
-import { z } from 'zod';
-import { calculateRFM, calculateWHtR, getWHtRStatus } from '@/utils/bodyComposition';
+import { showSuccess } from '@/utils/toast';
 
 const BodyMeasurementsPage = () => {
-  const { settings, convertWeight, convertWeightInverse, convertHeight, formatDate } = useUnits();
-  const { weightLogs, addWeightLog, fatLogs, addFatLog, tapeLogs, addTapeLog } = useHealthData();
+  const { settings, convertWeight, convertHeight } = useUnits();
+  const { weightLogs, addWeightLog, fatLogs, addFatLog } = useHealthData();
 
-  // Basic forms state
   const [weightInput, setWeightInput] = useState('');
   const [fatInput, setFatInput] = useState('');
-  const [logDay, setLogDay] = useState(() => new Date().toISOString().split('T')[0]);
+  const [logDay, setLogDay] = useState(new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }));
 
-  // Tape measurements states (inputs are string-based to allow empty values safely)
-  const [waistInput, setWaistInput] = useState('');
-  const [neckInput, setNeckInput] = useState('');
-  const [chestInput, setChestInput] = useState('');
-  const [hipsInput, setHipsInput] = useState('');
-  const [bicepsInput, setBicepsInput] = useState('');
-  const [thighsInput, setThighsInput] = useState('');
-  const [tapeDate, setTapeDate] = useState(() => new Date().toISOString().split('T')[0]);
-
-  // Height state initialized from localStorage with fallback (canonical in cm)
+  // Height state initialized from localStorage with fallback
   const [heightRaw, setHeightRaw] = useState<number>(() => {
     const saved = localStorage.getItem('declared_height');
     return saved ? parseFloat(saved) : 180;
@@ -47,9 +35,7 @@ const BodyMeasurementsPage = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [translateY, setTranslateY] = useState(0);
 
-  // Active user details
-  const profileSex = localStorage.getItem('profile_sex') || 'Male';
-
+  // Trigger close sequence with smooth fade & slide out animations
   const triggerClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -58,117 +44,37 @@ const BodyMeasurementsPage = () => {
     }, 230); // Matches the exit duration
   };
 
-  const weightSchema = z.object({
-    weight: z.string().refine((val) => {
-      if (val === '') return false;
-      const num = parseFloat(val);
-      return !isNaN(num) && num > 0 && num <= 1000;
-    }, { message: 'Weight must be a valid positive number' })
-  });
-
-  const fatSchema = z.object({
-    fat: z.string().refine((val) => {
-      if (val === '') return false;
-      const num = parseFloat(val);
-      return !isNaN(num) && num >= 0 && num <= 100; // percentage
-    }, { message: 'Body fat must be a valid number between 0 and 100%' })
-  });
-
   const logWeightEntry = (e: React.FormEvent) => {
     e.preventDefault();
-    const result = weightSchema.safeParse({ weight: weightInput });
-    if (!result.success) {
-      showError(result.error.errors[0].message);
-      return;
-    }
+    if (!weightInput) return;
 
-    const val = parseFloat(weightInput);
-    // Convert entered weight (lbs, st) back into canonical kg
-    const kgWeight = convertWeightInverse(val);
-
-    addWeightLog(kgWeight, logDay);
+    const parsedWeight = parseFloat(weightInput);
+    addWeightLog(parsedWeight, logDay);
     setWeightInput('');
     showSuccess('Weight measurement updated!');
   };
 
   const logFatEntry = (e: React.FormEvent) => {
     e.preventDefault();
-    const result = fatSchema.safeParse({ fat: fatInput });
-    if (!result.success) {
-      showError(result.error.errors[0].message);
-      return;
-    }
+    if (!fatInput) return;
 
-    const fat = parseFloat(fatInput);
-    addFatLog(fat, logDay);
+    const parsedFat = parseFloat(fatInput);
+    addFatLog(parsedFat, logDay);
     setFatInput('');
     showSuccess('Body Fat percentage updated!');
   };
 
   const saveHeight = (e: React.FormEvent) => {
     e.preventDefault();
-    const result = z.object({
-      height: z.string().refine((val) => {
-        if (val === '') return false;
-        const num = parseFloat(val);
-        return !isNaN(num) && num >= 50 && num <= 250; // cm
-      }, { message: 'Height must be a valid number between 50 and 250 cm' })
-    }).safeParse({ height: tempHeightInput });
-
-    if (!result.success) {
-      showError(result.error.errors[0].message);
-      return;
-    }
+    if (!tempHeightInput) return;
 
     const parsedHeight = parseFloat(tempHeightInput);
-    setHeightRaw(parsedHeight);
-    localStorage.setItem('declared_height', parsedHeight.toString());
-    triggerClose();
-    showSuccess('Declared height updated successfully!');
-  };
-
-  // Tape units: metric length setting translates to cm, imperial translates to inches
-  const isImperialTape = settings.length === 'imperial';
-  const tapeUnitLabel = isImperialTape ? 'in' : 'cm';
-
-  const convertTapeInputToCm = (valStr: string): number | undefined => {
-    if (!valStr) return undefined;
-    const num = parseFloat(valStr);
-    if (isNaN(num)) return undefined;
-    return isImperialTape ? num * 2.54 : num;
-  };
-
-  const convertCmToTapeDisplay = (cmValue?: number): string => {
-    if (cmValue === undefined) return '--';
-    const converted = isImperialTape ? cmValue / 2.54 : cmValue;
-    return `${Math.round(converted * 10) / 10} ${tapeUnitLabel}`;
-  };
-
-  const handleTapeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!waistInput) {
-      showError("Waist circumference is highly recommended to compute health indicators.");
-      return;
+    if (parsedHeight > 0) {
+      setHeightRaw(parsedHeight);
+      localStorage.setItem('declared_height', parsedHeight.toString());
+      triggerClose();
+      showSuccess('Declared height updated successfully!');
     }
-
-    const waistCm = convertTapeInputToCm(waistInput);
-    const neckCm = convertTapeInputToCm(neckInput);
-    const chestCm = convertTapeInputToCm(chestInput);
-    const hipsCm = convertTapeInputToCm(hipsInput);
-    const bicepsCm = convertTapeInputToCm(bicepsInput);
-    const thighsCm = convertTapeInputToCm(thighsInput);
-
-    addTapeLog(tapeDate, neckCm, waistCm, chestCm, hipsCm, bicepsCm, thighsCm);
-    
-    // reset tape form inputs
-    setWaistInput('');
-    setNeckInput('');
-    setChestInput('');
-    setHipsInput('');
-    setBicepsInput('');
-    setThighsInput('');
-    showSuccess('Tape circumference metrics recorded!');
   };
 
   // Convert height and current weight
@@ -184,15 +90,6 @@ const BodyMeasurementsPage = () => {
     : null;
 
   const currentFatRaw = fatLogs.length > 0 ? fatLogs[fatLogs.length - 1].val : null;
-
-  // Active Tape values
-  const latestTapeLog = tapeLogs.length > 0 ? tapeLogs[0] : null; // Context prepends so index 0 is newest
-  const activeWaistCm = latestTapeLog?.waist;
-
-  // Calculate live composition indicators
-  const liveRFM = activeWaistCm ? calculateRFM(heightRaw, activeWaistCm, profileSex) : null;
-  const liveWHtR = activeWaistCm ? calculateWHtR(heightRaw, activeWaistCm) : null;
-  const whtrStatus = liveWHtR ? getWHtRStatus(liveWHtR) : null;
 
   // Translate weight logs array to match settings unit preference
   const transformedWeightData = weightLogs.map((log) => ({
@@ -222,6 +119,7 @@ const BodyMeasurementsPage = () => {
   };
 
   const handleTouchEnd = () => {
+    // If swiped down past 110px, close the dialog with closing animation
     if (translateY > 110) {
       triggerClose();
     }
@@ -230,6 +128,7 @@ const BodyMeasurementsPage = () => {
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Closes the popup ONLY if user clicked the backdrop overlay wrapper itself
     if (e.target === e.currentTarget) {
       triggerClose();
     }
@@ -237,89 +136,71 @@ const BodyMeasurementsPage = () => {
 
   return (
     <MobileLayout title="Measurements" headerGradientClass="from-[#E2F1E8]/50" backPath="/overview">
-      <div className="space-y-6 pt-2 pb-12">
-        
-        {/* Advanced Composition Visual Indicators Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden p-5 flex flex-col justify-between">
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">Weight Ratio</span>
+      <div className="space-y-6 pt-2">
+        {/* Stacked top summary visualizer */}
+        <div className="flex items-center justify-between py-2">
+          <div className="space-y-5">
+            <div>
               <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
-                {currentWeightConverted !== null ? `${currentWeightConverted.value}` : '--'}
-                {currentWeightConverted !== null && <span className="text-xs font-semibold text-gray-400 ml-1">{currentWeightConverted.label}</span>}
+                {currentWeightConverted !== null ? `${currentWeightConverted.value} ${currentWeightConverted.label}` : '--'}
               </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Body Weight</p>
             </div>
-            <div className="mt-4 pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500 font-semibold">
-              <span>BMI: {currentBMI || '--'}</span>
+            
+            <div>
+              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+                {currentFatRaw !== null ? `${currentFatRaw} %` : '--'}
+              </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Body Fat Percentage</p>
             </div>
-          </Card>
 
-          <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden p-5 flex flex-col justify-between">
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">Relative Fat Mass (RFM)</span>
+            <div>
               <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
-                {liveRFM !== null ? `${liveRFM}` : '--'}
-                {liveRFM !== null && <span className="text-xs font-semibold text-gray-400 ml-1">%</span>}
+                {currentBMI !== null ? currentBMI : '--'}
               </p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Current Body Mass Index (BMI)</p>
             </div>
-            <p className="text-[10px] text-gray-400 leading-tight mt-1">
-              {liveRFM !== null ? "Waist-to-height formula body fat estimate." : "Log waist circumference to calculate."}
-            </p>
+          </div>
+
+          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#E2F1E8] to-[#CBE5D5] flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <Ruler size={84} className="text-[#00512C] relative z-10 opacity-90 animate-pulse duration-[5s]" />
+          </div>
+        </div>
+
+        {/* Basic info box with interactive Height modal trigger */}
+        <div className="grid grid-cols-1 gap-4">
+          <Card 
+            className="border-none shadow-none bg-white rounded-3xl cursor-pointer hover:bg-gray-50/50 transition-colors active:scale-[0.99]"
+            onClick={() => {
+              setTempHeightInput(heightRaw.toString());
+              setIsHeightDialogOpen(true);
+            }}
+          >
+            <CardContent className="p-5 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#E2F1E8] text-[#00512C] rounded-2xl flex items-center justify-center shrink-0">
+                  <Ruler size={20} />
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400 font-semibold block">Declared Height</span>
+                  <p className="text-lg font-black text-[#6750A4] mt-0.5">
+                    {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
+                  </p>
+                </div>
+              </div>
+              <ChevronRight size={18} className="text-gray-400 shrink-0" />
+            </CardContent>
           </Card>
         </div>
 
-        {/* Dynamic WHtR indicator card with clinical alerts */}
-        {liveWHtR !== null && whtrStatus && (
-          <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden p-5">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">Waist-To-Height Ratio</span>
-                <p className="text-2xl font-black text-[#1A1C1E]">{liveWHtR}</p>
-              </div>
-              <div className={`px-3 py-1 rounded-full text-xs font-bold ${whtrStatus.bgClass} ${whtrStatus.colorClass}`}>
-                {whtrStatus.label}
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-2 bg-gray-50 p-3 rounded-2xl">
-              <ShieldAlert size={16} className="text-gray-400 shrink-0" />
-              <p className="text-[10px] text-gray-500 leading-relaxed">
-                Health risk increases when waist ratio is above <span className="font-bold">0.5</span>. Your current ratio corresponds to {whtrStatus.label.toLowerCase()}.
-              </p>
-            </div>
-          </Card>
-        )}
-
-        {/* Basic height selector */}
-        <Card 
-          className="border-none shadow-none bg-white rounded-3xl cursor-pointer hover:bg-gray-50/50 transition-colors active:scale-[0.99]"
-          onClick={() => {
-            setTempHeightInput(heightRaw.toString());
-            setIsHeightDialogOpen(true);
-          }}
-        >
-          <CardContent className="p-5 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#E2F1E8] text-[#00512C] rounded-2xl flex items-center justify-center shrink-0">
-                <Ruler size={20} />
-              </div>
-              <div>
-                <span className="text-xs text-gray-400 font-semibold block">Declared Height</span>
-                <p className="text-lg font-black text-[#6750A4] mt-0.5">
-                  {currentHeightConverted.value} <span className="text-xs font-normal text-gray-400">{currentHeightConverted.label}</span>
-                </p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="text-gray-400 shrink-0" />
-          </CardContent>
-        </Card>
-
-        {/* Height update Pop-up dialog overlay */}
+        {/* Height update Pop-up dialog overlay with Swipe & Tap outside options */}
         {isHeightDialogOpen && (
           <div 
             onClick={handleBackdropClick}
             className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 cursor-pointer duration-200 ${
               isClosing ? 'animate-out fade-out fill-mode-forwards' : 'animate-in fade-in'
-            }`} 
+            }`}
           >
             <div 
               onTouchStart={handleTouchStart}
@@ -333,10 +214,10 @@ const BodyMeasurementsPage = () => {
                 isClosing 
                   ? 'animate-out fade-out slide-out-to-bottom-12 duration-200 fill-mode-forwards' 
                   : 'animate-in fade-in slide-in-from-bottom-12 duration-300'
-              }`} 
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Swipe Handle Indicator */}
+              {/* Swipe/Drag Visual Handle Indicator */}
               <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto -mt-2 mb-2 sm:hidden cursor-row-resize" />
 
               <div className="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -366,7 +247,7 @@ const BodyMeasurementsPage = () => {
                     autoFocus
                   />
                   <p className="text-[10px] text-gray-400 leading-normal">
-                    Please provide your height in centimeters.
+                    Please provide your height in centimeters. It will automatically convert to feet & inches depending on your preferences.
                   </p>
                 </div>
                 <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium transition-colors">
@@ -376,207 +257,6 @@ const BodyMeasurementsPage = () => {
             </div>
           </div>
         )}
-
-        {/* Unified metrics Logger Card */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-6">
-            
-            {/* Weight inputs */}
-            <div className="border-b border-gray-100 pb-5">
-              <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
-                <Scale size={18} className="text-[#6750A4]" />
-                Log Weight & Fat Ratio
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <form onSubmit={logWeightEntry} className="space-y-3">
-                  <div className="space-y-1">
-                    <Label htmlFor="weight-input" className="text-[10px] font-bold text-gray-400 uppercase">Weight ({settings.weight})</Label>
-                    <Input
-                      id="weight-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="75.0"
-                      value={weightInput}
-                      onChange={(e) => setWeightInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-xl h-9 text-xs font-semibold">
-                    Log Weight
-                  </Button>
-                </form>
-
-                <form onSubmit={logFatEntry} className="space-y-3">
-                  <div className="space-y-1">
-                    <Label htmlFor="fat-input" className="text-[10px] font-bold text-gray-400 uppercase">Body Fat (%)</Label>
-                    <Input
-                      id="fat-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="15.5"
-                      value={fatInput}
-                      onChange={(e) => setFatInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full bg-[#10B981] hover:bg-[#10B981]/90 text-white rounded-xl h-9 text-xs font-semibold">
-                    Log Fat %
-                  </Button>
-                </form>
-              </div>
-            </div>
-
-            {/* Tape Circumference Logger Section */}
-            <div>
-              <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
-                <Ruler size={18} className="text-indigo-500" />
-                Log Tape Circumference
-              </h3>
-              <form onSubmit={handleTapeSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="waist-input" className="text-[10px] font-bold text-gray-400 uppercase">Waist ({tapeUnitLabel})*</Label>
-                    <Input
-                      id="waist-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 80"
-                      value={waistInput}
-                      onChange={(e) => setWaistInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="neck-input" className="text-[10px] font-bold text-gray-400 uppercase">Neck ({tapeUnitLabel})</Label>
-                    <Input
-                      id="neck-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 38"
-                      value={neckInput}
-                      onChange={(e) => setNeckInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="chest-input" className="text-[10px] font-bold text-gray-400 uppercase">Chest ({tapeUnitLabel})</Label>
-                    <Input
-                      id="chest-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 100"
-                      value={chestInput}
-                      onChange={(e) => setChestInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="hips-input" className="text-[10px] font-bold text-gray-400 uppercase">Hips ({tapeUnitLabel})</Label>
-                    <Input
-                      id="hips-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 95"
-                      value={hipsInput}
-                      onChange={(e) => setHipsInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="biceps-input" className="text-[10px] font-bold text-gray-400 uppercase">Biceps ({tapeUnitLabel})</Label>
-                    <Input
-                      id="biceps-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 35"
-                      value={bicepsInput}
-                      onChange={(e) => setBicepsInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="thighs-input" className="text-[10px] font-bold text-gray-400 uppercase">Thighs ({tapeUnitLabel})</Label>
-                    <Input
-                      id="thighs-input"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 55"
-                      value={thighsInput}
-                      onChange={(e) => setThighsInput(e.target.value)}
-                      className="rounded-2xl border-gray-150 h-11 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <Label htmlFor="tape-date" className="text-[10px] font-bold text-gray-400 uppercase">Measurement Date</Label>
-                  <Input
-                    id="tape-date"
-                    type="date"
-                    value={tapeDate}
-                    onChange={(e) => setTapeDate(e.target.value)}
-                    className="rounded-2xl border-gray-150 h-11 text-xs"
-                  />
-                </div>
-
-                <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-11 font-medium text-xs">
-                  Save Tape Measurements
-                </Button>
-              </form>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tape Measurement Logs list */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-1 flex items-center gap-2">
-            <List size={16} />
-            Tape Measurements History
-          </h4>
-          {tapeLogs.length === 0 ? (
-            <div className="bg-white p-6 rounded-3xl text-center">
-              <p className="text-sm text-gray-400 font-medium">No tape measurements logged yet.</p>
-            </div>
-          ) : (
-            tapeLogs.slice(0, 10).map((log) => (
-              <Card key={log.id} className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
-                <CardContent className="p-5 space-y-3">
-                  <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                    <span className="text-xs font-bold text-indigo-600">{formatDate(log.date)}</span>
-                    <span className="text-[10px] text-gray-400 font-semibold uppercase">Composition metrics</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="bg-gray-50 p-2 rounded-xl">
-                      <span className="text-[10px] text-gray-400 block font-semibold">Waist</span>
-                      <span className="font-bold text-[#1A1C1E]">{convertCmToTapeDisplay(log.waist)}</span>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-xl">
-                      <span className="text-[10px] text-gray-400 block font-semibold">Neck</span>
-                      <span className="font-bold text-[#1A1C1E]">{convertCmToTapeDisplay(log.neck)}</span>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-xl">
-                      <span className="text-[10px] text-gray-400 block font-semibold">Hips</span>
-                      <span className="font-bold text-[#1A1C1E]">{convertCmToTapeDisplay(log.hips)}</span>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-xl">
-                      <span className="text-[10px] text-gray-400 block font-semibold">Chest</span>
-                      <span className="font-bold text-[#1A1C1E]">{convertCmToTapeDisplay(log.chest)}</span>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-xl">
-                      <span className="text-[10px] text-gray-400 block font-semibold">Biceps</span>
-                      <span className="font-bold text-[#1A1C1E]">{convertCmToTapeDisplay(log.biceps)}</span>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-xl">
-                      <span className="text-[10px] text-gray-400 block font-semibold">Thighs</span>
-                      <span className="font-bold text-[#1A1C1E]">{convertCmToTapeDisplay(log.thighs)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
 
         {/* Weight 30 days trends area graph */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
@@ -630,7 +310,7 @@ const BodyMeasurementsPage = () => {
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-base text-[#1A1C1E]">BMI Trend</h3>
               {currentBMI !== null && (
-                <span className="text-sm font-bold bg-[#EADDFF] text-[#21005D] px-2.5 py-1 rounded-full font-sans">Current: {currentBMI}</span>
+                <span className="text-sm font-bold bg-[#EADDFF] text-[#21005D] px-2.5 py-1 rounded-full">Current: {currentBMI}</span>
               )}
             </div>
             {weightLogs.length > 0 ? (
@@ -652,6 +332,58 @@ const BodyMeasurementsPage = () => {
           </CardContent>
         </Card>
 
+        {/* Logging inputs */}
+        <Card className="border-none shadow-none bg-white rounded-3xl">
+          <CardContent className="p-6 space-y-4">
+            <div className="border-b border-gray-100 pb-4">
+              <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
+                <Scale size={18} className="text-[#6750A4]" />
+                Update Weight
+              </h3>
+              <form onSubmit={logWeightEntry} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="weight-input" className="text-xs text-gray-500">Weight ({settings.weight === 'kg' ? 'kg' : settings.weight === 'lbs' ? 'lbs' : 'st'})</Label>
+                  <Input
+                    id="weight-input"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g. 75.2"
+                    value={weightInput}
+                    onChange={(e) => setWeightInput(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium">
+                  Update Weight
+                </Button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-base font-bold text-[#1A1C1E] mb-3 flex items-center gap-2">
+                <Scale size={18} className="text-[#10B981]" />
+                Update Body Fat
+              </h3>
+              <form onSubmit={logFatEntry} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="fat-input" className="text-xs text-gray-500">Body Fat (%)</Label>
+                  <Input
+                    id="fat-input"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g. 15.5"
+                    value={fatInput}
+                    onChange={(e) => setFatInput(e.target.value)}
+                    className="rounded-2xl border-gray-200 h-11"
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-[#10B981] hover:bg-[#10B981]/90 text-white rounded-2xl h-11 font-medium">
+                  Update Fat Ratio
+                </Button>
+              </form>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </MobileLayout>
   );
