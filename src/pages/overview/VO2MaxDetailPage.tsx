@@ -12,7 +12,7 @@ import { showSuccess, showError } from '@/utils/toast';
 
 const VO2MaxDetailPage = () => {
   const { vitalsData, addVitalLog, weightLogs } = useHealthData();
-  const { convertWeight } = useUnits();
+  const { settings, convertWeight } = useUnits();
 
   // Calculation states
   const [method, setMethod] = useState<'ratio' | 'rockport'>('ratio');
@@ -191,7 +191,10 @@ const VO2MaxDetailPage = () => {
                   <div className="bg-blue-50 p-3 rounded-2xl flex gap-3 items-center">
                     <Timer size={18} className="text-blue-500 shrink-0" />
                     <p className="text-[10px] text-blue-700 leading-tight">
-                      For the most accurate result, walk exactly 1 mile as fast as possible and record your heart rate immediately at the finish.
+                      {settings.length === 'metric' 
+                        ? "For the most accurate result, walk exactly 1.6 km as fast as possible and record your heart rate immediately at the finish."
+                        : "For the most accurate result, walk exactly 1 mile as fast as possible and record your heart rate immediately at the finish."
+                      }
                     </p>
                   </div>
                 </div>
