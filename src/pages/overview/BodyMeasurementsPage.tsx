@@ -331,7 +331,7 @@ const BodyMeasurementsPage = () => {
                   <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
                     <p className="text-xs text-gray-400 font-semibold">Waist-to-Height (WHtR)</p>
                     <p className="text-xl font-black text-[#1A1C1E]">{activeWHtR}</p>
-                    <p className="text-[9px] text-gray-400">Ideal target is < 0.50</p>
+                    <p className="text-[9px] text-gray-400">{ "Ideal target is < 0.50" }</p>
                   </div>
                 </div>
 
