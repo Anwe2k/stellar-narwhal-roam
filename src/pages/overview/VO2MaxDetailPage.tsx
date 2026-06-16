@@ -12,7 +12,7 @@ import { showSuccess, showError } from '@/utils/toast';
 
 const VO2MaxDetailPage = () => {
   const { vitalsData, addVitalLog, weightLogs } = useHealthData();
-  const { convertWeight } = useUnits();
+  const { settings } = useUnits();
 
   // Calculation states
   const [method, setMethod] = useState<'ratio' | 'rockport'>('ratio');
@@ -29,6 +29,9 @@ const VO2MaxDetailPage = () => {
   const dob = localStorage.getItem('profile_dob');
   const sex = localStorage.getItem('profile_sex') || 'Male';
   const age = dob ? Math.abs(new Date(Date.now() - new Date(dob).getTime()).getUTCFullYear() - 1970) : 28;
+
+  const isMetric = settings.length === 'metric';
+  const walkDistanceLabel = isMetric ? '1.6 km' : '1 mile';
 
   const getFitnessCategory = (vo2: number) => {
     if (vo2 >= 55) return { label: 'Elite', color: 'text-purple-500', bg: 'bg-purple-50' };
@@ -191,7 +194,7 @@ const VO2MaxDetailPage = () => {
                   <div className="bg-blue-50 p-3 rounded-2xl flex gap-3 items-center">
                     <Timer size={18} className="text-blue-500 shrink-0" />
                     <p className="text-[10px] text-blue-700 leading-tight">
-                      For the most accurate result, walk exactly 1 mile as fast as possible and record your heart rate immediately at the finish.
+                      For the most accurate result, walk exactly {walkDistanceLabel} as fast as possible and record your heart rate immediately at the finish.
                     </p>
                   </div>
                 </div>
@@ -228,10 +231,10 @@ const VO2MaxDetailPage = () => {
               <div className="p-4 rounded-2xl bg-gray-50 space-y-1">
                 <div className="flex items-center gap-2">
                   <Timer size={14} className="text-gray-400" />
-                  <span className="text-xs font-bold text-gray-700">The 1-Mile Test</span>
+                  <span className="text-xs font-bold text-gray-700">The 1-Mile Walk Test</span>
                 </div>
                 <p className="text-[11px] text-gray-500 leading-relaxed">
-                  The Rockport Walk Test is medically validated. It's best performed on a flat track with a consistent pace.
+                  The Rockport Walk Test is medically validated. It is best performed on a flat track with a consistent pace.
                 </p>
               </div>
             </div>
