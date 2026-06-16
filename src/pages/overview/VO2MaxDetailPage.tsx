@@ -24,6 +24,7 @@ const VO2MaxDetailPage = () => {
 
   const logs = vitalsData.vo2max || [];
   const latestValue = logs.length > 0 ? logs[logs.length - 1].value : 0;
+  const hasData = latestValue > 0;
 
   // Derive age and gender from localstorage if possible
   const dob = localStorage.getItem('profile_dob');
@@ -80,8 +81,8 @@ const VO2MaxDetailPage = () => {
         {/* Hero Card */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
-            <div className={`w-16 h-16 rounded-full ${category.bg} flex items-center justify-center`}>
-              <Wind size={32} className={category.color} />
+            <div className={`w-16 h-16 rounded-full ${hasData ? category.bg : 'bg-gray-100'} flex items-center justify-center`}>
+              <Wind size={32} className={hasData ? category.color : 'text-gray-400'} />
             </div>
             <div>
               <p className="text-5xl font-black text-[#1A1C1E] tracking-tighter">
@@ -89,9 +90,15 @@ const VO2MaxDetailPage = () => {
               </p>
               <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">ml/kg/min</p>
             </div>
-            <div className={`px-4 py-1.5 rounded-full ${category.bg} ${category.color} text-xs font-black uppercase tracking-wider`}>
-              {category.label} Fitness
-            </div>
+            {hasData ? (
+              <div className={`px-4 py-1.5 rounded-full ${category.bg} ${category.color} text-xs font-black uppercase tracking-wider`}>
+                {category.label} Fitness
+              </div>
+            ) : (
+              <div className="px-4 py-1.5 rounded-full bg-gray-100 text-gray-400 text-xs font-black uppercase tracking-wider">
+                No Data
+              </div>
+            )}
             <p className="text-xs text-gray-400 leading-relaxed max-w-[240px]">
               VO2 Max is the single best measure of cardiovascular fitness and aerobic power.
             </p>
