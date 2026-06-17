@@ -109,28 +109,34 @@ const VO2MaxDetailPage = () => {
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <h3 className="font-bold text-base text-[#1A1C1E]">Fitness Trend</h3>
-            <div className="h-40 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={logs}>
-                  <XAxis dataKey="date" hide />
-                  <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="bg-white p-2.5 rounded-xl shadow-md border border-gray-100 text-xs">
-                            <p className="font-bold text-gray-800">{payload[0].value} ml/kg/min</p>
-                            <p className="text-gray-400">{payload[0].payload.date}</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Area type="monotone" dataKey="value" stroke="#F43F5E" strokeWidth={3} fill="rgba(244, 63, 94, 0.05)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            {hasData ? (
+              <div className="h-40 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={logs}>
+                    <XAxis dataKey="date" hide />
+                    <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-white p-2.5 rounded-xl shadow-md border border-gray-100 text-xs">
+                              <p className="font-bold text-gray-800">{payload[0].value} ml/kg/min</p>
+                              <p className="text-gray-400">{payload[0].payload.date}</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Area type="monotone" dataKey="value" stroke="#F43F5E" strokeWidth={3} fill="rgba(244, 63, 94, 0.05)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-40 w-full flex items-center justify-center bg-gray-50 rounded-2xl">
+                <span className="text-sm text-gray-400 font-medium">No recorded graphs. Add below.</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 
