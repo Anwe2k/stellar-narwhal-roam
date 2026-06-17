@@ -151,48 +151,49 @@ const SleepPage = () => {
   ];
 
   return (
-    <MobileLayout title="Sleep Tracker" headerGradientClass="from-[#D0E1FD]/50" backPath="/overview">
-      <div className="space-y-6 pt-2">
-        {/* Stacked top summary visualizer - Updated to Blue Theme */}
-        <div className="flex items-center justify-between py-2">
-          <div className="space-y-5">
+    <MobileLayout title="Sleep Tracker" backPath="/overview">
+      <div className="space-y-6 pt-1 pb-12">
+        
+        {/* Dynamic sleep indicators summary */}
+        <div className="flex items-center justify-between py-2 bg-[#F3EDF7] border border-[#CAC4D0]/30 rounded-[28px] p-5">
+          <div className="space-y-4">
             <div>
-              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
-                {avgDuration} <span className="text-base font-normal text-gray-400">HRS</span>
+              <p className="text-2xl font-extrabold text-[#1D1B20] tracking-tight">
+                {avgDuration} <span className="text-xs font-bold text-[#49454F]">HRS</span>
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Average Duration</p>
+              <p className="text-[10px] font-bold text-[#49454F] tracking-wider uppercase">Average Duration</p>
             </div>
             
             <div>
-              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+              <p className="text-2xl font-extrabold text-[#1D1B20] tracking-tight">
                 {sleepScore !== null ? `${sleepScore}/100` : '--'}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Sleep Quality Score</p>
+              <p className="text-[10px] font-bold text-[#49454F] tracking-wider uppercase">Sleep Quality</p>
             </div>
 
             <div>
-              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+              <p className="text-2xl font-extrabold text-[#1D1B20] tracking-tight">
                 {lastBedtime}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Last Logged Bedtime</p>
+              <p className="text-[10px] font-bold text-[#49454F] tracking-wider uppercase">Last Bedtime</p>
             </div>
           </div>
 
-          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#D0E1FD] to-[#A2C4FC] flex items-center justify-center relative overflow-hidden">
+          <div className="w-28 h-36 rounded-[24px] bg-[#D0E1FD] border border-[#A2C4FC] flex items-center justify-center relative overflow-hidden shrink-0">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
-            <Moon size={84} className="text-[#1A56DB] relative z-10 opacity-90 animate-bounce duration-[6s]" />
+            <Moon size={64} className="text-[#1A56DB] relative z-10 opacity-95 animate-bounce duration-[6s]" />
           </div>
         </div>
 
-        {/* Sleep stages breakdown - Premium Apple Health / Fitbit Style */}
-        <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
-          <CardContent className="p-6 space-y-6">
+        {/* Sleep stages breakdown - Premium Material Outlined Style */}
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px] overflow-hidden">
+          <CardContent className="p-5 space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="font-bold text-base text-[#1A1C1E]">Sleep Stages</h3>
+              <h3 className="font-extrabold text-sm text-[#1D1B20] uppercase tracking-wider">Sleep Stages</h3>
               {sleepScore !== null && (
-                <span className="text-xs font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles size={12} />
-                  {sleepScore >= 85 ? 'Excellent Sleep' : sleepScore >= 70 ? 'Good Sleep' : 'Restless Sleep'}
+                <span className="text-[10px] font-extrabold bg-[#EADDFF] text-[#21005D] px-2.5 py-1 rounded-full flex items-center gap-1 border border-[#D0BCFF]">
+                  <Sparkles size={11} />
+                  {sleepScore >= 85 ? 'Excellent Rest' : sleepScore >= 70 ? 'Good Rest' : 'Restless Rest'}
                 </span>
               )}
             </div>
@@ -200,8 +201,8 @@ const SleepPage = () => {
             {sleepLogs.length > 0 ? (
               <div className="space-y-6">
                 {/* Horizontal Proportion Bar */}
-                <div className="space-y-2">
-                  <div className="h-4 w-full rounded-full flex overflow-hidden bg-gray-100">
+                <div className="space-y-3">
+                  <div className="h-3 w-full rounded-full flex overflow-hidden bg-gray-100 border border-gray-200">
                     {stages.map((stage) => (
                       <div 
                         key={stage.name} 
@@ -211,10 +212,10 @@ const SleepPage = () => {
                       />
                     ))}
                   </div>
-                  <div className="flex justify-between text-[11px] font-bold text-gray-400 px-1">
+                  <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-[#49454F]">
                     {stages.map((stage) => (
-                      <span key={stage.name} className="flex items-center gap-1">
-                        <span className={`w-2 h-2 rounded-full ${stage.color}`} />
+                      <span key={stage.name} className="flex items-center gap-1.5">
+                        <span className={`w-2.5 h-2.5 rounded-full ${stage.color} border border-black/10`} />
                         {stage.name} ({stage.percentage}%)
                       </span>
                     ))}
@@ -222,21 +223,21 @@ const SleepPage = () => {
                 </div>
 
                 {/* Step-Timeline Sleep Cycle Chart */}
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Sleep Cycle Timeline</span>
-                  <div className="h-48 w-full -ml-4">
+                <div className="space-y-2 border-t border-[#CAC4D0]/20 pt-4">
+                  <span className="text-[10px] font-bold text-[#49454F] uppercase tracking-wider block">Sleep Cycle Timeline</span>
+                  <div className="h-40 w-full -ml-4">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={timelineData}>
                         <XAxis 
                           dataKey="time" 
-                          stroke="#9CA3AF" 
-                          fontSize={10} 
+                          stroke="#49454F" 
+                          fontSize={9} 
                           axisLine={false} 
                           tickLine={false} 
                         />
                         <YAxis 
-                          stroke="#9CA3AF" 
-                          fontSize={10} 
+                          stroke="#49454F" 
+                          fontSize={9} 
                           axisLine={false} 
                           tickLine={false} 
                           domain={[1, 4]}
@@ -251,8 +252,8 @@ const SleepPage = () => {
                             if (active && payload && payload.length) {
                               const data = payload[0].payload;
                               return (
-                                <div className="bg-white p-2.5 rounded-xl shadow-md border border-gray-100 text-xs">
-                                  <p className="font-bold text-gray-800">{data.stageName} Stage</p>
+                                <div className="bg-white p-2.5 rounded-xl shadow-md border border-[#E6E0E9] text-[11px]">
+                                  <p className="font-extrabold text-gray-800">{data.stageName} Stage</p>
                                   <p className="text-gray-400">Time: {data.time}</p>
                                 </div>
                               );
@@ -263,9 +264,9 @@ const SleepPage = () => {
                         <Area 
                           type="stepAfter" 
                           dataKey="stageValue" 
-                          stroke="#3B82F6" 
-                          strokeWidth={2.5}
-                          fill="rgba(59, 130, 246, 0.08)" 
+                          stroke="#1A56DB" 
+                          strokeWidth={2}
+                          fill="rgba(26, 86, 219, 0.05)" 
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -273,39 +274,39 @@ const SleepPage = () => {
                 </div>
 
                 {/* Detailed Stage Insights List */}
-                <div className="space-y-3 pt-2 border-t border-gray-100">
+                <div className="space-y-3 pt-3 border-t border-[#CAC4D0]/20">
                   {stages.map((stage) => (
-                    <div key={stage.name} className="flex gap-3 items-start p-3 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                      <div className={`w-2.5 h-2.5 rounded-full ${stage.color} mt-1.5 shrink-0`} />
+                    <div key={stage.name} className="flex gap-3 items-start p-3 rounded-2xl bg-white border border-[#CAC4D0]/10 hover:bg-[#ECE6F0]/20 transition-colors">
+                      <div className={`w-2.5 h-2.5 rounded-full ${stage.color} mt-1.5 shrink-0 border border-black/10`} />
                       <div className="space-y-1">
                         <div className="flex items-baseline gap-2">
-                          <span className="font-bold text-sm text-gray-800">{stage.name}</span>
-                          <span className="text-xs font-bold text-gray-500">{formatHrs(stage.duration)}</span>
-                          <span className="text-[10px] font-semibold text-gray-400">({stage.percentage}%)</span>
+                          <span className="font-extrabold text-xs text-gray-800">{stage.name}</span>
+                          <span className="text-[10px] font-bold text-gray-400">{formatHrs(stage.duration)}</span>
+                          <span className="text-[9px] font-semibold text-gray-400">({stage.percentage}%)</span>
                         </div>
-                        <p className="text-xs text-gray-500 leading-relaxed">{stage.insight}</p>
+                        <p className="text-[11px] text-[#49454F] leading-relaxed font-medium">{stage.insight}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">Log sleep periods below to generate sleep phase calculations.</p>
+              <div className="p-6 text-center bg-white border border-[#CAC4D0]/20 rounded-2xl">
+                <p className="text-xs text-[#49454F] font-bold">Log sleep periods below to generate phase breakdowns.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Heart Rate During Sleep Graph */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Sleeping Heart Rate (Weekly)</h3>
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px]">
+          <CardContent className="p-5 space-y-4">
+            <h3 className="font-extrabold text-sm text-[#1D1B20] uppercase tracking-wider">Sleeping Heart Rate (Weekly)</h3>
             <div className="h-32 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={sleepingHrData}>
-                  <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                  <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 3', 'dataMax + 3']} />
+                  <XAxis dataKey="day" stroke="#49454F" fontSize={9} axisLine={false} tickLine={false} />
+                  <YAxis stroke="#49454F" fontSize={9} axisLine={false} tickLine={false} width={20} domain={['dataMin - 3', 'dataMax + 3']} />
                   <Tooltip />
                   <Area type="monotone" dataKey="bpm" stroke="#EF4444" strokeWidth={2} fill="rgba(239, 68, 68, 0.05)" />
                 </AreaChart>
@@ -314,35 +315,35 @@ const SleepPage = () => {
           </CardContent>
         </Card>
 
-        {/* 7 Days duration list and input */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">7-Day History</h3>
+        {/* 7 Days Duration list */}
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px]">
+          <CardContent className="p-5 space-y-4">
+            <h3 className="font-extrabold text-sm text-[#1D1B20] uppercase tracking-wider">7-Day Sleep Duration</h3>
             {sleepLogs.length > 0 ? (
               <div className="h-32 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={sleepLogs}>
-                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={11} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={11} axisLine={false} tickLine={false} width={20} />
+                    <XAxis dataKey="day" stroke="#49454F" fontSize={9} axisLine={false} tickLine={false} />
+                    <YAxis stroke="#49454F" fontSize={9} axisLine={false} tickLine={false} width={20} />
                     <Tooltip />
-                    <Bar dataKey="hrs" fill="#3B82F6" radius={[6, 6, 0, 0]} barSize={16} />
+                    <Bar dataKey="hrs" fill="#1A56DB" radius={[6, 6, 0, 0]} barSize={16} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">No 7-day sleep duration logged yet.</p>
+              <div className="p-6 text-center bg-white border border-[#CAC4D0]/20 rounded-2xl">
+                <p className="text-xs text-[#49454F] font-bold">No sleep logs recorded yet.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Period selection inputs */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6">
-            <h3 className="text-base font-bold text-[#1A1C1E] mb-3">Log Sleep Period</h3>
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px]">
+          <CardContent className="p-5">
+            <h3 className="text-sm font-extrabold text-[#1D1B20] uppercase tracking-wider mb-4">Log Sleep Period</h3>
             <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <CustomTimePicker 
                   label="Went to Bed"
                   value={bedtime}
@@ -361,11 +362,11 @@ const SleepPage = () => {
                 onChange={setLogDate}
               />
 
-              <div className="bg-blue-50 text-blue-900 p-3.5 rounded-2xl text-center text-sm font-medium">
-                Calculated Sleep Time: <span className="font-bold text-lg text-blue-600">{computedHrs}</span> hours
+              <div className="bg-[#EADDFF] text-[#21005D] border border-[#D0BCFF] p-4 rounded-2xl text-center text-xs font-extrabold">
+                Calculated Sleep Time: <span className="text-lg font-black block mt-0.5">{computedHrs} hours</span>
               </div>
 
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-11 font-medium">
+              <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-full h-12 font-bold transition-transform active:scale-95">
                 Log Sleep Period
               </Button>
             </form>

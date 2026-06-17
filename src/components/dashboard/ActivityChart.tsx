@@ -16,28 +16,28 @@ const data = [
 
 const ActivityChart = () => {
   return (
-    <Card className="mt-6 border-none shadow-none bg-white rounded-3xl">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold">Weekly Activity</CardTitle>
+    <Card className="border border-[#CAC4D0]/40 shadow-none bg-[#F7F2FA] rounded-[28px] overflow-hidden">
+      <CardHeader className="pb-1 pt-5 px-6">
+        <CardTitle className="text-sm font-extrabold text-[#1D1B20] tracking-wider uppercase">Weekly Activity</CardTitle>
       </CardHeader>
-      <CardContent className="h-[200px] w-full pt-0">
+      <CardContent className="h-[210px] w-full pt-2 px-4 pb-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <XAxis 
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fontSize: 12, fill: '#888' }} 
+              tick={{ fontSize: 11, fill: '#49454F', fontWeight: 'bold' }} 
             />
             <Tooltip 
-              cursor={{ fill: '#f3f4f6' }}
-              contentStyle={{ borderRadius: '12px', border: 'none' }}
+              cursor={{ fill: 'rgba(103, 80, 164, 0.06)', radius: 8 }}
+              contentStyle={{ borderRadius: '16px', border: 'none', backgroundColor: '#FEF7FF', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
             />
             <Bar 
               dataKey="steps" 
               fill="#6750A4" 
-              radius={[6, 6, 0, 0]} 
-              barSize={20}
+              radius={[8, 8, 0, 0]} 
+              barSize={18}
             />
           </BarChart>
         </ResponsiveContainer>

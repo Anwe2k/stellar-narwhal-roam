@@ -58,106 +58,108 @@ const Profile = () => {
   const gearAction = (
     <Link 
       to="/settings/units" 
-      className="p-2.5 rounded-full bg-white/40 backdrop-blur-md text-[#535C8A] hover:bg-white/60 active:scale-95 transition-all shadow-sm"
-      title="Settings"
+      className="w-11 h-11 rounded-full bg-[#EADDFF] text-[#21005D] hover:bg-[#D0BCFF] active:scale-95 transition-all flex items-center justify-center shadow-sm"
+      title="Units Settings"
     >
-      <Settings size={22} className="animate-[spin_1s_ease-in-out]" />
+      <Settings size={20} className="stroke-[2.5]" />
     </Link>
   );
 
   return (
     <MobileLayout 
-      title="Profile" 
-      headerGradientClass="from-[#C1C8FF] via-[#DCE1FF]/40" 
+      title="My Space" 
       rightAction={gearAction}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 pb-12">
         
+        {/* Profile Card Block */}
         <Link 
           to="/profile-settings"
-          className="flex items-center justify-between p-2 mt-4 bg-transparent rounded-3xl active:scale-[0.98] transition-transform duration-200 group"
+          className="flex items-center justify-between p-4 bg-[#F7F2FA] border border-[#CAC4D0]/30 rounded-[28px] active:scale-[0.98] hover:bg-[#ECE6F0] transition-all duration-200 group"
         >
           <div className="flex items-center gap-4">
-            <Avatar className="w-16 h-16 border-2 border-white/80 shadow-md">
+            <Avatar className="w-16 h-16 border-2 border-white/85 shadow-sm">
               <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop" />
-              <AvatarFallback className="bg-[#C1C8FF] text-[#1A1C1E] font-black">AJ</AvatarFallback>
+              <AvatarFallback className="bg-[#EADDFF] text-[#21005D] font-black">AJ</AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-2xl font-black text-[#1A1C1E] tracking-tight group-hover:text-[#6750A4] transition-colors">
+              <h2 className="text-xl font-extrabold text-[#1D1B20] tracking-tight group-hover:text-[#6750A4] transition-colors">
                 {profileName}
               </h2>
-              <p className="text-xs text-gray-500 font-semibold">{profileEmail}</p>
+              <p className="text-xs text-[#49454F] font-bold mt-0.5">{profileEmail}</p>
             </div>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1A1C1E] shadow-sm group-hover:translate-x-1 transition-transform">
-            <ChevronRight size={20} strokeWidth={2.5} />
+          <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#1D1B20] shadow-sm group-hover:translate-x-1 transition-transform">
+            <ChevronRight size={16} strokeWidth={2.5} />
           </div>
         </Link>
 
-        <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
-          <CardContent className="p-6 space-y-4">
-            <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+        {/* M3 Tonal Metrics Card */}
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px] overflow-hidden">
+          <CardContent className="p-5 space-y-4">
+            <div className="flex items-center gap-2 border-b border-[#E6E0E9] pb-3">
               <Activity size={18} className="text-[#6750A4]" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Metrics Overview</span>
+              <span className="text-xs font-bold text-[#49454F] uppercase tracking-wider">Metrics Profile</span>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Age</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{age}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-[#FEF7FF] border border-[#CAC4D0]/20 p-4 rounded-2xl space-y-1">
+                <p className="text-[10px] text-[#49454F] font-bold uppercase tracking-wider">Age</p>
+                <p className="text-base font-extrabold text-[#1D1B20]">{age}</p>
               </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Blood Type</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{bloodType}</p>
+              <div className="bg-[#FEF7FF] border border-[#CAC4D0]/20 p-4 rounded-2xl space-y-1">
+                <p className="text-[10px] text-[#49454F] font-bold uppercase tracking-wider">Blood Type</p>
+                <p className="text-base font-extrabold text-[#1D1B20]">{bloodType}</p>
               </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Sex</p>
-                <p className="text-lg font-black text-[#1A1C1E]">{sex}</p>
+              <div className="bg-[#FEF7FF] border border-[#CAC4D0]/20 p-4 rounded-2xl space-y-1">
+                <p className="text-[10px] text-[#49454F] font-bold uppercase tracking-wider">Sex</p>
+                <p className="text-base font-extrabold text-[#1D1B20]">{sex}</p>
               </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Target Bedtime</p>
+              <div className="bg-[#FEF7FF] border border-[#CAC4D0]/20 p-4 rounded-2xl space-y-1">
+                <p className="text-[10px] text-[#49454F] font-bold uppercase tracking-wider">Bedtime Target</p>
                 <div className="flex items-center gap-1">
-                  <Clock size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{formatTime(bedtime)}</p>
+                  <Clock size={14} className="text-[#6750A4] shrink-0" />
+                  <p className="text-base font-extrabold text-[#1D1B20]">{formatTime(bedtime)}</p>
                 </div>
               </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Wake Up Time</p>
+              <div className="bg-[#FEF7FF] border border-[#CAC4D0]/20 p-4 rounded-2xl space-y-1">
+                <p className="text-[10px] text-[#49454F] font-bold uppercase tracking-wider">Wakeup Target</p>
                 <div className="flex items-center gap-1">
-                  <Sunrise size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E]">{formatTime(wakeUpTime)}</p>
+                  <Sunrise size={14} className="text-[#6750A4] shrink-0" />
+                  <p className="text-base font-extrabold text-[#1D1B20]">{formatTime(wakeUpTime)}</p>
                 </div>
               </div>
-              <div className="bg-[#F7F9FC] p-4 rounded-2xl space-y-1">
-                <p className="text-xs text-gray-400 font-semibold">Country</p>
-                <div className="flex items-center gap-1">
-                  <Globe size={14} className="text-gray-400 shrink-0" />
-                  <p className="text-lg font-black text-[#1A1C1E] truncate max-w-full">{country}</p>
+              <div className="bg-[#FEF7FF] border border-[#CAC4D0]/20 p-4 rounded-2xl space-y-1">
+                <p className="text-[10px] text-[#49454F] font-bold uppercase tracking-wider">Region</p>
+                <div className="flex items-center gap-1 min-w-0">
+                  <Globe size={14} className="text-[#6750A4] shrink-0" />
+                  <p className="text-base font-extrabold text-[#1D1B20] truncate max-w-full">{country}</p>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
-          <CardContent className="p-2 space-y-0.5">
+        {/* Quick Settings Action Rows */}
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px] overflow-hidden">
+          <CardContent className="p-2.5 space-y-1">
             {[
-              { icon: Bell, label: 'Notifications', color: 'text-blue-500', bg: 'bg-blue-50' },
-              { icon: Shield, label: 'Privacy & Security', color: 'text-green-500', bg: 'bg-green-50' },
-              { icon: Flame, label: 'Goals Configuration', color: 'text-orange-500', bg: 'bg-orange-50' },
-              { icon: LogOut, label: 'Sign Out', color: 'text-red-500', bg: 'bg-red-50' },
+              { icon: Bell, label: 'Push Notifications', color: 'text-blue-500', bg: 'bg-blue-50 border-blue-100' },
+              { icon: Shield, label: 'Security & Privacy', color: 'text-green-500', bg: 'bg-green-50 border-green-100' },
+              { icon: Flame, label: 'Goal Configuration', color: 'text-orange-500', bg: 'bg-orange-50 border-orange-100' },
+              { icon: LogOut, label: 'Sign Out Account', color: 'text-red-500', bg: 'bg-red-50 border-red-100' },
             ].map((item, idx) => (
               <button 
                 key={item.label}
-                className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 active:scale-[0.99] transition-all"
+                className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-white active:scale-[0.99] transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 ${item.bg} rounded-xl flex items-center justify-center shrink-0`}>
-                    <item.icon size={20} className={item.color} />
+                  <div className={`w-9 h-9 ${item.bg} border rounded-xl flex items-center justify-center shrink-0`}>
+                    <item.icon size={18} className={item.color} />
                   </div>
-                  <span className="font-bold text-sm text-[#1A1C1E]">{item.label}</span>
+                  <span className="font-extrabold text-sm text-[#1D1B20]">{item.label}</span>
                 </div>
-                <ChevronRight size={18} className="text-gray-300" />
+                <ChevronRight size={16} className="text-gray-300" />
               </button>
             ))}
           </CardContent>

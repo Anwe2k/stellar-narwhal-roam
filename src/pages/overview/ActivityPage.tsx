@@ -48,74 +48,72 @@ const ActivityPage = () => {
   const displayDistance = totalDistance * (settings.length === 'imperial' ? 0.621371 : 1);
 
   return (
-    <MobileLayout title="Activity" headerGradientClass="from-[#EADDFF]/50" backPath="/overview">
-      <div className="space-y-6 pt-2">
-        {/* Top visual layout inspired by original photo */}
-        <div className="flex items-center justify-between py-2">
-          {/* 3 stacked key metrics */}
-          <div className="space-y-5">
+    <MobileLayout title="Activity Logs" backPath="/overview">
+      <div className="space-y-6 pt-1 pb-12">
+        {/* Top visual layout inspired by Material 3 */}
+        <div className="flex items-center justify-between py-2 bg-[#F3EDF7] border border-[#CAC4D0]/30 rounded-[28px] p-5">
+          <div className="space-y-4">
             <div>
-              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+              <p className="text-2xl font-extrabold text-[#1D1B20] tracking-tight">
                 {totalSteps.toLocaleString()}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Steps Today</p>
+              <p className="text-[10px] font-bold text-[#49454F] tracking-wider uppercase">Steps Today</p>
             </div>
             
             <div>
-              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+              <p className="text-2xl font-extrabold text-[#1D1B20] tracking-tight">
                 {displayDistance.toFixed(2)}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">{distanceUnit}</p>
+              <p className="text-[10px] font-bold text-[#49454F] tracking-wider uppercase">{distanceUnit}</p>
             </div>
 
             <div>
-              <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
+              <p className="text-2xl font-extrabold text-[#1D1B20] tracking-tight">
                 {Math.round(convertedEnergyTotal.value).toLocaleString()}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Active {convertedEnergyTotal.label}</p>
+              <p className="text-[10px] font-bold text-[#49454F] tracking-wider uppercase">Active {convertedEnergyTotal.label}</p>
             </div>
           </div>
 
-          {/* Large gorgeous category visual on the right */}
-          <div className="w-36 h-48 rounded-[32px] bg-gradient-to-br from-[#EADDFF] to-[#D0BCFF]/60 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px]" />
-            <Footprints size={84} className="text-[#6750A4] relative z-10 opacity-90 animate-pulse duration-[3s]" />
+          <div className="w-28 h-36 rounded-[24px] bg-[#EADDFF] border border-[#D0BCFF] flex items-center justify-center relative overflow-hidden shrink-0">
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
+            <Footprints size={64} className="text-[#6750A4] relative z-10 opacity-95 animate-pulse duration-[3s]" />
           </div>
         </div>
 
         {/* Log Form */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6">
-            <h3 className="text-base font-bold text-[#1A1C1E] mb-4">Log Active Workout</h3>
+        <Card className="border border-[#CAC4D0]/30 shadow-none bg-[#F7F2FA] rounded-[28px]">
+          <CardContent className="p-5">
+            <h3 className="text-sm font-extrabold text-[#1D1B20] uppercase tracking-wider mb-4">Log Active Workout</h3>
             <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="steps" className="text-xs font-medium text-gray-500">Steps Taken</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="steps" className="text-xs font-bold text-[#49454F]">Steps Taken</Label>
                   <Input
                     id="steps"
                     type="number"
                     placeholder="e.g. 5000"
                     value={stepsInput}
                     onChange={(e) => setStepsInput(e.target.value)}
-                    className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
+                    className="rounded-xl border-gray-200 h-11 focus-visible:ring-[#6750A4]"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="energy" className="text-xs font-medium text-gray-500">Calories Burned (kcal)</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="energy" className="text-xs font-bold text-[#49454F]">Calories (kcal)</Label>
                   <Input
                     id="energy"
                     type="number"
                     placeholder="e.g. 250"
                     value={energyInput}
                     onChange={(e) => setEnergyInput(e.target.value)}
-                    className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
+                    className="rounded-xl border-gray-200 h-11 focus-visible:ring-[#6750A4]"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="distance" className="text-xs font-medium text-gray-500">Distance ({settings.length === 'metric' ? 'km' : 'miles'})</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="distance" className="text-xs font-bold text-[#49454F]">Distance ({settings.length === 'metric' ? 'km' : 'miles'})</Label>
                   <Input
                     id="distance"
                     type="number"
@@ -123,7 +121,7 @@ const ActivityPage = () => {
                     placeholder={settings.length === 'metric' ? "e.g. 3.2" : "e.g. 2.0"}
                     value={distanceInput}
                     onChange={(e) => setDistanceInput(e.target.value)}
-                    className="rounded-2xl border-gray-200 focus-visible:ring-[#6750A4]"
+                    className="rounded-xl border-gray-200 h-11 focus-visible:ring-[#6750A4]"
                   />
                 </div>
 
@@ -134,7 +132,7 @@ const ActivityPage = () => {
                 />
               </div>
 
-              <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-2xl h-11 font-medium">
+              <Button type="submit" className="w-full bg-[#6750A4] hover:bg-[#6750A4]/90 text-white rounded-full h-12 font-bold transition-transform active:scale-95">
                 Save Activity
               </Button>
             </form>
@@ -143,29 +141,29 @@ const ActivityPage = () => {
 
         {/* Activity Logs history */}
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-1">Today's Active Logs</h4>
+          <h4 className="text-xs font-extrabold text-[#49454F] uppercase tracking-wider px-1">Today's Active Logs</h4>
           {activityLogs.length === 0 ? (
-            <div className="bg-white p-6 rounded-3xl text-center">
-              <p className="text-sm text-gray-400 font-medium">No activity data logged yet.</p>
+            <div className="bg-white border border-[#CAC4D0]/20 p-6 rounded-[24px] text-center">
+              <p className="text-xs text-[#49454F] font-bold">No activity data logged yet.</p>
             </div>
           ) : (
             activityLogs.map((log) => {
               const convertedEnergy = convertEnergy(log.energy);
               const dist = log.distance * (settings.length === 'imperial' ? 0.621371 : 1);
               return (
-                <div key={log.id} className="bg-white p-4 rounded-3xl flex justify-between items-center animate-in fade-in">
+                <div key={log.id} className="bg-white border border-[#CAC4D0]/10 p-4 rounded-[24px] flex justify-between items-center animate-in fade-in">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#EADDFF] text-[#21005D] rounded-2xl flex items-center justify-center shrink-0">
-                      <Footprints size={20} />
+                    <div className="w-10 h-10 bg-[#EADDFF] border border-[#D0BCFF] text-[#21005D] rounded-xl flex items-center justify-center shrink-0">
+                      <Footprints size={18} />
                     </div>
                     <div>
-                      <p className="font-bold text-[#1A1C1E]">{log.steps.toLocaleString()} steps</p>
-                      <p className="text-xs text-gray-400">At {formatTime(log.time)}</p>
+                      <p className="font-extrabold text-sm text-[#1D1B20]">{log.steps.toLocaleString()} steps</p>
+                      <p className="text-[10px] text-[#49454F] font-bold">At {formatTime(log.time)}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-[#6750A4]">{Math.round(convertedEnergy.value)} {convertedEnergy.label}</p>
-                    <p className="text-xs text-gray-500">{dist.toFixed(1)} {distanceUnit}</p>
+                    <p className="font-extrabold text-sm text-[#6750A4]">{Math.round(convertedEnergy.value)} {convertedEnergy.label}</p>
+                    <p className="text-[10px] text-[#49454F] font-bold">{dist.toFixed(1)} {distanceUnit}</p>
                   </div>
                 </div>
               );

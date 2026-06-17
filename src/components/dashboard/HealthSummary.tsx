@@ -23,43 +23,50 @@ const HealthSummary = () => {
       value: latestHR !== null ? latestHR.toString() : 'No data', 
       unit: latestHR !== null ? 'bpm' : '', 
       icon: Heart, 
-      color: 'bg-red-100 text-red-600' 
+      color: 'bg-[#FFDAD6] text-[#410002] border-[#FFB2AB]' 
     },
     { 
       label: 'Calories Burned', 
       value: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).value.toLocaleString() : 'No data', 
       unit: totalCaloriesBurned > 0 ? convertEnergy(totalCaloriesBurned).label : '', 
       icon: Flame, 
-      color: 'bg-orange-100 text-orange-600' 
+      color: 'bg-[#FFE082]/30 text-[#FF8F00] border-[#FFD54F]' 
     },
     { 
-      label: 'Steps', 
+      label: 'Steps Taken', 
       value: totalSteps > 0 ? totalSteps.toLocaleString() : 'No data', 
       unit: totalSteps > 0 ? 'steps' : '', 
       icon: Footprints, 
-      color: 'bg-blue-100 text-blue-600' 
+      color: 'bg-[#EADDFF] text-[#21005D] border-[#D0BCFF]' 
     },
     { 
-      label: 'Sleep', 
+      label: 'Sleep Duration', 
       value: totalSleep > 0 ? totalSleep.toString() : 'No data', 
       unit: totalSleep > 0 ? 'hrs' : '', 
       icon: Moon, 
-      color: 'bg-purple-100 text-purple-600' 
+      color: 'bg-[#D0E1FD] text-[#1A56DB] border-[#A2C4FC]' 
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 mt-4">
+    <div className="grid grid-cols-2 gap-3.5">
       {stats.map((stat) => (
-        <Card key={stat.label} className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
-          <CardContent className="p-5">
-            <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-3", stat.color)}>
-              <stat.icon size={20} />
+        <Card 
+          key={stat.label} 
+          className="border border-[#CAC4D0]/40 shadow-none bg-[#F7F2FA] rounded-[24px] overflow-hidden hover:bg-[#ECE6F0] active:scale-[0.98] transition-all duration-200"
+        >
+          <CardContent className="p-4 flex flex-col justify-between min-h-[140px]">
+            <div className={cn("w-10 h-10 rounded-[12px] flex items-center justify-center mb-1 border", stat.color)}>
+              <stat.icon size={18} />
             </div>
-            <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
-            <div className="flex items-baseline gap-1 mt-1">
-              <span className={cn("font-bold", stat.value === 'No data' ? 'text-sm text-gray-400' : 'text-2xl')}>{stat.value}</span>
-              {stat.unit && <span className="text-xs text-gray-400">{stat.unit}</span>}
+            <div>
+              <p className="text-[11px] text-[#49454F] font-bold tracking-wider uppercase">{stat.label}</p>
+              <div className="flex items-baseline gap-0.5 mt-0.5">
+                <span className={cn("font-extrabold tracking-tight text-gray-950", stat.value === 'No data' ? 'text-xs text-gray-400' : 'text-xl')}>
+                  {stat.value}
+                </span>
+                {stat.unit && <span className="text-[10px] text-[#49454F] font-bold ml-0.5">{stat.unit}</span>}
+              </div>
             </div>
           </CardContent>
         </Card>
