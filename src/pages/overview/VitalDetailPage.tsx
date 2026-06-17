@@ -13,6 +13,7 @@ import { useHealthData } from '@/context/HealthDataContext';
 import { useUnits } from '@/context/UnitContext';
 import { CustomTimePicker, CustomDatePicker } from '@/components/ui/CustomDateTimePicker';
 import { showSuccess } from '@/utils/toast';
+import PeriodSelector, { PeriodType } from '@/components/ui/PeriodSelector';
 
 const vitalTypes = [
   { key: 'hr', title: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', description: 'Beats per minute measures how fast your heart beats. Normal is between 60-100 bpm.' },
@@ -30,6 +31,8 @@ const VitalDetailPage = () => {
 
   const vitalObj = vitalTypes.find(v => v.key === vitalKey);
 
+  // Default Resting HR, Blood Pressure, and Blood Sugar to 'week'
+  const [period, setPeriod] = useState<PeriodType>('week');
   const [newValue, setNewValue] = useState('');
   const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
   const [logTime, setLogTime] = useState('');
@@ -80,6 +83,27 @@ const VitalDetailPage = () => {
     };
   });
 
+  // Filter trend records based on selected period
+  const now = new Date();
+  const filteredHistory = formattedHistory.filter(item => {
+    const itemDate = new Date(item.date);
+    if (isNaN(itemDate.getTime())) return true;
+    
+    const diffTime = now.getTime() - itemDate.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+    if (period === '24h') {
+      return diffDays <= 1;
+    } else if (period === 'week') {
+      return diffDays <= 7;
+    } else if (period === 'month') {
+      return diffDays <= 30;
+    } else if (period === 'year') {
+      return diffDays <= 365;
+    }
+    return true;
+  });
+
   return (
     <MobileLayout title={vitalObj.title} backPath="/overview/vitals">
       <div className="space-y-6 pt-2">
@@ -109,11 +133,18 @@ const VitalDetailPage = () => {
         {/* Chart */}
         <Card className="border-none shadow-none bg-white rounded-3xl overflow-hidden">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Trends</h3>
-            {hasData ? (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-bold text-base text-[#1A1C1E]">Trends</h3>
+              <PeriodSelector 
+                value={period} 
+                onChange={setPeriod} 
+                activeColorClass="text-[#1A1C1E] font-extrabold"
+              />
+            </div>
+            {filteredHistory.length > 0 ? (
               <div className="h-44 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={formattedHistory}>
+                  <AreaChart data={filteredHistory}>
                     <XAxis dataKey="displayDate" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
                     <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={25} domain={['dataMin - 5', 'dataMax + 5']} />
                     <Tooltip />
@@ -129,7 +160,7 @@ const VitalDetailPage = () => {
               </div>
             ) : (
               <div className="h-44 w-full flex items-center justify-center bg-gray-50 rounded-2xl">
-                <span className="text-sm text-gray-400 font-medium">No recorded graphs. Add below.</span>
+                <span className="text-sm text-gray-400 font-medium">No recorded logs for this period.</span>
               </div>
             )}
           </CardContent>

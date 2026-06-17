@@ -9,10 +9,14 @@ import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'rec
 import { useHealthData } from '@/context/HealthDataContext';
 import { useUnits } from '@/context/UnitContext';
 import { showSuccess, showError } from '@/utils/toast';
+import PeriodSelector, { PeriodType } from '@/components/ui/PeriodSelector';
 
 const VO2MaxDetailPage = () => {
   const { vitalsData, addVitalLog, weightLogs } = useHealthData();
   const { settings } = useUnits();
+
+  // Period state defaulting to 'month'
+  const [period, setPeriod] = useState<PeriodType>('month');
 
   // Calculation states
   const [method, setMethod] = useState<'ratio' | 'rockport'>('ratio');
@@ -74,6 +78,22 @@ const VO2MaxDetailPage = () => {
 
   const category = getFitnessCategory(latestValue);
 
+  // Filter dynamic logs list by period
+  const now = new Date();
+  const filteredLogs = logs.filter(item => {
+    const itemDate = new Date(item.date);
+    if (isNaN(itemDate.getTime())) return true;
+    
+    const diffTime = now.getTime() - itemDate.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+    if (period === '24h') return diffDays <= 1;
+    if (period === 'week') return diffDays <= 7;
+    if (period === 'month') return diffDays <= 30;
+    if (period === 'year') return diffDays <= 365;
+    return true;
+  });
+
   return (
     <MobileLayout title="VO2 Max Detail" headerGradientClass="from-[#FFDAD6]/40" backPath="/overview/vitals">
       <div className="space-y-6 pt-2 pb-10">
@@ -108,11 +128,18 @@ const VO2MaxDetailPage = () => {
         {/* History Graph */}
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Fitness Trend</h3>
-            {hasData ? (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-bold text-base text-[#1A1C1E]">Fitness Trend</h3>
+              <PeriodSelector 
+                value={period} 
+                onChange={setPeriod} 
+                activeColorClass="text-[#F43F5E] font-black"
+              />
+            </div>
+            {filteredLogs.length > 0 ? (
               <div className="h-40 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={logs}>
+                  <AreaChart data={filteredLogs}>
                     <XAxis dataKey="date" hide />
                     <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
                     <Tooltip 
@@ -134,7 +161,7 @@ const VO2MaxDetailPage = () => {
               </div>
             ) : (
               <div className="h-40 w-full flex items-center justify-center bg-gray-50 rounded-2xl">
-                <span className="text-sm text-gray-400 font-medium">No recorded graphs. Add below.</span>
+                <span className="text-sm text-gray-400 font-medium">No recorded logs for this period.</span>
               </div>
             )}
           </CardContent>

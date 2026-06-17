@@ -12,10 +12,16 @@ import { useHealthData } from '@/context/HealthDataContext';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { showSuccess, showError } from '@/utils/toast';
 import { calculateRFM, calculateWHtR, getWHtRStatus } from '@/utils/bodyComposition';
+import PeriodSelector, { PeriodType } from '@/components/ui/PeriodSelector';
 
 const BodyMeasurementsPage = () => {
   const { settings, convertWeight, convertHeight } = useUnits();
   const { weightLogs, addWeightLog, fatLogs, addFatLog, tapeLogs, addTapeLog } = useHealthData();
+
+  // Period states default to 'month'
+  const [weightPeriod, setWeightPeriod] = useState<PeriodType>('month');
+  const [fatPeriod, setFatPeriod] = useState<PeriodType>('month');
+  const [bmiPeriod, setBmiPeriod] = useState<PeriodType>('month');
 
   const [weightInput, setWeightInput] = useState('');
   const [fatInput, setFatInput] = useState('');
@@ -152,6 +158,40 @@ const BodyMeasurementsPage = () => {
     return `${parseFloat(displayed.toFixed(1))} ${tapeUnitLabel}`;
   };
 
+  // Parsing helper to map log 'day' strings (e.g. "Oct 12") safely to Date objects
+  const parseDayLabelToDate = (dayStr: string) => {
+    const now = new Date();
+    const parts = dayStr.split(' ');
+    if (parts.length === 2) {
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthIdx = monthNames.indexOf(parts[0]);
+      if (monthIdx !== -1) {
+        const dayVal = parseInt(parts[1]);
+        if (!isNaN(dayVal)) {
+          return new Date(now.getFullYear(), monthIdx, dayVal);
+        }
+      }
+    }
+    const parsed = Date.parse(dayStr);
+    if (!isNaN(parsed)) return new Date(parsed);
+    return now;
+  };
+
+  const getFilteredLogsByPeriod = <T extends { day: string }>(logsList: T[], targetPeriod: PeriodType): T[] => {
+    const now = new Date();
+    return logsList.filter(log => {
+      const logDate = parseDayLabelToDate(log.day);
+      const diffTime = now.getTime() - logDate.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+      if (targetPeriod === '24h') return diffDays <= 1;
+      if (targetPeriod === 'week') return diffDays <= 7;
+      if (targetPeriod === 'month') return diffDays <= 30;
+      if (targetPeriod === 'year') return diffDays <= 365;
+      return true;
+    });
+  };
+
   // Translate weight logs array to match settings unit preference
   const transformedWeightData = weightLogs.map((log) => ({
     day: log.day,
@@ -163,6 +203,11 @@ const BodyMeasurementsPage = () => {
     day: log.day,
     val: parseFloat((log.val / (heightMeters * heightMeters)).toFixed(1)),
   }));
+
+  // Filter trends by user selected period
+  const filteredWeightData = getFilteredLogsByPeriod(transformedWeightData, weightPeriod);
+  const filteredFatData = getFilteredLogsByPeriod(fatLogs, fatPeriod);
+  const filteredBmiData = getFilteredLogsByPeriod(bmiLogs, bmiPeriod);
 
   // Gesture Handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -376,6 +421,96 @@ const BodyMeasurementsPage = () => {
           </CardContent>
         </Card>
 
+        {/* Weight Trend with period selection */}
+        <Card className="border-none shadow-none bg-white rounded-3xl">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-bold text-base text-[#1A1C1E]">Weight Trend</h3>
+              <PeriodSelector 
+                value={weightPeriod} 
+                onChange={setWeightPeriod} 
+                activeColorClass="text-[#6750A4] font-black"
+              />
+            </div>
+            {filteredWeightData.length > 0 ? (
+              <div className="h-32 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={filteredWeightData}>
+                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 3', 'dataMax + 3']} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="val" stroke="#6750A4" strokeWidth={2} fill="rgba(103, 80, 164, 0.05)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+                <p className="text-sm text-gray-400 font-medium">No weight logs recorded for this period.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Body Fat Trend with period selection */}
+        <Card className="border-none shadow-none bg-white rounded-3xl">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-bold text-base text-[#1A1C1E]">Body Fat (%) Trend</h3>
+              <PeriodSelector 
+                value={fatPeriod} 
+                onChange={setFatPeriod} 
+                activeColorClass="text-[#10B981] font-black"
+              />
+            </div>
+            {filteredFatData.length > 0 ? (
+              <div className="h-32 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={filteredFatData}>
+                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 1', 'dataMax + 1']} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="val" stroke="#10B981" strokeWidth={2} fill="rgba(16, 185, 129, 0.05)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+                <p className="text-sm text-gray-400 font-medium">No body fat logs recorded for this period.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* BMI Trend with period selection */}
+        <Card className="border-none shadow-none bg-white rounded-3xl">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-bold text-base text-[#1A1C1E]">BMI Trend</h3>
+              <PeriodSelector 
+                value={bmiPeriod} 
+                onChange={setBmiPeriod} 
+                activeColorClass="text-[#3B82F6] font-black"
+              />
+            </div>
+            {filteredBmiData.length > 0 ? (
+              <div className="h-32 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={filteredBmiData}>
+                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 1', 'dataMax + 1']} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="val" stroke="#3B82F6" strokeWidth={2} fill="rgba(59, 130, 246, 0.05)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="p-6 text-center bg-gray-50 rounded-2xl">
+                <p className="text-sm text-gray-400 font-medium">No BMI records available for this period.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Circumference tape logger form */}
         <Card className="border-none shadow-none bg-white rounded-3xl">
           <CardContent className="p-6">
@@ -471,80 +606,6 @@ const BodyMeasurementsPage = () => {
                 Save Tape Measurements
               </Button>
             </form>
-          </CardContent>
-        </Card>
-
-        {/* Weight 30 days trends area graph */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Weight Trend (30 days)</h3>
-            {weightLogs.length > 0 ? (
-              <div className="h-32 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={transformedWeightData}>
-                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 3', 'dataMax + 3']} />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="val" stroke="#6750A4" strokeWidth={2} fill="rgba(103, 80, 164, 0.05)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">Log weight entries below to construct weight charts.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Body Fat 30 days trends area graph */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-base text-[#1A1C1E]">Body Fat (%) (30 days)</h3>
-            {fatLogs.length > 0 ? (
-              <div className="h-32 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={fatLogs}>
-                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 1', 'dataMax + 1']} />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="val" stroke="#10B981" strokeWidth={2} fill="rgba(16, 185, 129, 0.05)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">Log body fat entries below to view percentage trends.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* BMI 30 days trends area graph */}
-        <Card className="border-none shadow-none bg-white rounded-3xl">
-          <CardContent className="p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-bold text-base text-[#1A1C1E]">BMI Trend</h3>
-              {currentBMI !== null && (
-                <span className="text-sm font-bold bg-[#EADDFF] text-[#21005D] px-2.5 py-1 rounded-full">Current: {currentBMI}</span>
-              )}
-            </div>
-            {weightLogs.length > 0 ? (
-              <div className="h-32 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={bmiLogs}>
-                    <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} axisLine={false} tickLine={false} width={20} domain={['dataMin - 1', 'dataMax + 1']} />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="val" stroke="#3B82F6" strokeWidth={2} fill="rgba(59, 130, 246, 0.05)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="p-6 text-center bg-gray-50 rounded-2xl">
-                <p className="text-sm text-gray-400 font-medium">No BMI records available.</p>
-              </div>
-            )}
           </CardContent>
         </Card>
 
