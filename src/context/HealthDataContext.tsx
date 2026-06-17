@@ -104,8 +104,15 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const [vitalsData, setVitalsData] = useState<Record<string, VitalLog[]>>(() => {
     const saved = localStorage.getItem('health_vitals');
-    return saved ? JSON.parse(saved) : {
-      hr: [], rhr: [], spo2: [], bp: [], sugar: [], temp: []
+    const parsed = saved ? JSON.parse(saved) : null;
+    if (parsed) {
+      if (!parsed.hrv) {
+        parsed.hrv = [];
+      }
+      return parsed;
+    }
+    return {
+      hr: [], rhr: [], spo2: [], bp: [], sugar: [], temp: [], hrv: []
     };
   });
 
@@ -193,8 +200,8 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setVitalsData(prev => {
       const currentList = prev[key] || [];
       const filtered = currentList.filter(entry => {
-        if (key === 'rhr') {
-          // Resting HR is unique per date only
+        if (key === 'rhr' || key === 'hrv') {
+          // Resting HR and HRV can be unique per date only for summary
           return entry.date !== date;
         } else {
           // Other vitals are unique per date AND time combination
@@ -278,7 +285,7 @@ export const HealthDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const clearAllData = () => {
     setActivityLogs([]);
-    setVitalsData({ hr: [], rhr: [], spo2: [], bp: [], sugar: [], temp: [] });
+    setVitalsData({ hr: [], rhr: [], spo2: [], bp: [], sugar: [], temp: [], hrv: [] });
     setSleepLogs([]);
     setCalorieLogs([]);
     setWaterLogs([]);

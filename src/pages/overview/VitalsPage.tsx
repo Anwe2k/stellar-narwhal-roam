@@ -3,7 +3,7 @@
 import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowUpRight, Heart, Wind } from 'lucide-react';
+import { ArrowUpRight, Heart, Wind, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -14,6 +14,7 @@ const VitalsPage = () => {
   const vitalTypes = [
     { key: 'hr', title: 'Heart Rate', current: 'Heart Rate', unit: 'bpm', color: '#EF4444', gradient: 'rgba(239, 68, 68, 0.1)', periodText: 'Last 12 hours' },
     { key: 'rhr', title: 'Resting Heart Rate', current: 'Resting HR', unit: 'bpm', color: '#F97316', gradient: 'rgba(249, 115, 22, 0.1)', periodText: 'Last week' },
+    { key: 'hrv', title: 'Heart Rate Variability', current: 'HRV', unit: 'ms', color: '#EC4899', gradient: 'rgba(236, 72, 153, 0.1)', periodText: 'Last week' },
     { key: 'spo2', title: 'Blood Oxygen (SpO2)', current: 'SpO2', unit: '%', color: '#06B6D4', gradient: 'rgba(6, 182, 212, 0.1)', periodText: 'Last week' },
     { key: 'bp', title: 'Blood Pressure', current: 'BP', unit: 'mmHg', color: '#3B82F6', gradient: 'rgba(59, 130, 246, 0.1)', periodText: 'Last week' },
     { key: 'sugar', title: 'Blood Sugar', current: 'Blood Sugar', unit: 'mg/dL', color: '#10B981', gradient: 'rgba(16, 185, 129, 0.1)', periodText: 'Last week' },
@@ -28,11 +29,12 @@ const VitalsPage = () => {
   const latestHR = getLatestValue('hr');
   const latestSpO2 = getLatestValue('spo2');
   const latestVO2 = getLatestValue('vo2max');
+  const latestHRV = getLatestValue('hrv');
 
   return (
     <MobileLayout title="Vitals" headerGradientClass="from-[#FFDAD6]/50" backPath="/overview">
       <div className="space-y-6 pt-2">
-        {/* Stacked top summary visualizer - Updated with VO2 Max card */}
+        {/* Stacked top summary visualizer - Updated with HRV and VO2 Max */}
         <div className="flex items-center justify-between py-2">
           <div className="space-y-5">
             <div>
@@ -44,10 +46,9 @@ const VitalsPage = () => {
             
             <div>
               <p className="text-3xl font-black text-[#1A1C1E] tracking-tight">
-                {latestVO2 !== null ? `${latestVO2}` : '--'} 
-                {latestVO2 !== null && <span className="text-sm font-bold text-gray-400 ml-1">ml/kg/min</span>}
+                {latestHRV !== null ? `${latestHRV} ms` : '--'}
               </p>
-              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Cardio Fitness (VO2 Max)</p>
+              <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">Heart Rate Variability (HRV)</p>
             </div>
 
             <div>
