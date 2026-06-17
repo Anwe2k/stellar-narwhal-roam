@@ -4,9 +4,9 @@ import React from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import HealthSummary from '@/components/dashboard/HealthSummary';
 import ActivityChart from '@/components/dashboard/ActivityChart';
-import InsightsSection from '@/components/dashboard/InsightsSection';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   return (
@@ -14,16 +14,10 @@ const Dashboard = () => {
       <div className="space-y-6">
         <p className="text-[#44474E] -mt-2">Here's your health summary for today.</p>
         
-        {/* Core health summary overview cards */}
         <HealthSummary />
         
-        {/* Dynamic rule-based insights and target goal indicators */}
-        <InsightsSection />
-        
-        {/* Activity history chart */}
         <ActivityChart />
 
-        {/* Connect Banner */}
         <div className="bg-[#EADDFF] p-6 rounded-3xl mt-6 relative overflow-hidden">
           <div className="relative z-10">
             <h3 className="text-[#21005D] font-bold text-lg">Health Connect</h3>
