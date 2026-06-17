@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame, Globe, Clock, User, Sunrise } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, ChevronRight, Activity, Flame, Globe, Clock, User, Sunrise, Palette } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUnits } from '@/context/UnitContext';
 import { useHealthData } from '@/context/HealthDataContext';
@@ -141,6 +141,16 @@ const Profile = () => {
 
         <Card className="border-none shadow-none bg-white rounded-[32px] overflow-hidden">
           <CardContent className="p-2 space-y-0.5">
+            <Link to="/settings/look-and-feel" className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 active:scale-[0.99] transition-all text-left">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Palette size={20} className="text-purple-500" />
+                </div>
+                <span className="font-bold text-sm text-[#1A1C1E]">Look & Feel</span>
+              </div>
+              <ChevronRight size={18} className="text-gray-300" />
+            </Link>
+
             {[
               { icon: Bell, label: 'Notifications', color: 'text-blue-500', bg: 'bg-blue-50' },
               { icon: Shield, label: 'Privacy & Security', color: 'text-green-500', bg: 'bg-green-50' },
@@ -149,7 +159,7 @@ const Profile = () => {
             ].map((item, idx) => (
               <button 
                 key={item.label}
-                className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 active:scale-[0.99] transition-all"
+                className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 active:scale-[0.99] transition-all text-left"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 ${item.bg} rounded-xl flex items-center justify-center shrink-0`}>
